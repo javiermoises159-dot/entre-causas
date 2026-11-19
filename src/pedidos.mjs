@@ -1,7 +1,7 @@
 import { getStore, ENV } from "./store.mjs";
 import { avisar } from "./push.mjs";
 import { restante, contar, reservar } from "./stock.mjs";
-import { json, pinOk, fechaRoma, horaRoma, esFecha, rangoDias, txt, num, modificar } from "./comun.mjs";
+import { json, pinOk, fechaRoma, horaRoma, esFecha, rangoDias, txt, num, modificar, aMin, ahoraRoma, abiertoEn, enCierre } from "./comun.mjs";
 
 // Misma persona aunque escriba +39, 0039 o espacios
 function claveTel(t) {
@@ -89,6 +89,22 @@ export default async (req) => {
     // pedido programado para mañana: disponibilidad y stock de mañana
     const manana = !!(b.prog && /^\d\d:\d\d$/.test(String(b.prog.hora || "")) && Number(b.prog.dia) === 1);
     const diaEntrega = new Date(Date.now() + (manana ? 86400000 : 0)), fStock = fechaRoma(diaEntrega);
+    // horario: el servidor no acepta pedidos con el local cerrado (los del local por teléfono o palmare, sí)
+    if (!porTel) {
+      const AJh = menu.ajustes || {}, n = ahoraRoma(), prgOk = !!(b.prog && /^\d\d:\d\d$/.test(String(b.prog.hora || "")));
+      if (enCierre(AJh, fStock)) return json({ error: "cerrado" }, 423);
+      if (!prgOk) {
+        if (AJh.modo === "cerrado" || (AJh.modo !== "abierto" && !abiertoEn(AJh, n.d, n.m))) return json({ error: "cerrado" }, 423);
+      } else {
+        const m = aMin(b.prog.hora);
+        if ((!manana && m < n.m - 5) || (AJh.modo !== "abierto" && !abiertoEn(AJh, (n.d + (manana ? 1 : 0)) % 7, m))) return json({ error: "hora" }, 423);
+      }
+      const D = AJh.horaDel;
+      if (D && D.abre && D.cierra && b.modo !== "Retiro en local" && !String(b.mesa || "").replace(/\D/g, "")) {
+        const m = prgOk ? aMin(b.prog.hora) : n.m;
+        if (!(m >= aMin(D.abre) && m < aMin(D.cierra))) return json({ error: "horaDel", abre: D.abre, cierra: D.cierra }, 423);
+      }
+    }
     const nd = noDisponibles(menu, b.lineas, diaEntrega);
     if (nd.length) return json({ error: "no-disponible", items: nd }, 409);
     const lineas = armar(menu, b.lineas);

@@ -74,3 +74,24 @@ export async function modificar(store, key, inicial, fn) {
   }
   throw new Error("conflicto");
 }
+
+// ---- Horario (mismas reglas que la app de clientes) ----
+export const aMin = (s) => { const [a, b] = String(s || "0:0").split(":").map(Number); return a * 60 + (b || 0); };
+// Día de la semana (0 = lunes) y minuto actual en Italia
+export function ahoraRoma(d = new Date()) {
+  const p = {};
+  new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Rome", weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(d).forEach((x) => (p[x.type] = x.value));
+  return { d: { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 }[p.weekday], m: (+p.hour) * 60 + (+p.minute) };
+}
+function franjaDia(AJ, d) {
+  const h = AJ.horario?.[d];
+  if (!h || h.cerrado || !h.abre || !h.cierra) return null;
+  const a = aMin(h.abre); let c = aMin(h.cierra); if (c <= a) c += 1440;
+  return [a, c];
+}
+// ¿Abierto el día d a los m minutos? (cuenta la noche anterior si cierra después de medianoche)
+export function abiertoEn(AJ, d, m) {
+  const s = franjaDia(AJ, d), y = franjaDia(AJ, (d + 6) % 7);
+  return !!((s && m >= s[0] && m < s[1]) || (y && m + 1440 < y[1]));
+}
+export const enCierre = (AJ, f) => (AJ.cierres || []).find((c) => c && c.desde && f >= c.desde && f <= (c.hasta || c.desde));

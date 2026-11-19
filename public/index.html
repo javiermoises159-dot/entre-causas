@@ -655,7 +655,7 @@ async function enviar(){const err=$('err');const fail=s=>{err.textContent=s;err.
       body:JSON.stringify({lineas:CART.map(({id,q,o})=>({id,q,o})),cliente:{nombre:CLI.nom,dir:CLI.dir},modo:CLI.modo,mesa:MESA||'',pago:CLI.pago,nota,lang:LANG,
         tel:CLI.tel,promos:CLI.promos,comune:CLI.modo==='Delivery'?CLI.comune:'',cupon:CLI.cupon,prog:CLI.cuando==='prog'?{dia:Number(CLI.pdia||0),hora:CLI.phora}:null})});
     clearTimeout(tm);if(r.ok){const j=await r.json();pid=j.id||'';fid=j.fid||null;pfecha=j.fecha||'';}
-    else if(r.status===423){btn.disabled=false;const j=await r.json();return fail(t('errPausa')(j.hasta||''));}
+    else if(r.status===423){btn.disabled=false;const j=await r.json();if(j.error==='cerrado')return fail(t('errCerrado')+' '+t('cerradoProg'));if(j.error==='hora')return fail(t('errHoraFuera'));if(j.error==='horaDel')return fail(t('errDel')(j.abre||'',j.cierra||''));return fail(t('errPausa')(j.hasta||''));}
     else if(r.status===409){const j=await r.json();btn.disabled=false;if(j.error==='franja')return fail(t('errFranja')(j.siguiente||''));{const q=(j.items||[]).filter(x=>x.quedan>0);if(q.length){q.forEach(x=>{if(ITEMS[x.id])ITEMS[x.id]._st=x.quedan;});renderAll();return fail(q.map(x=>t('quedan')(x.quedan)+' · '+(ITEMS[x.id]?N(ITEMS[x.id]):x.n)).join('\n'));}}const ids=(j.items||[]).map(x=>x.id);
       ids.forEach(id=>{if(ITEMS[id])ITEMS[id]._ag=true;});CART=CART.filter(l=>!ids.includes(l.id));saveCart();renderAll();updCart();
       return fail(t('yaNo')((j.items||[]).map(x=>ITEMS[x.id]?N(ITEMS[x.id]):x.n).join(', ')));}}catch(e){}
