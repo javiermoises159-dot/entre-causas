@@ -171,6 +171,8 @@ export default async (req) => {
         }
       } catch {}
     }
+    // cupón de primera compra: solo si es de verdad el primer pedido de ese teléfono
+    if (cu && cu.primera && (!telKey || nCli > 1)) { desc = 0; cupon = ""; }
     const p = {
       id: codigo(), fecha, hora: horaRoma(ahora), ts: ahora.toISOString(), origen: palmare ? "palmare" : porTel ? "tel" : "app", estado: palmare && b.espera === true ? "espera" : porTel && !palmare ? "preparando" : "nuevo",
       cliente: txt(b.cliente?.nombre, 60), dir: modo === "Delivery" ? txt(b.cliente?.dir, 160) : "",
