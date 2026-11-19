@@ -472,8 +472,11 @@ const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(
 const DEF={modo:'abierto',horario:Array.from({length:7},()=>({abre:'12:00',cierra:'23:00',cerrado:false})),envio:{tiempo:'',costo:null,minimo:0,gratisDesde:null,zona:''},direccion:'',instagram:'',whatsapp:'393208329786',aviso:{texto:'',activo:false}};
 let AJ=DEF,CATS=[],ITEMS={},RECO=[],SUG=[],CART=LS.get('ed_cart',[]),P=null,EST={open:true},ACT=null;
 let CLI={nom:'',dir:'',modo:'Delivery',pago:'Efectivo',tel:'',comune:'',cuando:'ya',pdia:'0',phora:'',cupon:'',promos:false,...LS.get('ed_cli',{})};
-const N=it=>LANG==='it'&&it.n_it?it.n_it:it.n, D=it=>LANG==='it'&&it.d_it?it.d_it:it.d, B=it=>LANG==='it'&&it.b_it?it.b_it:it.b;
-const CN=c=>LANG==='it'&&c.n_it?c.n_it:c.n, CS=c=>LANG==='it'&&c.s_it?c.s_it:c.s;
+const L3=(o,k)=>(LANG!=='es'&&o[k+'_'+LANG])||o[k];
+const N=it=>L3(it,'n'), D=it=>L3(it,'d'), B=it=>L3(it,'b');
+/* textos de ajustes en 3 idiomas: campo, campo_it, campo_en */
+const TX=(o,k)=>o?((LANG!=='es'&&o[k+'_'+LANG])||o[k]||''):'';
+const CN=c=>L3(c,'n'), CS=c=>L3(c,'s');
 function toast(s){document.querySelectorAll('.toast').forEach(x=>x.remove());const d=document.createElement('div');d.className='toast';d.textContent=s;document.body.appendChild(d);setTimeout(()=>{d.style.opacity=0;setTimeout(()=>d.remove(),300)},1500);}
 const ALG={gluten:['🌾','Gluten','Glutine'],crustaceos:['🦐','Crustáceos','Crostacei'],huevo:['🥚','Huevo','Uova'],pescado:['🐟','Pescado','Pesce'],cacahuetes:['🥜','Cacahuetes','Arachidi'],soja:['🫘','Soja','Soia'],lacteos:['🥛','Lácteos','Latte'],frutos:['🌰','Frutos de cáscara','Frutta a guscio'],apio:['🥬','Apio','Sedano'],mostaza:['🟡','Mostaza','Senape'],sesamo:['⚪','Sésamo','Sesamo'],sulfitos:['🍷','Sulfitos','Solfiti'],altramuces:['🫛','Altramuces','Lupini'],moluscos:['🦪','Moluscos','Molluschi']};
 const DC={es:['lun','mar','mié','jue','vie','sáb','dom'],it:['lun','mar','mer','gio','ven','sab','dom'],en:['Mon','Tue','Wed','Thu','Fri','Sat','Sun']};
@@ -505,7 +508,7 @@ function pintarEstado(){EST=estado();$('stat').classList.toggle('off',!EST.open)
 function applyLang(){document.documentElement.lang=LANG;
   document.querySelectorAll('[data-t]').forEach(e=>{const v=t(e.dataset.t);if(typeof v==='string')e.innerHTML=v;});
   document.querySelectorAll('[data-tp]').forEach(e=>e.placeholder=t(e.dataset.tp));$('lang').textContent=$('wLang').textContent=LBL[NXL[LANG]];}
-function setLang(l){LANG=l;LS.set('ed_lang',l);applyLang();renderAll();if(TAB==='res')renderRes();}
+function setLang(l){LANG=l;LS.set('ed_lang',l);applyLang();renderAll();if(TAB==='res')renderRes();if(TAB==='perfil'&&typeof renderPerfil==='function')renderPerfil();if(AJ&&AJ.aviso)$('avisoT').textContent='📣 '+TX(AJ.aviso,'texto');if(MESA){$('mesaS').textContent='🍽️ '+t('mesaT')(MESA);document.querySelectorAll('.mll button').forEach((b,i)=>b.textContent=(i?'🧾 ':'🙋 ')+t(i?'llCuenta':'llCam'));}}
 
 /* carta */
 function ctl(id){const it=ITEMS[id];if(it.agotado)return `<span class="sold">${lbl(it)}</span>`;
@@ -525,7 +528,7 @@ let jumping=false;
 function irA(id){if($('q').value){$('q').value='';buscar();}const s=$('s-'+id);if(!s)return;jumping=true;setAct(id);scrollTo({top:s.getBoundingClientRect().top+scrollY-58,behavior:'smooth'});setTimeout(()=>jumping=false,700);}
 addEventListener('scroll',()=>{if(jumping||$('q').value)return;let cur=CATS[0]?.id;for(const c of CATS){const s=$('s-'+c.id);if(s&&s.getBoundingClientRect().top<120)cur=c.id;}if(cur)setAct(cur);},{passive:true});
 function buscar(){const q=norm($('q').value.trim());$('qx').classList.toggle('hidden',!q);$('home').classList.toggle('hidden',!!q);$('chips').classList.toggle('hidden',!!q);
-  if(!q){renderMenu();return;}renderMenu(Object.values(ITEMS).filter(i=>norm([i.n,i.n_it,i.d,i.d_it].join(' ')).includes(q)));}
+  if(!q){renderMenu();return;}renderMenu(Object.values(ITEMS).filter(i=>norm([i.n,i.n_it,i.n_en,i.d,i.d_it,i.d_en].join(' ')).includes(q)));}
 
 /* carrito */
 const qtyOf=id=>CART.filter(l=>l.id===id).reduce((a,l)=>a+l.q,0);
@@ -571,7 +574,7 @@ function updCart(){const n=CART.reduce((a,l)=>a+l.q,0),T2=totals();
   $('descRow').style.display=T2.desc?'flex':'none';if(T2.desc){$('descL').textContent=t('descuento')+' · '+T2.cu.c.codigo.toUpperCase();$('desc').textContent='−'+eur(T2.desc);}
   const cm2=$('cupMsg');cm2.className='cupm'+(T2.cu?(T2.cu.err?' cs-er':' cs-ok'):'');cm2.textContent=T2.cu?(T2.cu.err||t('cupOk')(eur(T2.cu.d))):'';$('cupBox').style.display=(AJ.cupones||[]).some(c=>c&&c.activo!==false)?'block':'none';
   if(!$('cup').value&&CLI.cupon)$('cup').value=CLI.cupon;
-  const F=AJ.fidelidad||{};$('telHint').textContent=F.activo&&F.cada>1?t('telFid')(F.cada,F.premio||''):t('telOpc');
+  const F=AJ.fidelidad||{};$('telHint').textContent=F.activo&&F.cada>1?t('telFid')(F.cada,TX(F,'premio')):t('telOpc');
   if(!EST.open&&CLI.cuando!=='prog'){CLI.cuando='prog';}
   document.querySelectorAll('#cuando button').forEach(b=>b.classList.toggle('act',b.dataset.v===CLI.cuando));$('progBox').style.display=CLI.cuando==='prog'?'grid':'none';
   $('pDia').innerHTML=[0,1].map(i=>`<option value="${i}"${String(i)===String(CLI.pdia)?' selected':''}>${i?t('manana'):t('hoy')} · ${t('dias')[(romeNow().d+i)%7]}</option>`).join('');$('pHora').value=CLI.phora||'';$('dirBox').style.display=CLI.modo==='Delivery'?'block':'none';
@@ -610,7 +613,7 @@ let deferredInstall=null;addEventListener('beforeinstallprompt',e=>{e.preventDef
 function openInfo(){const E=AJ.envio||{},n=romeNow(),ios=/iphone|ipad|ipod/i.test(navigator.userAgent),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
   const ig=String(AJ.instagram||'').replace(/^@/,'').trim(),wa=String(AJ.whatsapp||'').replace(/\D/g,'');
   $('infoSheet').innerHTML=`<div class="grab"></div><h2>${t('infoT')}<button class="x" onclick="closeAll()" aria-label="Cerrar">✕</button></h2>
-  ${AJ.aviso?.activo&&AJ.aviso.texto?`<div class="aviso">📣 ${esc(AJ.aviso.texto)}</div>`:''}
+  ${AJ.aviso?.activo&&AJ.aviso.texto?`<div class="aviso">📣 ${esc(TX(AJ.aviso,'texto'))}</div>`:''}
   <div class="ib2"><h4><i style="width:8px;height:8px;border-radius:50%;background:${EST.open?'#22B07D':'var(--ac)'}"></i><span style="font-weight:500">${estadoTxt(EST)}</span></h4>
    ${AJ.modo==='auto'?t('Dias').map((d,i)=>{const h=AJ.horario[i];return `<div class="hr${i===n.d?' today':''}"><span>${d}</span><span>${h.cerrado?t('cerrado'):esc(h.abre)+' – '+esc(h.cierra)}</span></div>`}).join(''):''}</div>
   <div class="ib2"><h4>🛵 ${t('deliveryT')}</h4>
@@ -622,7 +625,7 @@ function openInfo(){const E=AJ.envio||{},n=romeNow(),ios=/iphone|ipad|ipod/i.tes
    ${E.zona?`<div class="kv"><span>${t('zona')}</span><span>${esc(E.zona)}</span></div>`:''}
    ${COM().map(c=>`<div class="kv"><span>📍 ${esc(c.n)}${c.minimo?`<br><small>${t('minimo')} ${eur(c.minimo)}</small>`:''}${c.gratisDesde?`<br><small>${t('gratisDesde')} ${eur(c.gratisDesde)}</small>`:''}</span><span>${c.costo==null||c.costo===''?t('aConfirmar'):Number(c.costo)?eur(c.costo):t('gratis')}</span></div>`).join('')}</div>
   <div class="ib2"><h4>📍 ${t('contacto')}</h4>
-   ${AJ.sala?`<div class="kv"><span>🍽️ ${t('sala')}</span><span>${esc(AJ.sala)}</span></div>`:''}${AJ.coperto?`<div class="kv"><span>${t('coperto')}</span><span>${eur(AJ.coperto)}</span></div>`:''}
+   ${AJ.sala?`<div class="kv"><span>🍽️ ${t('sala')}</span><span>${esc(TX(AJ,'sala'))}</span></div>`:''}${AJ.coperto?`<div class="kv"><span>${t('coperto')}</span><span>${eur(AJ.coperto)}</span></div>`:''}
    ${(AJ.locales||[]).map(l=>`<div style="font-size:13.5px;margin-top:10px"><b>${esc(l.n)}</b><br>${esc(l.dir)}</div><a class="lnk" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.dir)}" target="_blank" rel="noopener">🗺️ ${t('verMapa')}</a>`).join('')}
    ${!(AJ.locales||[]).length&&AJ.direccion?`<div style="font-size:13.5px">${esc(AJ.direccion)}</div><a class="lnk" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(AJ.direccion)}" target="_blank" rel="noopener">🗺️ ${t('verMapa')}</a>`:''}
    ${wa?`<a class="lnk" href="https://wa.me/${wa}" target="_blank" rel="noopener">💬 ${t('escribenos')}</a>`:''}
@@ -657,7 +660,7 @@ async function enviar(){const err=$('err');const fail=s=>{err.textContent=s;err.
       ids.forEach(id=>{if(ITEMS[id])ITEMS[id]._ag=true;});CART=CART.filter(l=>!ids.includes(l.id));saveCart();renderAll();updCart();
       return fail(t('yaNo')((j.items||[]).map(x=>ITEMS[x.id]?N(ITEMS[x.id]):x.n).join(', ')));}}catch(e){}
   btn.disabled=false;
-  {const F=AJ.fidelidad||{};if(!fid&&F.activo&&F.cada>1&&CLI.tel){const k='ed_fid_'+CLI.tel.replace(/\D/g,'');const n=LS.get(k,0)+1,toca=n>=F.cada;LS.set(k,toca?0:n);fid={n,cada:F.cada,premio:F.premio,toca};}}
+  {const F=AJ.fidelidad||{};if(!fid&&F.activo&&F.cada>1&&CLI.tel){const k='ed_fid_'+CLI.tel.replace(/\D/g,'');const n=LS.get(k,0)+1,toca=n>=F.cada;LS.set(k,toca?0:n);fid={n,cada:F.cada,premio:TX(F,'premio'),toca};}}
   let m=`🐟 *NUEVO PEDIDO${pid?' #'+pid:''} · Entre Causas*\n\n`;
   CART.forEach(l=>{const it=ITEMS[l.id];m+=`• ${l.q} x ${it.n} — ${eur(unit(l)*l.q)}\n`;const ot=optTxt(l.o);if(ot)m+=`   ↳ ${ot}\n`;});
   m+=`\nSubtotal: ${eur(T2.sub)}`;if(T2.desc)m+=`\nDescuento (${T2.cu.c.codigo.toUpperCase()}): −${eur(T2.desc)}`;if(CLI.modo==='Delivery')m+=`\nEnvío${CLI.comune?' ('+CLI.comune+')':''}: ${T2.conf?(T2.del?eur(T2.del):'Gratis'):'a confirmar'}`;
@@ -666,7 +669,7 @@ async function enviar(){const err=$('err');const fail=s=>{err.textContent=s;err.
   const url='https://wa.me/'+String(AJ.whatsapp||'').replace(/\D/g,'')+'?text='+encodeURIComponent(m);
   if(MESA)LS.set('ed_comandas',[...LS.get('ed_comandas',[]),{id:pid||Date.now().toString(36),mesa:MESA,nombre:CLI.nom,lineas:CART.map(l=>({n:ITEMS[l.id].n,q:l.q,o:optTxt(l.o)})),total:T2.tot,nota,hora:new Date().toISOString(),estado:'nueva'}]);
   LS.set('ed_last',CART.map(({id,q,o})=>({id,q,o})));$('okRes').textContent=(pid?t('numPed')+' #'+pid+'\n\n':'')+m.replace(/\*/g,'').replace(/^.*\n\n/,'');$('okLink').href=url;
-  $('okFid').classList.toggle('hidden',!fid);if(fid)$('okFid').textContent=fid.toca?t('fidToca')(fid.premio):t('fidVa')(fid.n,fid.cada,fid.premio);
+  $('okFid').classList.toggle('hidden',!fid);if(fid)$('okFid').textContent=(pr=>fid.toca?t('fidToca')(pr):t('fidVa')(fid.n,fid.cada,pr))(TX(AJ.fidelidad,'premio')||fid.premio);
   {const ig=String(AJ.instagram||'').replace(/^@/,'').trim();$('okLinks').innerHTML=(AJ.resena?`<a href="${esc(AJ.resena)}" target="_blank" rel="noopener">${t('resena')}</a>`:'')+(ig?`<a href="https://instagram.com/${encodeURIComponent(ig)}" target="_blank" rel="noopener">📸 ${t('instagram')}</a>`:'');}
   if(T2.cu&&T2.cu.c&&T2.cu.c.primera&&!T2.cu.err)LS.set('ed_c_'+String(T2.cu.c.codigo).toUpperCase(),true);
   CLI.cupon='';$('cup').value='';CLI.cuando='ya';LS.set('ed_cli',CLI);
@@ -743,7 +746,7 @@ function pfCupones(){const L=cupActivos();$('gcSheet').innerHTML=`<div class="gr
 function renderPerfil(){const F=AJ.fidelidad||{},c=F.cada||8,n=fidN(),reg=telD(),last=LS.get('ed_last',[]).filter(l=>ITEMS[l.id]),rs=LS.get('ed_reservas',[]).filter(r=>r.fecha>=fechaRome(0)).length,cu=cupActivos();
   let h=`<div class="pf-h"><span class="av">${esc((CLI.nom||'👤')[0].toUpperCase())}</span><div><b>${reg&&CLI.nom?t('pfHola')(esc(CLI.nom.split(' ')[0])):t('pfInv')}</b><small>${reg?fidCode():t('pfInvS')}</small></div></div>`;
   if(reg){const co=p=>`<svg style="position:absolute;${p}" width="20" height="20" viewBox="0 0 26 26" fill="none" stroke="#E9B54A" stroke-width="1.6" aria-hidden="true"><path d="M1 25V1h24"/><path d="M5 25V5h20"/></svg>`;
-    h+=`<button class="tes" onclick="openFid()" style="position:relative;display:block;width:100%;border:none;text-align:left;font-family:Poppins;background:#0E0C0B;color:#E9B54A;margin-top:0">${co('top:10px;left:10px')}${co('top:10px;right:10px;transform:scaleX(-1)')}<span style="display:flex;justify-content:space-between;align-items:flex-start;padding:4px 14px 0"><span><span style="display:block;font-family:Cinzel,serif;font-size:9.5px;letter-spacing:3px">${t('fdT').toUpperCase()}</span><img src="logo-claro.png" alt="Entre Causas" style="height:38px;margin-top:6px;filter:brightness(0) saturate(100%) invert(79%) sepia(38%) saturate(783%) hue-rotate(353deg) brightness(96%) contrast(90%)"></span><img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=4&data=${encodeURIComponent(fidCode())}" alt="QR" style="width:58px;height:58px;background:#fff;border-radius:8px"></span><span class="st" style="grid-template-columns:repeat(${c},1fr);gap:6px;margin:14px 0 10px">${Array.from({length:c},(_,i)=>`<i class="${i<n?'on':''}" style="font-size:13px;border-width:1.5px">${i===c-1&&i>=n?'🎁':''}</i>`).join('')}</span><span style="display:flex;justify-content:space-between;font-size:12px;color:#F6E7C1"><span>${t('fdS')(n,c)} · ${esc(F.premio||'')}</span><span style="opacity:.7">${fidCode()}</span></span></button>`;}
+    h+=`<button class="tes" onclick="openFid()" style="position:relative;display:block;width:100%;border:none;text-align:left;font-family:Poppins;background:#0E0C0B;color:#E9B54A;margin-top:0">${co('top:10px;left:10px')}${co('top:10px;right:10px;transform:scaleX(-1)')}<span style="display:flex;justify-content:space-between;align-items:flex-start;padding:4px 14px 0"><span><span style="display:block;font-family:Cinzel,serif;font-size:9.5px;letter-spacing:3px">${t('fdT').toUpperCase()}</span><img src="logo-claro.png" alt="Entre Causas" style="height:38px;margin-top:6px;filter:brightness(0) saturate(100%) invert(79%) sepia(38%) saturate(783%) hue-rotate(353deg) brightness(96%) contrast(90%)"></span><img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=4&data=${encodeURIComponent(fidCode())}" alt="QR" style="width:58px;height:58px;background:#fff;border-radius:8px"></span><span class="st" style="grid-template-columns:repeat(${c},1fr);gap:6px;margin:14px 0 10px">${Array.from({length:c},(_,i)=>`<i class="${i<n?'on':''}" style="font-size:13px;border-width:1.5px">${i===c-1&&i>=n?'🎁':''}</i>`).join('')}</span><span style="display:flex;justify-content:space-between;font-size:12px;color:#F6E7C1"><span>${t('fdS')(n,c)} · ${esc(TX(F,'premio'))}</span><span style="opacity:.7">${fidCode()}</span></span></button>`;}
   else h+=`<button class="pf-cta" onclick="REGNEXT='perfil';openReg()">${t('regT')}</button>`;
   const R=[['repeat',t('pfPed'),last.length?last.slice(0,2).map(l=>N(ITEMS[l.id])).join(', '):t('pfNoPed'),last.length?'repetir()':"tab('menu')"],['cal',t('pfRes'),t('pfResN')(rs),"tab('res')"],['gift',t('gcT'),t('qGcS'),'openGift()'],['tag',t('pfCup'),cu.length?cu.map(x=>x.codigo).join(', '):t('pfCupNo'),'pfCupones()'],['user',t('pfDat'),reg?(CLI.nom||'')+' · '+(CLI.tel||''):t('pfDatS'),"REGNEXT='perfil';openReg()"],['globe',t('pfLang'),LBL[LANG],'setLang(NXL[LANG]);renderPerfil()'],['info',t('pfLoc'),t('infoLink'),'openInfo()']];
   h+=`<div class="pf-l">${R.map(([i,a,b,f])=>`<button class="pf-r" onclick="${f}"><span class="i">${pic2(i)}</span><span class="s"><b>${a}</b><small>${esc(b)}</small></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div>`;
@@ -781,12 +784,12 @@ function openFid(){const F=AJ.fidelidad||{};if(!telD()){REGNEXT='none';openReg()
   $('gcSheet').innerHTML=`<div class="grab"></div><h2>⭐ ${t('fdT')}<button class="x" onclick="closeAll()" aria-label="Cerrar">✕</button></h2>
   <div class="tes"><img class="lg" src="logo-claro.png" alt="Entre Causas"><div style="margin-top:10px;font-weight:700;font-size:17px">${esc(CLI.nom||'')}</div><div class="num">${t('fdNum')} ${fidCode()}</div>
   <div class="st">${Array.from({length:c},(_,i)=>`<i class="${i<n?'on':''}">${i<n?'🐟':(i===c-1?'🎁':'')}</i>`).join('')}</div>
-  <div style="font-weight:600;text-align:center">${t('fdS')(n,c)} · ${t('fdPremio')(F.premio||'')}</div>
+  <div style="font-weight:600;text-align:center">${t('fdS')(n,c)} · ${t('fdPremio')(TX(F,'premio'))}</div>
   <div class="qr"><img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=4&data=${encodeURIComponent(fidCode())}" alt="QR"></div></div>
   <div style="font-size:13px;color:var(--mut);line-height:1.5;margin-top:12px">${t('fdHow')}</div>`;openS('gcSheet');}
 function renderHome(){
   {const F=AJ.fidelidad||{},c=F.cada||8,n=fidN();$('fdSub').textContent=telD()?`${n}/${c}`:t('qFdS');}
-  {const P=LS.get('ed_pd',null)||AJ.platoDia,it=P&&P.activo&&ITEMS[P.id];$('pdBox').innerHTML=it&&!it.agotado?`<button class="pd5" onclick="openP('${it.id}')">${it.foto?`<img src="${esc(it.foto)}" alt="">`:`<span class="em">${esc(it.e)}</span>`}<span class="ov"><span><small>${t('pdT')}</small><b>${esc(N(it))}</b>${P.nota?`<span class="nt">${esc(P.nota)}</span>`:''}</span><span class="pr">${eur(it.p)}</span></span></button>`:'';}
+  {const P=LS.get('ed_pd',null)||AJ.platoDia,it=P&&P.activo&&ITEMS[P.id];$('pdBox').innerHTML=it&&!it.agotado?`<button class="pd5" onclick="openP('${it.id}')">${it.foto?`<img src="${esc(it.foto)}" alt="">`:`<span class="em">${esc(it.e)}</span>`}<span class="ov"><span><small>${t('pdT')}</small><b>${esc(N(it))}</b>${P.nota?`<span class="nt">${esc(TX(P,'nota'))}</span>`:''}</span><span class="pr">${eur(it.p)}</span></span></button>`:'';}
   const of=(CATS.find(c=>c.id==='ofertas')?.items||[]).map(i=>ITEMS[i]).filter(i=>!i.agotado);
   $('ofBox').classList.toggle('hidden',!of.length);
   $('ofs').innerHTML=of.map(it=>`<button class="of" onclick="openP('${it.id}')">${it.foto?`<img src="${esc(it.foto)}" alt="">`:''}<div class="in">${B(it)?`<span class="tg">${esc(B(it))}</span>`:''}<b>${esc(N(it))}</b>${D(it)?`<p>${esc(D(it))}</p>`:''}<div class="pr">${eur(it.p)} <span>${t('pedirAhora')}</span></div></div></button>`).join('');
@@ -797,13 +800,13 @@ function renderAll(){marcarDias();renderHome();renderChips();if($('q').value.tri
 function init(m){const a=m.ajustes||{};AJ={...DEF,...a,envio:{...DEF.envio,...(a.envio||{})},aviso:{...DEF.aviso,...(a.aviso||{})},horario:(a.horario&&a.horario.length===7)?a.horario:DEF.horario};
   if(!a.modo&&a.abierto===false)AJ.modo='cerrado';CATS=[];ITEMS={};
   (m.categorias||[]).forEach(c=>{const ids=[];(c.items||[]).forEach(i=>{if(i.oculto)return;
-    ITEMS[i.id]={id:i.id,n:i.nombre,n_it:i.nombre_it,d:i.desc,d_it:i.desc_it,p:Number(i.precio)||0,e:i.emoji||'🍽️',b:i.etiqueta,b_it:i.etiqueta_it,foto:((i.fotos&&i.fotos.length)?i.fotos[0]:i.foto)||'',fotos:(i.fotos&&i.fotos.length)?i.fotos:(i.foto?[i.foto]:[]),al:i.alergenos||[],dias:i.dias||[],_ag:!!i.agotado,agotado:!!i.agotado,
+    ITEMS[i.id]={id:i.id,n:i.nombre,n_it:i.nombre_it,n_en:i.nombre_en,d:i.desc,d_it:i.desc_it,d_en:i.desc_en,p:Number(i.precio)||0,e:i.emoji||'🍽️',b:i.etiqueta,b_it:i.etiqueta_it,b_en:i.etiqueta_en,foto:((i.fotos&&i.fotos.length)?i.fotos[0]:i.foto)||'',fotos:(i.fotos&&i.fotos.length)?i.fotos:(i.foto?[i.foto]:[]),al:i.alergenos||[],dias:i.dias||[],_ag:!!i.agotado,agotado:!!i.agotado,
       ops:[...(i.opciones||[]).filter(g=>g&&g.nombre&&(g.valores||[]).some(v=>v.nombre)).map(g=>({...g,valores:g.valores.filter(v=>v.nombre)})),...(i.combo&&i.combo.activo&&String(i.combo.texto||'').trim()?[{nombre:'Combo',tipo:'varias',obligatorio:false,_combo:true,valores:[{nombre:i.combo.texto.trim(),lab:String(i.combo.texto_it||'').trim(),precio:Number(i.combo.precio)||0}]}]:[])],cat:c.id};ids.push(i.id);});
-    if(ids.length)CATS.push({id:c.id,n:c.nombre,n_it:c.nombre_it,s:c.corto||c.nombre,s_it:c.corto_it,icon:c.icono||'🍽️',items:ids});});
+    if(ids.length)CATS.push({id:c.id,n:c.nombre,n_it:c.nombre_it,n_en:c.nombre_en,s:c.corto||c.nombre,s_it:c.corto_it,s_en:c.corto_en,icon:c.icono||'🍽️',items:ids});});
   RECO=(m.recomendados||[]).filter(id=>ITEMS[id]);SUG=(m.sugerencias||[]).filter(id=>ITEMS[id]);
   marcarDias();CART=CART.filter(l=>ITEMS[l.id]&&!ITEMS[l.id].agotado);saveCart();
-  if(AJ.aviso.activo&&AJ.aviso.texto&&LS.get('ed_aviso','')!==AJ.aviso.texto){$('avisoT').textContent='📣 '+AJ.aviso.texto;$('aviso').classList.remove('hidden');}
-  $('nom').value=CLI.nom||'';$('dir').value=CLI.dir||'';$('tel').value=CLI.tel||'';$('promos').checked=!!CLI.promos;ACT=CATS[0]?.id;{const F=AJ.fidelidad||{};if(F.activo&&F.cada>1&&!MESA){$('wFid').textContent=t('wFid')(F.cada,F.premio);$('wFid').classList.remove('hidden');}}renderAll();if(window.__RES){window.__RES=0;openRes();}}
+  if(AJ.aviso.activo&&AJ.aviso.texto&&LS.get('ed_aviso','')!==AJ.aviso.texto){$('avisoT').textContent='📣 '+TX(AJ.aviso,'texto');$('aviso').classList.remove('hidden');}
+  $('nom').value=CLI.nom||'';$('dir').value=CLI.dir||'';$('tel').value=CLI.tel||'';$('promos').checked=!!CLI.promos;ACT=CATS[0]?.id;{const F=AJ.fidelidad||{};if(F.activo&&F.cada>1&&!MESA){$('wFid').textContent=t('wFid')(F.cada,TX(F,'premio'));$('wFid').classList.remove('hidden');}}renderAll();if(window.__RES){window.__RES=0;openRes();}}
 seg('modo','modo');seg('pago','pago');seg('cuando','cuando');applyLang();
 const MESA=(new URLSearchParams(location.search).get('mesa')||'').replace(/\D/g,'').slice(0,3);
 if(MESA){document.body.classList.add('mesa');$('wel').classList.add('hidden');CLI.modo='Mesa';CLI.cuando='ya';$('mesaS').textContent='🍽️ '+t('mesaT')(MESA);$('mesaS').classList.remove('hidden');$('mesaS').insertAdjacentHTML('afterend',`<div class="mll"><button onclick="llamar('camarero',this)">🙋 ${t('llCam')}</button><button class="k" onclick="llamar('cuenta',this)">🧾 ${t('llCuenta')}</button></div>`);tab('menu');}else{tab('home');if(CLI.modo==='Mesa')CLI.modo='Delivery';if(new URLSearchParams(location.search).has('reservar')){$('wel').classList.add('hidden');window.__RES=1;}}
