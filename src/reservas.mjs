@@ -86,19 +86,30 @@ export default async (req) => {
     const res = await Promise.all(rangoDias(desde, hasta, 62).map((f) => store.get("dia/" + f, { type: "json" })));
     const reservas = [];
     res.forEach((d) => d && reservas.push(...d.reservas));
+    const fl = (await store.get("faltas", { type: "json" }))?.tels || {};
+    reservas.forEach((r) => { const k = claveTel(r.tel); if (k && fl[k]) r.faltas = fl[k]; });
     return json({ desde, hasta, hoy: fechaRoma(), reservas });
   }
 
   // ---- Panel: cambiar estado ----
   if (req.method === "PATCH") {
     let b; try { b = await req.json(); } catch { return json({ error: "JSON inválido" }, 400); }
-    if (!esFecha(b.fecha) || !b.id || !ESTADOS.includes(b.estado)) return json({ error: "Faltan datos" }, 400);
+    if (!esFecha(b.fecha) || !b.id || (b.estado !== undefined && !ESTADOS.includes(b.estado))) return json({ error: "Faltan datos" }, 400);
+    let antes = "";
     const out = await modificar(store, "dia/" + b.fecha, { reservas: [] }, (d) => {
       const r = d.reservas.find((x) => x.id === b.id);
       if (!r) return false;
-      r.estado = b.estado;
+      antes = r.estado;
+      if (b.estado) r.estado = b.estado;
+      if (b.mesa !== undefined) r.mesa = txt(String(b.mesa || ""), 4);
+      if (b.recordado === true) r.recordado = true;
       return r;
     });
+    // quien no viene: se cuenta por teléfono
+    const tk = out && claveTel(out.tel);
+    if (tk && (b.estado === "noshow") !== (antes === "noshow") && (b.estado === "noshow" || antes === "noshow")) {
+      await modificar(store, "faltas", { tels: {} }, (d) => { d.tels[tk] = Math.max(0, (d.tels[tk] || 0) + (b.estado === "noshow" ? 1 : -1)); return true; });
+    }
     return out ? json({ ok: true, reserva: out }) : json({ error: "No encontrada" }, 404);
   }
 

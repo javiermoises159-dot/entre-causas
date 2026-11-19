@@ -78,8 +78,10 @@ export default async (req) => {
     const menu = await leerMenu(req);
     if (!menu) return json({ error: "Carta no disponible" }, 503);
     // pausa de la cocina (salvo pedidos programados)
+    // pedido apuntado por el local (teléfono): con PIN, sin pausa ni límite de franja
+    const porTel = b.origen === "tel" && (await pinOk(req));
     const pz = menu.ajustes?.pausa ? Date.parse(menu.ajustes.pausa) : 0;
-    if (pz > Date.now() && !(b.prog && b.prog.hora)) return json({ error: "pausa", hasta: horaRoma(new Date(pz)) }, 423);
+    if (!porTel && pz > Date.now() && !(b.prog && b.prog.hora)) return json({ error: "pausa", hasta: horaRoma(new Date(pz)) }, 423);
     const nd = noDisponibles(menu, b.lineas);
     if (nd.length) return json({ error: "no-disponible", items: nd }, 409);
     const lineas = armar(menu, b.lineas);
@@ -114,6 +116,23 @@ export default async (req) => {
       const dia = Number(b.prog.dia) === 1 ? 1 : 0;
       prog = { fecha: fechaRoma(new Date(ahora.getTime() + dia * 86400000)), hora: b.prog.hora };
     }
+    // límite de deliveries por franja de 30 min
+    const FR = AJ.franja || {};
+    const maxF = parseInt(FR.max, 10) || 0;
+    if (!porTel && FR.activo && maxF > 0 && modo === "Delivery") {
+      const fF = prog ? prog.fecha : fecha, hF = prog ? prog.hora : horaRoma(ahora);
+      const slot = (h) => { const [a, m] = String(h).split(":").map(Number); return a * 2 + (m >= 30 ? 1 : 0); };
+      const dd = await store.get("dia/" + fF, { type: "json" });
+      const cnt = {};
+      (dd?.pedidos || []).filter((x) => x.modo === "Delivery" && x.estado !== "cancelado")
+        .forEach((x) => { const s = slot(x.prog && x.prog.fecha === fF ? x.prog.hora : x.hora); cnt[s] = (cnt[s] || 0) + 1; });
+      let s = slot(hF);
+      if ((cnt[s] || 0) >= maxF) {
+        let k = s + 1; while (k < s + 8 && (cnt[k] || 0) >= maxF) k++;
+        const hh = String(Math.floor(k / 2) % 24).padStart(2, "0") + ":" + (k % 2 ? "30" : "00");
+        return json({ error: "franja", siguiente: hh }, 409);
+      }
+    }
     // teléfono y fidelidad
     const tel = txt(String(b.tel || "").replace(/[^\d+]/g, ""), 20);
     const telKey = claveTel(tel);
@@ -143,12 +162,13 @@ export default async (req) => {
       } catch {}
     }
     const p = {
-      id: codigo(), fecha, hora: horaRoma(ahora), ts: ahora.toISOString(), origen: "app", estado: "nuevo",
+      id: codigo(), fecha, hora: horaRoma(ahora), ts: ahora.toISOString(), origen: porTel ? "tel" : "app", estado: porTel ? "preparando" : "nuevo",
       cliente: txt(b.cliente?.nombre, 60), dir: modo === "Delivery" ? txt(b.cliente?.dir, 160) : "",
       modo, mesa, pago: b.pago === "Tarjeta" ? "Tarjeta" : "Efectivo", nota: txt(b.nota, 300), lang: ["it", "en"].includes(b.lang) ? b.lang : "es",
       lineas, subtotal: sub, envio, total: num(sub - desc + (envio || 0)),
       tel, comune: com ? com.n : "", cupon, desc, prog, fid, notaCli, nCli,
     };
+    if (porTel) { const m = parseInt(b.eta, 10); if (m >= 5 && m <= 120) { p.eta = m; p.etaHora = horaRoma(new Date(Date.now() + m * 60000)); } }
     try {
       const ok = await modificar(store, "dia/" + fecha, { pedidos: [] }, (d) => {
         if (d.pedidos.length >= 800) return false;
@@ -158,7 +178,7 @@ export default async (req) => {
       });
       if (!ok) return json({ error: "Límite diario alcanzado" }, 429);
     } catch { return json({ error: "Inténtalo de nuevo" }, 503); }
-    await avisar();
+    if (!porTel) await avisar();
     return json({ ok: true, id: p.id, fecha: p.fecha, total: p.total, envio: p.envio, fid });
   }
 
@@ -198,6 +218,7 @@ export default async (req) => {
       if (ESTADOS.includes(b.estado)) p.estado = b.estado;
       if (b.pago === "Efectivo" || b.pago === "Tarjeta") p.pago = b.pago;
       if (b.eta !== undefined) { const m = parseInt(b.eta, 10); if (m >= 5 && m <= 120) { p.eta = m; p.etaHora = horaRoma(new Date(Date.now() + m * 60000)); } }
+      if (b.resena === true) p.resena = true;
       if (b.motivo !== undefined) p.motivo = ["llena", "zona", "agotado", "cierre"].includes(b.motivo) ? b.motivo : "";
       if (b.envio !== undefined) { p.envio = b.envio === null ? null : num(b.envio); p.total = num(p.subtotal - (p.desc || 0) + (p.envio || 0)); }
       return p;
