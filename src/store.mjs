@@ -62,3 +62,9 @@ function fotos() {
     async set(key, buf, o = {}) { await kv().put(key, buf, { metadata: o.metadata || {} }); return { modified: true }; },
   };
 }
+
+// Copia completa de la base (sin contadores internos)
+export async function exportarTodo() {
+  const { results } = await ENV.DB.prepare("SELECT s, k, v FROM blobs WHERE s NOT IN ('entrecausas-limites', 'entrecausas-seguridad') ORDER BY s, k").all();
+  return results.map((r) => ({ s: r.s, k: r.k, v: JSON.parse(r.v) }));
+}

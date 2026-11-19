@@ -95,3 +95,19 @@ export function abiertoEn(AJ, d, m) {
   return !!((s && m >= s[0] && m < s[1]) || (y && m + 1440 < y[1]));
 }
 export const enCierre = (AJ, f) => (AJ.cierres || []).find((c) => c && c.desde && f >= c.desde && f <= (c.hasta || c.desde));
+
+// ---- Límite anti-spam por IP: como mucho `max` veces cada `min` minutos ----
+export async function limite(req, tipo, max, min) {
+  try {
+    const ip = (req.headers.get("cf-connecting-ip") || "").replace(/[^\w.:-]/g, "_");
+    if (!ip) return true;
+    const st = getStore({ name: "entrecausas-limites", consistency: "strong" }), ahora = Date.now(), v = min * 60000;
+    const ok = await modificar(st, tipo + "/" + ip, { t: ahora, n: 0 }, (d) => {
+      if (ahora - d.t > v) { d.t = ahora; d.n = 0; }
+      if (d.n >= max) return false;
+      d.n++; return true;
+    });
+    return ok !== null;
+  } catch { return true; } // si falla el contador, no se bloquea a nadie
+}
+export const demasiados = () => json({ error: "demasiados" }, 429);

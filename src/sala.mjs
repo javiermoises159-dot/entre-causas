@@ -1,5 +1,5 @@
 import { getStore } from "./store.mjs";
-import { json, pinOk, fechaRoma, esFecha, txt, modificar } from "./comun.mjs";
+import { json, pinOk, fechaRoma, esFecha, txt, modificar, limite, demasiados } from "./comun.mjs";
 import { avisar } from "./push.mjs";
 
 // Estado de las mesas y lista de espera del día (solo el panel)
@@ -15,6 +15,7 @@ export default async (req) => {
     let b; try { b = await req.json(); } catch { return json({ error: "JSON inválido" }, 400); }
     const mesa = String(b.mesa || "").replace(/\D/g, "").slice(0, 3), tipo = b.tipo === "cuenta" ? "cuenta" : "camarero";
     if (!mesa) return json({ error: "Falta la mesa" }, 400);
+    if (!(await limite(req, "llamada-" + mesa, 6, 10))) return demasiados(); // por mesa: en el local todos comparten la misma WiFi
     let nueva = false;
     await modificar(store, "dia/" + fechaRoma(), vacio, (d) => {
       d.llamadas = (d.llamadas || []).filter((x) => x.estado === "activa" || Date.now() - Date.parse(x.ts) < 3600000).slice(-80);

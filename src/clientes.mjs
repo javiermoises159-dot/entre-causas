@@ -1,5 +1,5 @@
 import { getStore } from "./store.mjs";
-import { json, pinOk, modificar, txt } from "./comun.mjs";
+import { json, pinOk, modificar, txt, limite, demasiados } from "./comun.mjs";
 
 // Clientes que pidieron por la app con su teléfono (para fidelidad y promociones)
 // Un registro por cliente ("c/<teléfono>"), para que la base no tenga un registro gigante
@@ -16,6 +16,7 @@ export default async (req) => {
     let b; try { b = await req.json(); } catch { return json({ error: "JSON inválido" }, 400); }
     const tel = txt(String(b.tel || "").replace(/[^\d+]/g, ""), 20), k = claveTel(tel), nombre = txt(b.nombre, 60).trim();
     if (!k || !nombre) return json({ error: "Faltan nombre o teléfono" }, 400);
+    if (!(await limite(req, "registro", 5, 30))) return demasiados();
     const hoy = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Rome" }).format(new Date());
     await modificar(store, "c/" + k, { tel, nombre: "", n: 0, total: 0, primero: hoy }, (c) => {
       c.tel = tel; c.nombre = nombre; c.promos = b.promos === true; c.registro = c.registro || hoy;

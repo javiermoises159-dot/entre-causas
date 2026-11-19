@@ -1,7 +1,7 @@
 import { getStore, ENV } from "./store.mjs";
 import { avisar } from "./push.mjs";
 import { restante, contar, reservar } from "./stock.mjs";
-import { json, pinOk, fechaRoma, horaRoma, esFecha, rangoDias, txt, num, modificar, aMin, ahoraRoma, abiertoEn, enCierre } from "./comun.mjs";
+import { json, pinOk, fechaRoma, horaRoma, esFecha, rangoDias, txt, num, modificar, aMin, ahoraRoma, abiertoEn, enCierre, limite, demasiados } from "./comun.mjs";
 
 // Misma persona aunque escriba +39, 0039 o espacios
 function claveTel(t) {
@@ -62,9 +62,23 @@ function armar(menu, lineas) {
   return out;
 }
 
+// Minutos de espera según los platos que hay ahora en cocina
+export function espera(pedidos, modo = "Delivery") {
+  const platos = (pedidos || []).filter((p) => ["nuevo", "preparando"].includes(p.estado))
+    .reduce((a, p) => a + (p.lineas || []).filter((l) => !l.anulado && !l.listo).reduce((b, l) => b + (l.q || 0), 0), 0);
+  const base = modo === "Delivery" ? 25 : 10, min = Math.round((base + Math.max(0, platos - 3) * 2.5) / 5) * 5;
+  return { platos, min: Math.min(modo === "Delivery" ? 90 : 60, Math.max(base, min)) };
+}
+
 export default async (req) => {
   const store = getStore({ name: "entrecausas-pedidos", consistency: "strong" });
   const url = new URL(req.url);
+
+  // ---- Público: tiempo de espera estimado ahora (para la app de clientes) ----
+  if (req.method === "GET" && url.searchParams.has("espera")) {
+    const d = await store.get("dia/" + fechaRoma(), { type: "json" });
+    return json({ delivery: espera(d?.pedidos, "Delivery").min, retiro: espera(d?.pedidos, "Retiro en local").min });
+  }
 
   // ---- Cliente: ver el estado de su pedido ----
   if (req.method === "GET" && url.searchParams.has("ver")) {
@@ -84,6 +98,7 @@ export default async (req) => {
     // pedido apuntado por el local (teléfono): con PIN, sin pausa ni límite de franja
     const porTel = (b.origen === "tel" || b.origen === "palmare") && (await pinOk(req));
     const palmare = porTel && b.origen === "palmare";
+    if (!porTel && !(await limite(req, "pedido", 6, 10))) return demasiados();
     const pz = menu.ajustes?.pausa ? Date.parse(menu.ajustes.pausa) : 0;
     if (!porTel && pz > Date.now() && !(b.prog && b.prog.hora)) return json({ error: "pausa", hasta: horaRoma(new Date(pz)) }, 423);
     // pedido programado para mañana: disponibilidad y stock de mañana
