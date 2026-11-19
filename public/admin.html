@@ -542,17 +542,18 @@ async function avEstado(){
   return 'ok';}
 function avPinta(e){const el=$('avObl');el.className='avo v'+AVD;const quien=window.APP==='cocina'?'la cocina':'el panel';
   const T={off:['🔔','Activa los avisos',`Sin avisos no te enteras de los pedidos nuevos. Son obligatorios para usar ${quien}.`,'',`<button onclick="avActivar()">Activar avisos</button>`],
-   denied:['🔕','Los avisos están bloqueados','Así no te llega ningún pedido. Vuelve a permitirlos:',`<ol><li><b>Android:</b> mantén pulsado el icono de la app → Información de la app → Notificaciones → Permitir.</li><li><b>iPhone:</b> Ajustes → Notificaciones → Entre Causas → Permitir notificaciones.</li><li><b>Ordenador:</b> toca el candado junto a la dirección → Notificaciones → Permitir.</li></ol>`,`<button onclick="avVigilar(1)">Ya lo hice</button>`],
+   denied:['🔕','Los avisos están bloqueados','Así no te llega ningún pedido. Vuelve a permitirlos:',`<ol><li><b>Android:</b> cierra la app del todo (botón de apps recientes → desliza la app hacia arriba) y vuelve a abrirla. Si sigue igual: abre <b>Chrome</b> → ⋮ → Configuración → Configuración de sitios → Notificaciones → <b>${location.hostname}</b> → Permitir.</li><li><b>iPhone:</b> Ajustes → Notificaciones → Entre Causas → Permitir notificaciones.</li><li><b>Ordenador:</b> toca el candado junto a la dirección → Notificaciones → Permitir.</li></ol>`,`<button onclick="avVigilar(1)">Ya lo hice</button>`],
    inapp:['🌐','Ábrelo en Safari o Chrome','Estás dentro de WhatsApp, Instagram o TikTok, y desde aquí los avisos no funcionan.',`<ol><li>Toca los tres puntos ⋯ o el icono de brújula.</li><li>Elige "Abrir en Safari" o "Abrir en Chrome".</li><li>En Android, mejor aún: instala la app con el APK.</li></ol>`,`<button onclick="navigator.clipboard?.writeText(location.origin+SWS);toast('Link copiado: pégalo en Safari o Chrome')">Copiar el link</button>`],
    ios:['📲','Instala la app para recibir avisos','En iPhone los avisos solo funcionan con la app en la pantalla de inicio.',`<ol><li>Toca Compartir ⬆️ abajo en Safari.</li><li>Elige "Añadir a pantalla de inicio".</li><li>Abre ${quien} desde ese icono y activa los avisos.</li></ol>`,'']}[e];
   el.innerHTML=`<div class="avc"><div class="avi">${T[0]}</div><h2>${T[1]}</h2><p>${T[2]}</p>${T[3]}${AV_ERR&&e==='off'?`<p style="color:#C8341F;font-size:12.5px">No se pudo activar: ${esc(AV_ERR)}</p>`:''}${T[4]}${AV_ERR||e!=='off'?`<button class="av2b" onclick="avSaltar()">Seguir sin avisos por ahora</button>`:''}</div>`;el.classList.remove('hidden');}
 async function avActivar(){await activarAvisos();avVigilar(1);}
-async function avVigilar(manual){if(!avObl()||avSkip())return;const e=await avEstado();
+async function avVigilar(manual){if(!avObl()||avSkip())return;let e=await avEstado();
+  if(manual&&e==='denied'){try{await Notification.requestPermission();}catch(_){}e=await avEstado();if(e==='off'){await activarAvisos();e=await avEstado();}}
   if(e==='ok'||e==='nosoporte'){$('avObl').classList.add('hidden');if(AV_OK===false&&e==='ok')toast('🔔 Avisos activados');AV_OK=true;pintarAvisos();return;}
   const antes=AV_OK;AV_OK=false;avPinta(e);
   try{const ep=localStorage.getItem('ec_ep');if(ep){localStorage.removeItem('ec_ep');api('/api/push',{method:'DELETE',headers:{'content-type':'application/json'},body:JSON.stringify({endpoint:ep})}).catch(()=>{});}}catch(_){} // así el dueño ve que este dispositivo ya no recibe avisos
   if(antes===true){beep();setTimeout(beep,600);setTimeout(beep,1200);try{navigator.vibrate?.([400,150,400,150,400]);}catch(_){}}
-  else if(manual&&e==='denied')toast('Todavía están bloqueados',true);}
+  else if(manual&&e==='denied')toast('Todavía bloqueados: cierra la app del todo y ábrela otra vez',true);}
 setInterval(()=>avVigilar(),30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)avVigilar();});
 async function avisosInit(){if(!('serviceWorker' in navigator)){$('avisos').innerHTML='';avVigilar();return;}
   try{await navigator.serviceWorker.register('/sw-admin.js',{scope:SWS});}catch(e){}
