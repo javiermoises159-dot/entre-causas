@@ -769,7 +769,7 @@ async function enviarRes(){const nom=String(CLI.nom||'').trim(),tel=String(CLI.t
   const rv={id:Date.now().toString(36),fecha:RES.f,hora:RES.h,personas:RES.p,nombre:nom,tel,nota:RES.nota.trim(),estado:'pendiente',creada:new Date().toISOString(),desc:resDescOk()?AJ.resPromo.pct:0};if(rv.desc)LS.set('ed_res20_'+String(tel).replace(/\D/g,''),true);
   let sid='';try{const rq=await fetch('/api/reservas',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...rv,lang:LANG})});if(rq.ok){const j=await rq.json();sid=j.id||'';if(sid){rv.id=sid;rv.srv=true;rv.desc=j.desc||0;}}}catch(x){}
   LS.set('ed_reservas',[...LS.get('ed_reservas',[]),rv]);
-  const ok=$('ok');ok.querySelector('h2').textContent=t('resOkT');ok.querySelector('p').textContent=t('resOkTx');$('okRes').textContent=msg.replace(/\*/g,'').replace(/^.*\n\n/,'');$('okLink').href=url;$('okFid').classList.add('hidden');$('okLinks').innerHTML='';
+  const ok=$('ok');ok.querySelector('h2').textContent=t('resOkT');ok.querySelector('p').textContent=t('resOkTx');$('okRes').textContent=`📅 ${t('Dias')[dowOf(RES.f)]} ${d}/${m}\n⏰ ${RES.h}\n👥 ${RES.p} · ${t('personas')}\n\n👤 ${nom}\n📞 ${tel}`+(RES.nota.trim()?`\n📝 ${RES.nota.trim()}`:'')+(resDescOk()?`\n\n🏷️ -${AJ.resPromo.pct}%`:'');$('okLink').href=url;$('okFid').classList.add('hidden');$('okLinks').innerHTML='';
   RES.nota='';closeAll();ok.classList.remove('hidden');if(sid)okServer('res',sid,rv.fecha);else setTimeout(()=>{try{location.href=url}catch(x){}},350);}
 
 function pintarRepetir(){const L=LS.get('ed_last',[]).filter(l=>ITEMS[l.id]&&!ITEMS[l.id].agotado);$('repeat').classList.toggle('hidden',!L.length);

@@ -80,7 +80,8 @@ export default async (req) => {
     if (!menu) return json({ error: "Carta no disponible" }, 503);
     // pausa de la cocina (salvo pedidos programados)
     // pedido apuntado por el local (teléfono): con PIN, sin pausa ni límite de franja
-    const porTel = b.origen === "tel" && (await pinOk(req));
+    const porTel = (b.origen === "tel" || b.origen === "palmare") && (await pinOk(req));
+    const palmare = porTel && b.origen === "palmare";
     const pz = menu.ajustes?.pausa ? Date.parse(menu.ajustes.pausa) : 0;
     if (!porTel && pz > Date.now() && !(b.prog && b.prog.hora)) return json({ error: "pausa", hasta: horaRoma(new Date(pz)) }, 423);
     const nd = noDisponibles(menu, b.lineas);
@@ -169,12 +170,19 @@ export default async (req) => {
       } catch {}
     }
     const p = {
-      id: codigo(), fecha, hora: horaRoma(ahora), ts: ahora.toISOString(), origen: porTel ? "tel" : "app", estado: porTel ? "preparando" : "nuevo",
+      id: codigo(), fecha, hora: horaRoma(ahora), ts: ahora.toISOString(), origen: palmare ? "palmare" : porTel ? "tel" : "app", estado: porTel && !palmare ? "preparando" : "nuevo",
       cliente: txt(b.cliente?.nombre, 60), dir: modo === "Delivery" ? txt(b.cliente?.dir, 160) : "",
       modo, mesa, pago: b.pago === "Tarjeta" ? "Tarjeta" : "Efectivo", nota: txt(b.nota, 300), lang: ["it", "en"].includes(b.lang) ? b.lang : "es",
       lineas, subtotal: sub, envio, total: num(sub - desc + (envio || 0)),
       tel, comune: com ? com.n : "", cupon, desc, prog, fid, notaCli, nCli,
     };
+    if (palmare) {
+      // comensal y nota de cada línea (misma posición que las líneas)
+      const ok = Array.isArray(b.lineas) && b.lineas.length === lineas.length;
+      p.asientos = lineas.map((_, i) => (ok ? Math.max(0, Math.min(30, parseInt(b.lineas[i].c, 10) || 0)) : 0));
+      p.notasL = lineas.map((_, i) => (ok ? txt(b.lineas[i].nt, 60) : ""));
+      p.mozo = txt(b.mozo, 30);
+    }
     if (porTel) { const m = parseInt(b.eta, 10); if (m >= 5 && m <= 120) { p.eta = m; p.etaHora = horaRoma(new Date(Date.now() + m * 60000)); } }
     try {
       const ok = await modificar(store, "dia/" + fecha, { pedidos: [] }, (d) => {
