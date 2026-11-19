@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacidad · Entre Causas</title>
+<link rel="icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Poppins,system-ui,sans-serif;color:#1F1A17;background:#fff;line-height:1.6;-webkit-font-smoothing:antialiased}
+.w{max-width:680px;margin:0 auto;padding:16px 20px 60px}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.top a{color:#1F1A17;text-decoration:none;font-weight:600;font-size:14px;background:#F6F3EF;border-radius:99px;padding:8px 14px}
+.top .sp{flex:1}
+.top button{border:1.5px solid #EEE9E3;background:#fff;border-radius:99px;padding:7px 12px;font:600 12px Poppins;cursor:pointer}
+img.lg{height:44px;display:block;margin:10px 0 4px}
+h1{font-size:24px;letter-spacing:-.3px;margin:6px 0 2px}
+.up{font-size:12.5px;color:#7A716B;margin-bottom:18px}
+h2{font-size:16px;margin:22px 0 6px}
+p,li{font-size:14px;color:#3E3631}
+ul{padding-left:20px}
+.box{background:#F6F3EF;border-radius:14px;padding:14px 16px;font-size:14px;margin-top:6px}
+.box b{display:inline-block;min-width:120px}
+.miss{color:#B42A20;font-weight:600}
+.btn{margin-top:10px;border:none;background:#1F1A17;color:#fff;border-radius:12px;padding:12px 16px;font:600 14px Poppins;cursor:pointer}
+.ok{color:#16936F;font-weight:600;font-size:13px;margin-top:8px;display:none}
+[data-l]{display:none}
+html[lang=es] [data-l=es],html[lang=it] [data-l=it]{display:block}
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="top"><a href="./">← Entre Causas</a><span class="sp"></span><button onclick="setL(document.documentElement.lang==='es'?'it':'es')" id="lb">🇮🇹 IT</button></div>
+  <img class="lg" src="logo-claro.png" alt="Entre Causas">
+
+  <div data-l="es">
+    <h1>Política de privacidad</h1>
+    <div class="up">Información según el Reglamento (UE) 2016/679 (RGPD)</div>
+    <h2>1. Responsable del tratamiento</h2>
+    <div class="box" id="resp-es"></div>
+    <h2>2. Qué datos usamos</h2>
+    <ul><li>Nombre, dirección de entrega y notas que escribes al hacer un pedido.</li>
+      <li>Los productos que pides, la forma de pago elegida (efectivo o tarjeta al recibir) y el total.</li>
+      <li>Tu número de teléfono de WhatsApp, cuando nos envías el pedido por WhatsApp.</li></ul>
+    <p style="margin-top:8px">No pedimos datos de tarjetas ni pagos en esta web.</p>
+    <h2>3. Para qué los usamos</h2>
+    <p>Solo para preparar, entregar y cobrar tu pedido, y para contactarte si hay algún problema con él. La base legal es la ejecución del pedido que nos pides (art. 6.1.b RGPD). No usamos tus datos para publicidad ni los vendemos.</p>
+    <h2>4. Datos guardados en tu celular</h2>
+    <p>Para que no tengas que escribirlos otra vez, la web guarda en tu propio dispositivo (almacenamiento local del navegador) tu nombre, dirección, idioma, carrito y último pedido. Estos datos no se envían a nuestros servidores. Puedes borrarlos cuando quieras con el botón de abajo. No usamos cookies de publicidad ni de seguimiento.</p>
+    <button class="btn" onclick="borrar()">🗑 Borrar mis datos de este celular</button><div class="ok" id="ok-es">✓ Datos borrados de este dispositivo.</div>
+    <h2>5. Con quién se comparten</h2>
+    <ul><li><b>WhatsApp (Meta)</b>: el pedido se envía a través de WhatsApp, que trata los datos según su propia política de privacidad.</li>
+      <li><b>Netlify</b>: proveedor que aloja esta web.</li>
+      <li>La persona que hace la entrega, solo lo necesario para llevarte el pedido.</li></ul>
+    <h2>6. Cuánto tiempo los guardamos</h2>
+    <p>El tiempo necesario para gestionar el pedido y cumplir las obligaciones fiscales y contables que marca la ley.</p>
+    <h2>7. Tus derechos</h2>
+    <p>Puedes pedir ver, corregir o borrar tus datos, limitar u oponerte a su uso y pedir su portabilidad (arts. 15–22 RGPD), escribiéndonos a los datos de contacto de arriba. También puedes presentar una reclamación ante el Garante per la protezione dei dati personali (<a href="https://www.garanteprivacy.it" target="_blank" rel="noopener">garanteprivacy.it</a>).</p>
+  </div>
+
+  <div data-l="it">
+    <h1>Informativa sulla privacy</h1>
+    <div class="up">Informativa ai sensi del Regolamento (UE) 2016/679 (GDPR)</div>
+    <h2>1. Titolare del trattamento</h2>
+    <div class="box" id="resp-it"></div>
+    <h2>2. Quali dati trattiamo</h2>
+    <ul><li>Nome, indirizzo di consegna e note che scrivi quando fai un ordine.</li>
+      <li>I prodotti ordinati, il metodo di pagamento scelto (contanti o carta alla consegna) e il totale.</li>
+      <li>Il tuo numero WhatsApp, quando ci invii l’ordine tramite WhatsApp.</li></ul>
+    <p style="margin-top:8px">Su questo sito non chiediamo dati di carte né pagamenti.</p>
+    <h2>3. Per quali finalità</h2>
+    <p>Solo per preparare, consegnare e incassare il tuo ordine e per contattarti in caso di problemi. La base giuridica è l’esecuzione dell’ordine da te richiesto (art. 6.1.b GDPR). Non usiamo i tuoi dati per pubblicità e non li vendiamo.</p>
+    <h2>4. Dati salvati sul tuo telefono</h2>
+    <p>Per non doverli riscrivere, il sito salva sul tuo dispositivo (memoria locale del browser) nome, indirizzo, lingua, carrello e ultimo ordine. Questi dati non vengono inviati ai nostri server. Puoi cancellarli quando vuoi con il pulsante qui sotto. Non usiamo cookie pubblicitari o di tracciamento.</p>
+    <button class="btn" onclick="borrar()">🗑 Cancella i miei dati da questo telefono</button><div class="ok" id="ok-it">✓ Dati cancellati da questo dispositivo.</div>
+    <h2>5. Con chi vengono condivisi</h2>
+    <ul><li><b>WhatsApp (Meta)</b>: l’ordine viene inviato tramite WhatsApp, che tratta i dati secondo la propria informativa.</li>
+      <li><b>Netlify</b>: fornitore che ospita questo sito.</li>
+      <li>Chi effettua la consegna, solo per quanto necessario a portarti l’ordine.</li></ul>
+    <h2>6. Per quanto tempo</h2>
+    <p>Per il tempo necessario a gestire l’ordine e ad adempiere agli obblighi fiscali e contabili previsti dalla legge.</p>
+    <h2>7. I tuoi diritti</h2>
+    <p>Puoi chiedere di accedere, rettificare o cancellare i tuoi dati, limitarne o opporti al trattamento e chiederne la portabilità (artt. 15–22 GDPR), scrivendo ai contatti indicati sopra. Puoi anche proporre reclamo al Garante per la protezione dei dati personali (<a href="https://www.garanteprivacy.it" target="_blank" rel="noopener">garanteprivacy.it</a>).</p>
+  </div>
+</div>
+<script>
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let L='es';try{L=JSON.parse(localStorage.getItem('ed_lang'))||((navigator.language||'').toLowerCase().startsWith('it')?'it':'es')}catch(e){}
+function setL(l){document.documentElement.lang=l;document.getElementById('lb').textContent=l==='es'?'🇮🇹 IT':'🇪🇸 ES';}
+setL(L);
+function borrar(){try{['ed_cart','ed_cli','ed_last','ed_lang','ed_aviso'].forEach(k=>localStorage.removeItem(k))}catch(e){}
+  document.querySelectorAll('.ok').forEach(e=>e.style.display='block');}
+function pintar(a){const g=a.legal||{},wa=String(a.whatsapp||'').replace(/\D/g,'');
+  const v=(x,es,it)=>x?esc(x):`<span class="miss">[${es}]</span>`;
+  const row=(k,x)=>`<div><b>${k}</b> ${x}</div>`;
+  document.getElementById('resp-es').innerHTML=row('Nombre:',v(g.razon||'Entre Causas'))+row('Dirección:',v(g.sede||a.direccion,'por completar'))+(wa?row('WhatsApp:','+'+wa):'');
+  document.getElementById('resp-it').innerHTML=row('Ragione sociale:',v(g.razon||'Entre Causas'))+row('Sede:',v(g.sede||a.direccion,'da completare'))+(wa?row('WhatsApp:','+'+wa):'');}
+(async()=>{let m=null;try{const r=await fetch('/api/menu',{cache:'no-store'});if(r.ok)m=await r.json();}catch(e){}
+  if(!m){try{const r=await fetch('menu.json',{cache:'no-store'});if(r.ok)m=await r.json();}catch(e){}}
+  pintar((m&&m.ajustes)||{});})();
+</script>
+</body>
+</html>
