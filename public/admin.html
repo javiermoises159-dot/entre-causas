@@ -521,11 +521,16 @@ const allItems=()=>{const o={};M.categorias.forEach(c=>c.items.forEach(i=>o[i.id
 /* ---------- avisos push ---------- */
 const aforo=()=>(M&&AJ().mesas||[]).reduce((a,m)=>a+(+m.c||0),0)||32;
 function b64ToU8(b){const p='='.repeat((4-b.length%4)%4),s=atob((b+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(s,c=>c.charCodeAt(0));}
-const esIOS=/iphone|ipad|ipod/i.test(navigator.userAgent),instalada=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+const esIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1),instalada=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
 /* ---------- avisos obligatorios: dueño (panel) y cocina ---------- */
 let AV_OK=null,AV_ROLES=null;const AVD=4;
 const avObl=()=>!(navigator.webdriver&&!window.__AVTEST)&&(window.APP==='cocina'||(window.APP==='panel'&&ROL==='dueno'));
+const enApp=/FBAN|FBAV|Instagram|WhatsApp|TikTok|musical_ly|BytedanceWebview|Line\/|Snapchat|; wv\)/i.test(navigator.userAgent);
+let AV_ERR='';const avSkip=()=>{try{return Number(sessionStorage.getItem('av_skip')||0)>Date.now();}catch(e){return false;}};
+function avSaltar(){try{sessionStorage.setItem('av_skip',String(Date.now()+10*60000));}catch(e){}$('avObl').classList.add('hidden');AV_OK=null;toast('Sin avisos: te lo volveremos a pedir en 10 minutos',true);}
 async function avEstado(){
+  if(enApp)return 'inapp';
+  if(esIOS&&!instalada)return 'ios';
   if(!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window))return esIOS&&!instalada?'ios':'nosoporte';
   if(Notification.permission==='denied')return 'denied';
   if(Notification.permission!=='granted')return 'off';
@@ -538,10 +543,11 @@ async function avEstado(){
 function avPinta(e){const el=$('avObl');el.className='avo v'+AVD;const quien=window.APP==='cocina'?'la cocina':'el panel';
   const T={off:['🔔','Activa los avisos',`Sin avisos no te enteras de los pedidos nuevos. Son obligatorios para usar ${quien}.`,'',`<button onclick="avActivar()">Activar avisos</button>`],
    denied:['🔕','Los avisos están bloqueados','Así no te llega ningún pedido. Vuelve a permitirlos:',`<ol><li><b>Android:</b> mantén pulsado el icono de la app → Información de la app → Notificaciones → Permitir.</li><li><b>iPhone:</b> Ajustes → Notificaciones → Entre Causas → Permitir notificaciones.</li><li><b>Ordenador:</b> toca el candado junto a la dirección → Notificaciones → Permitir.</li></ol>`,`<button onclick="avVigilar(1)">Ya lo hice</button>`],
+   inapp:['🌐','Ábrelo en Safari o Chrome','Estás dentro de WhatsApp, Instagram o TikTok, y desde aquí los avisos no funcionan.',`<ol><li>Toca los tres puntos ⋯ o el icono de brújula.</li><li>Elige "Abrir en Safari" o "Abrir en Chrome".</li><li>En Android, mejor aún: instala la app con el APK.</li></ol>`,`<button onclick="navigator.clipboard?.writeText(location.origin+SWS);toast('Link copiado: pégalo en Safari o Chrome')">Copiar el link</button>`],
    ios:['📲','Instala la app para recibir avisos','En iPhone los avisos solo funcionan con la app en la pantalla de inicio.',`<ol><li>Toca Compartir ⬆️ abajo en Safari.</li><li>Elige "Añadir a pantalla de inicio".</li><li>Abre ${quien} desde ese icono y activa los avisos.</li></ol>`,'']}[e];
-  el.innerHTML=`<div class="avc"><div class="avi">${T[0]}</div><h2>${T[1]}</h2><p>${T[2]}</p>${T[3]}${T[4]}${AV_OK===false&&e!=='ios'?'':''}</div>`;el.classList.remove('hidden');}
+  el.innerHTML=`<div class="avc"><div class="avi">${T[0]}</div><h2>${T[1]}</h2><p>${T[2]}</p>${T[3]}${AV_ERR&&e==='off'?`<p style="color:#C8341F;font-size:12.5px">No se pudo activar: ${esc(AV_ERR)}</p>`:''}${T[4]}${AV_ERR||e!=='off'?`<button class="av2b" onclick="avSaltar()">Seguir sin avisos por ahora</button>`:''}</div>`;el.classList.remove('hidden');}
 async function avActivar(){await activarAvisos();avVigilar(1);}
-async function avVigilar(manual){if(!avObl())return;const e=await avEstado();
+async function avVigilar(manual){if(!avObl()||avSkip())return;const e=await avEstado();
   if(e==='ok'||e==='nosoporte'){$('avObl').classList.add('hidden');if(AV_OK===false&&e==='ok')toast('🔔 Avisos activados');AV_OK=true;pintarAvisos();return;}
   const antes=AV_OK;AV_OK=false;avPinta(e);
   try{const ep=localStorage.getItem('ec_ep');if(ep){localStorage.removeItem('ec_ep');api('/api/push',{method:'DELETE',headers:{'content-type':'application/json'},body:JSON.stringify({endpoint:ep})}).catch(()=>{});}}catch(_){} // así el dueño ve que este dispositivo ya no recibe avisos
@@ -556,12 +562,12 @@ async function pintarAvisos(){const box=$('avisos');if(!box)return;
   let sub=null;try{const r=await navigator.serviceWorker.getRegistration(SWS);sub=r&&await r.pushManager.getSubscription();}catch(e){}
   if(sub&&Notification.permission==='granted'){box.innerHTML=`<div class="box" style="padding:10px 14px;display:flex;align-items:center;gap:10px"><span style="flex:1;font-size:13px">🔔 <b>Avisos activados</b> en este dispositivo</span>${ROL==='dueno'&&window.APP==='panel'?'':'<button class="pill2" onclick="probarAviso()">Probar</button>'}</div>`+avEquipo()+avPruebas();return;}
   box.innerHTML=`<div class="box" style="padding:12px 14px;background:#FFF1E6;display:flex;align-items:center;gap:10px"><span style="flex:1;font-size:13px"><b>🔔 Activa los avisos</b><br><span style="color:var(--mut);font-size:12px">Te suena y vibra cada pedido o reserva nueva, aunque tengas el móvil bloqueado.</span></span><button class="btn b-or" style="padding:10px 14px;font-size:13px" onclick="activarAvisos()">Activar</button></div>`;}
-async function activarAvisos(){try{const perm=await Notification.requestPermission();if(perm!=='granted'){toast('Permiso de avisos denegado. Actívalo en los ajustes del navegador.',true);return;}
-  const reg=await navigator.serviceWorker.register('/sw-admin.js',{scope:SWS});await navigator.serviceWorker.ready;
+async function activarAvisos(){AV_ERR='';let paso='permiso';try{const perm=await Notification.requestPermission();if(perm!=='granted'){AV_ERR=perm==='denied'?'el permiso fue rechazado':'no se aceptó el permiso';toast('Permiso de avisos denegado. Actívalo en los ajustes del navegador.',true);return;}paso='registro';
+  const reg=await navigator.serviceWorker.register('/sw-admin.js',{scope:SWS});if(!reg.active)await new Promise(r=>{const w=reg.installing||reg.waiting;if(!w)return r();w.addEventListener('statechange',()=>{if(w.state==='activated')r();});setTimeout(r,6000);});
   const k=(await (await fetch('/api/push',{cache:'no-store'})).json()).key;
-  const sub=(await reg.pushManager.getSubscription())||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToU8(k)});
+  paso='suscripción';const sub=(await reg.pushManager.getSubscription())||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToU8(k)});paso='servidor';
   const r=await api('/api/push',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...sub.toJSON(),nombre:navigator.platform||''})});if(!r.ok)throw 0;
-  toast('🔔 Avisos activados');pintarAvisos();}catch(e){toast('No se pudieron activar los avisos',true);}}
+  toast('🔔 Avisos activados');pintarAvisos();}catch(e){AV_ERR=paso+(e&&e.message?' · '+String(e.message).slice(0,80):'');toast('No se pudieron activar los avisos',true);}}
 function avPruebas(){if(ROL!=='dueno'||window.APP!=='panel')return '';const n=r=>AV_ROLES?` <small style="opacity:.7">(${AV_ROLES[r]||0})</small>`:'';return `<div class="box" style="padding:12px 14px"><b style="font-size:13.5px">🔊 Probar los avisos</b><p style="margin:3px 0 10px;font-size:12px;color:var(--mut)">Manda una notificación de prueba y comprueba que suena. Bloquea el móvil o la tablet antes de tocar para probarlo como un pedido real.</p><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="pill2" onclick="probarAviso()">📱 Este móvil</button><button class="pill2" onclick="probarAviso('cocina')">👨‍🍳 Cocina${n('cocina')}</button><button class="pill2" onclick="probarAviso('camarero')">📝 Camareros${n('camarero')}</button><button class="pill2" onclick="beep();setTimeout(beep,500)">🔔 Sonido del panel</button></div></div>`;}
 function avEquipo(){if(ROL!=='dueno'||!AV_ROLES)return '';const f=[];if(!AV_ROLES.cocina)f.push('la <b>cocina</b>');if(EQ&&EQ.personas?.some(p=>p.rol==='camarero')&&!AV_ROLES.camarero)f.push('ningún <b>camarero</b>');return f.length?`<div class="box" style="padding:12px 14px;background:#FDE8E4;border-left:4px solid var(--red)"><b>⚠️ Avisos apagados: ${f.join(' y ')}</b><p style="margin:4px 0 0;font-size:12.5px;color:var(--mut)">No tienen los avisos activados en ningún dispositivo, así que no se enteran de los pedidos nuevos. Abre su app en la tablet o el móvil y activa los avisos.</p></div>`:'';}
 async function probarAviso(rol){let ep='';try{const r=await navigator.serviceWorker.getRegistration(SWS);ep=(await r?.pushManager.getSubscription())?.endpoint||'';}catch(e){}
