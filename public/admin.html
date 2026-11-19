@@ -484,6 +484,7 @@ const TPL={picante:{nombre:'Picante',tipo:'una',obligatorio:false,valores:['Sin 
 function toast(t,bad){const d=document.createElement('div');d.className='toast'+(bad?' bad':'');d.textContent=t;document.body.appendChild(d);setTimeout(()=>{d.style.opacity=0;setTimeout(()=>d.remove(),300)},2200);}
 const api=(url,opt={})=>fetch(url,{...opt,headers:{...(opt.headers||{}),'x-admin-pin':PIN}});
 const AJ=()=>M.ajustes;
+const nPedidos=L=>{const v=L.filter(p=>p.estado!=='cancelado'&&p.modo!=='Coperto');return v.filter(p=>!p.mesa).length+new Set(v.filter(p=>p.mesa).map(p=>p.cuenta||p.fecha+'|'+p.mesa)).size;};
 /* alérgenos: si la nota habla de alergia, la comanda sale en rojo con los alérgenos de cada plato */
 const itemDe=id=>{for(const c of (M?.categorias||[]))for(const i of (c.items||[]))if(i.id===id)return i;return null;};
 const RXA=/alerg|allerg|intoler|intoller|cel[ií]ac|sin gluten|senza glutine|gluten.?free|lactosa|lattosio|no puede comer|non pu[oò] mangiare/i;
@@ -876,8 +877,9 @@ async function pmLiberar(falta){if(falta&&!confirm('Todavía falta cobrar una pa
   const L=pmLineas(),pax=Math.max(PM.pax||1,1),cop=COP()*CPN(),total=L.reduce((a,l)=>a+l.t,0)+cop,pag=(SALA.mesas[PM.mesa]?.pagos)||[];
   const tar=pag.filter(x=>x.metodo==='Tarjeta').reduce((a,x)=>a+x.monto,0),ef=pag.filter(x=>x.metodo!=='Tarjeta').reduce((a,x)=>a+x.monto,0),met=tar>ef?'Tarjeta':'Efectivo';
   // al cobrar: los pedidos de la mesa se cierran (salen de la cocina y de "en curso"); todo queda como entregado
-  for(const p of pmPedidos()){if(p.estado==='cancelado')continue;const est='entregado',body={fecha:p.fecha,id:p.id,pago:met};if(p.estado!=='entregado')body.estado=est;try{await api('/api/pedidos',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify(body)});}catch(e){}}
-  if(cop>0){try{await api('/api/pedidos?manual=1',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({total:cop,fecha:HOY,modo:'Coperto',pago:met,nota:'Coperto mesa '+PM.mesa+' · '+pax+' pax'})});}catch(e){}}
+  const cta=PM.mesa+'-'+Date.now().toString(36);
+  for(const p of pmPedidos()){if(p.estado==='cancelado')continue;const est='entregado',body={fecha:p.fecha,id:p.id,pago:met,cuenta:cta};if(p.estado!=='entregado')body.estado=est;try{await api('/api/pedidos',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify(body)});}catch(e){}}
+  if(cop>0){try{await api('/api/pedidos?manual=1',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({total:cop,fecha:HOY,modo:'Coperto',pago:met,nota:'Coperto mesa '+PM.mesa+' · '+pax+' pax',cuenta:cta})});}catch(e){}}
   cerrarMd();await salaPost('PATCH',{mesa:PM.mesa,estado:'libre',cierre:{pax,total,coperto:cop,scontrino:scon},por:YO});toast('✓ Mesa '+PM.mesa+' cerrada · '+eur(total));PM.draft=[];if(PALM){PM.mesa='';pmPinta();}else{PM=null;$('pm').classList.add('hidden');}cargarPedidos(true);}
 async function pmMarchar(n){for(const p of pmPedidos().filter(x=>x.estado==='espera'&&(!n||(x.salida??1)===n)))await patchPed(p.fecha,p.id,{estado:'nuevo'});toast('✓ '+(n?SALN[n]+' marchados':'Marchado')+': la cocina ya los tiene');pmPinta();}
 function pmAnular(f,id,i,n){$('md').innerHTML=`<h2>Anular · ${esc(n)}<button class="x" onclick="cerrarMd()">✕</button></h2><p style="font-size:12.5px;color:var(--mut);margin:4px 0 10px">No se cobra y la cocina lo ve tachado.</p>
@@ -1063,7 +1065,7 @@ async function informeSemana(){const dw=(new Date(HOY+'T12:00:00Z').getUTCDay()+
   const sem=(d,h)=>{const ps=P.filter(p=>p.fecha>=d&&p.fecha<=h&&p.estado!=='cancelado'&&p.modo!=='Coperto'),v=ps.reduce((a,p)=>a+p.total,0)+P.filter(p=>p.fecha>=d&&p.fecha<=h&&p.modo==='Coperto').reduce((a,p)=>a+p.total,0),g=G.filter(x=>x.fecha>=d&&x.fecha<=h).reduce((a,x)=>a+x.monto,0);
     const can={Delivery:0,Retiro:0,Sala:0,Local:0};ps.forEach(p=>{const k=p.mesa?'Sala':p.origen==='local'?'Local':p.modo==='Delivery'?'Delivery':'Retiro';can[k]+=p.total;});
     const pl={};ps.forEach(p=>(p.lineas||[]).forEach(l=>{if(!l.anulado)pl[l.n]=(pl[l.n]||0)+l.q;}));const conTel=ps.filter(p=>p.tel),rep=conTel.filter(p=>p.nCli>1).length;
-    const rs=R.filter(r=>r.fecha>=d&&r.fecha<=h);return{v,g,n:ps.length,t:ps.length?v/ps.length:0,can,pl,rep,conTel:conTel.length,res:rs.filter(r=>r.estado!=='rechazada').length,ns:rs.filter(r=>r.estado==='noshow').length,dias:[...Array(7)].map((_,k)=>{const f=addD(d,k);return[f,P.filter(p=>p.fecha===f&&p.estado!=='cancelado').reduce((a,p)=>a+p.total,0)];})};};
+    const rs=R.filter(r=>r.fecha>=d&&r.fecha<=h),np=nPedidos(ps);return{v,g,n:np,t:np?v/np:0,can,pl,rep,conTel:conTel.length,res:rs.filter(r=>r.estado!=='rechazada').length,ns:rs.filter(r=>r.estado==='noshow').length,dias:[...Array(7)].map((_,k)=>{const f=addD(d,k);return[f,P.filter(p=>p.fecha===f&&p.estado!=='cancelado').reduce((a,p)=>a+p.total,0)];})};};
   const A=sem(a1,fin),B=sem(a0,addD(a1,-1)),pct=(x,y)=>y>0?Math.round((x-y)/y*100):null,fl=(x,y)=>{const q=pct(x,y);return q===null?'':` <small style="color:${q>=0?'var(--grn)':'var(--red)'}">${q>=0?'▲':'▼'} ${Math.abs(q)}%</small>`;};
   const top=Object.entries(A.pl).sort((a,b)=>b[1]-a[1]),vend=new Set(Object.keys(A.pl)),sinV=(M.categorias||[]).flatMap(c=>(c.items||[]).filter(i=>!i.oculto&&!vend.has(i.nombre)).map(i=>i.nombre));
   const mejor=A.dias.slice().sort((a,b)=>b[1]-a[1])[0],DN=['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
@@ -1114,7 +1116,7 @@ function renderAhora(){try{renderSalaV();}catch(e){}if(!M||!$('ahH'))return;if(!
   const rHoy=RALL.filter(r=>r.fecha===HOY&&!['rechazada','noshow'].includes(r.estado)),pers=rHoy.reduce((a,r)=>a+r.personas,0);
   const z=enPausa();
   $('ahH').innerHTML=`<div class="ahh">${OFF||COLA.length?`<div style="margin-bottom:10px">${chipOffline()}</div>`:''}<div class="r1">${z?`<div class="stp pz"><i></i>En pausa hasta las ${hRoma(z)}</div><button class="gb" onclick="pausar(0)">${ic('play',14)}Reanudar</button>`:`<div class="stp"><i></i>Recibiendo pedidos</div><button class="gb" onclick="menuPausa()">${ic('flame',15)}Cocina llena</button>`}</div>
-   <div class="ahk"><div><b>${vivos.length}</b><span>pedidos hoy</span></div><div><b>${eur(vivos.reduce((a,p)=>a+p.total,0))}</b><span>caja hoy</span></div><div><b>${pers}/${aforo()}</b><span>sala reservada</span></div></div></div>`;
+   <div class="ahk"><div><b>${nPedidos(vivos)}</b><span>pedidos hoy</span></div><div><b>${eur(vivos.reduce((a,p)=>a+p.total,0))}</b><span>caja hoy</span></div><div><b>${pers}/${aforo()}</b><span>sala reservada</span></div></div></div>`;
   const nuevos=hoyP.filter(p=>p.estado==='nuevo'&&p.origen!=='palmare').sort((a,b)=>(a.ts||'').localeCompare(b.ts||''));
   const pend=RALL.filter(r=>r.estado==='pendiente'&&r.fecha>=HOY).sort((a,b)=>(a.fecha+a.hora).localeCompare(b.fecha+b.hora));
   const lis=hoyP.filter(p=>p.estado==='listo');
@@ -1299,7 +1301,7 @@ function rango(){const h=HOY||fechaRoma();if(PER==='hoy')return[h,h];if(PER==='7
 async function cargarCuentas(){const [d,h]=rango();$('kG').textContent='…';
   try{const [r1,r2]=await Promise.all([api(`/api/pedidos?desde=${d}&hasta=${h}`),api(`/api/gastos?desde=${d}&hasta=${h}`)]);if(!r1.ok||!r2.ok)throw 0;
     CP=(await r1.json()).pedidos.filter(p=>p.estado!=='cancelado');CG=(await r2.json()).gastos;}catch(e){toast('No se pudieron cargar las cuentas',true);return;}
-  const V=CP.reduce((a,p)=>a+p.total,0),G=CG.reduce((a,g)=>a+g.monto,0),N=CP.length;
+  const V=CP.reduce((a,p)=>a+p.total,0),G=CG.reduce((a,g)=>a+g.monto,0),N=nPedidos(CP);
   $('kVe').textContent=eur(V);$('kGa').textContent=eur(G);$('kPe').textContent=N;$('kTi').textContent=eur(N?V/N:0);
   $('kG').textContent=eur(V-G);$('kG').className=V-G>=0?'':'neg';$('kGlab').textContent=`Ganancia · ${fmtF(d)}${d!==h?' → '+fmtF(h):''}`;
   // gráfico por día

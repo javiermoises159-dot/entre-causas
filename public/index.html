@@ -504,7 +504,7 @@ function estado(){const ch=cierreHoy();if(ch)return{open:false,cierre:ch};const 
 function cuando(e){return `${t('abre')} ${e.en===0?t('hoy'):e.en===1?t('manana'):(LANG==='it'?'':'el ')+t('dias')[e.dia]} ${t('alas')} ${e.abre}`;}
 let ESPM=null;// minutos de espera según la cocina ahora
 async function cargarEspera(){try{const r=await fetch('/api/pedidos?espera',{cache:'no-store'});if(r.ok){ESPM=await r.json();pintarEstado();}}catch(e){}}
-function estadoTxt(e){if(e.pausa)return `<b>⏸️ ${t('pausaT')(e.pausa)}</b>`;if(e.open)return `<b>${t('abierto')}</b>`+(e.cierra?` · ${t('cierra')} ${e.cierra}`:'')+(AJ.envio.tiempo?` · ${esc(AJ.envio.tiempo)}`:ESPM&&ESPM.delivery?` · 🛵 ${t('espAhora')(ESPM.delivery)}`:'');
+function estadoTxt(e){if(e.pausa)return `<b>⏸️ ${t('pausaT')(e.pausa)}</b>`;if(e.open)return `<b>${t('abierto')}</b>`+(e.cierra?` · ${t('cierra')} ${e.cierra}`:'')+(AJ.envio.tiempo?` · ${esc(AJ.envio.tiempo)}`:ESPM&&ESPM.delivery&&!MESA?` · 🛵 ${t('espAhora')(ESPM.delivery)}`:'');
   if(e.cierre){const h=(e.cierre.hasta||e.cierre.desde),nx=new Date(h+'T12:00:00Z');nx.setUTCDate(nx.getUTCDate()+1);return `<b>${t('cerrado')}</b>`+(e.cierre.motivo?` · ${esc(e.cierre.motivo)}`:'')+` · ${t('cerradoHasta')} ${String(nx.getUTCDate()).padStart(2,'0')}/${String(nx.getUTCMonth()+1).padStart(2,'0')}`;}
   return `<b>${t('cerrado')}</b>`+(e.abre?` · ${cuando(e)}`:'');}
 function pintarEstado(){EST=estado();$('stat').classList.toggle('off',!EST.open);$('statT').innerHTML=estadoTxt(EST);

@@ -290,6 +290,7 @@ export default async (req) => {
       if (b.pago === "Efectivo" || b.pago === "Tarjeta") p.pago = b.pago;
       if (b.eta !== undefined) { const m = parseInt(b.eta, 10); if (m >= 5 && m <= 120) { p.eta = m; p.etaHora = horaRoma(new Date(Date.now() + m * 60000)); } }
       if (b.resena === true) p.resena = true;
+      if (b.cuenta !== undefined) p.cuenta = txt(String(b.cuenta || ""), 24);
       // anular un plato ya enviado (palmare): no se cobra y la cocina lo ve tachado
       if (b.anular && Number.isInteger(b.anular.i) && p.lineas[b.anular.i] && !p.lineas[b.anular.i].anulado) {
         const l = p.lineas[b.anular.i];
