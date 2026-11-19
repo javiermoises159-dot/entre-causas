@@ -266,7 +266,7 @@ body:not(.rol-dueno) #setup,body:not(.rol-dueno) .ahk div:nth-child(2){display:n
   </div>
 
   <!-- AHORA -->
-  <div id="p-ahora"><div id="ahH"></div><div id="avisos"></div><div id="ahL"></div><div id="setup" style="margin-top:18px"></div></div>
+  <div id="p-ahora"><div id="ahH"></div><div id="instA"></div><div id="avisos"></div><div id="ahL"></div><div id="setup" style="margin-top:18px"></div></div>
 
   <!-- PEDIDOS -->
   <div id="p-pedidos" class="hidden">
@@ -353,6 +353,7 @@ body:not(.rol-dueno) #setup,body:not(.rol-dueno) .ahk div:nth-child(2){display:n
 
   <!-- MAS -->
   <div id="p-mas" class="hidden">
+    <div class="box" id="instBox"></div>
     <div class="box" id="equipoBox"></div>
     <div class="box" id="autoBox"></div>
     <div class="lk" style="margin:12px 0 14px"><button onclick="tab('pedidos')">📋 Historial de pedidos</button><button onclick="tab('local')">🕒 Horario y local</button><button onclick="tab('delivery')">🛵 Envío y zonas</button></div>
@@ -510,6 +511,35 @@ async function resManual(){const f=prompt('Día (AAAA-MM-DD)',$('rFecha').value|
 
 
 
+
+
+/* ---------- instalar el panel: Android (app/APK), iPhone (pantalla de inicio), PC ---------- */
+let BIP=null,APK=false;const UA=navigator.userAgent,esAnd=/android/i.test(UA),esSafari=esIOS&&!/crios|fxios|edgios|opios|gsa\//i.test(UA);
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();BIP=e;pintarInst();});
+addEventListener('appinstalled',()=>{BIP=null;toast('✓ App instalada. Ábrela desde el icono');pintarInst();});
+fetch('/panel.apk',{method:'HEAD'}).then(r=>{APK=r.ok&&!/html/.test(r.headers.get('content-type')||'');pintarInst();}).catch(()=>{});
+async function instalar(){if(!BIP){instMd();return;}BIP.prompt();const r=await BIP.userChoice;if(r.outcome==='accepted')BIP=null;pintarInst();}
+function instHTML(corto){const plat=esIOS?'iPhone':esAnd?'Android':'ordenador';
+  const btn=esIOS?`<button class="btn b-dk" style="width:100%" onclick="instMd()">📱 Cómo instalarla en iPhone</button>`
+   :`<button class="btn b-dk" style="width:100%" onclick="instalar()">📲 Instalar la app ${esAnd?'en este Android':'en este ordenador'}</button>${esAnd&&APK?`<a class="btn b-lt" style="display:block;text-align:center;text-decoration:none;margin-top:8px" href="/panel.apk" download>⬇️ Descargar APK</a>`:''}`;
+  return `<div class="row" style="align-items:flex-start;gap:12px"><img src="icon-192.png" alt="" style="width:48px;height:48px;border-radius:12px;flex:0 0 auto"><div style="flex:1"><b style="font-size:14px">Instala el panel en tu ${plat}</b><p style="margin:2px 0 10px;font-size:12.5px;color:var(--mut)">Queda como una app con su icono, se abre a pantalla completa y te avisa de cada pedido aunque tengas el móvil bloqueado.</p>${btn}
+   ${corto?`<button class="pill2" style="margin-top:8px" onclick="try{localStorage.setItem('ec_inst_no','1')}catch(e){};pintarInst()">Ahora no</button>`:`<button class="pill2" style="margin-top:8px" onclick="instMd()">Ver los pasos</button>`}</div></div>`;}
+function pintarInst(){const a=$('instA'),b=$('instBox');if(!a||!b)return;let no=false;try{no=localStorage.getItem('ec_inst_no')==='1'}catch(e){}
+  if(instalada){a.innerHTML='';b.innerHTML='<h3>📲 App del panel</h3><p>✓ Estás usando el panel como app instalada.</p>';return;}
+  a.innerHTML=no?'':`<div class="box" style="padding:12px 14px">${instHTML(true)}</div>`;b.innerHTML='<h3>📲 Instalar el panel</h3>'+instHTML(false);}
+function instMd(){const link=location.origin+'/admin';let h;
+  if(esIOS)h=`${!esSafari?`<div class="nt" style="background:#FBE3E3;color:var(--red)"><b>Ábrelo en Safari.</b> En iPhone solo se puede instalar desde Safari.<br><button class="pill2" style="margin-top:6px" onclick="navigator.clipboard?.writeText('${link}');toast('Link copiado: pégalo en Safari')">Copiar el link</button></div>`:''}
+   <ol style="font-size:14px;line-height:1.6;padding-left:20px;margin-top:10px">
+   <li>Toca el botón <b>Compartir</b> <span style="display:inline-block;border:1.5px solid var(--ink);border-radius:5px;padding:0 5px;font-size:12px">⬆</span> abajo en Safari.</li>
+   <li>Baja y toca <b>Añadir a pantalla de inicio</b> <span style="display:inline-block;border:1.5px solid var(--ink);border-radius:5px;padding:0 5px;font-size:12px">＋</span>.</li>
+   <li>Toca <b>Añadir</b> arriba a la derecha.</li>
+   <li>Abre el panel desde el nuevo icono <b>EC Panel</b> y entra con tu PIN.</li>
+   <li>En "Activa los avisos" toca <b>Activar</b> y luego <b>Permitir</b>.</li></ol>
+   <p style="font-size:12px;color:var(--mut)">Los avisos funcionan en iPhone con iOS 16.4 o más reciente, y solo abriendo el panel desde el icono.</p>`;
+  else if(esAnd)h=`${APK?`<a class="btn b-dk" style="display:block;text-align:center;text-decoration:none;margin-top:10px" href="/panel.apk" download>⬇️ Descargar APK</a><p style="font-size:12px;color:var(--mut);margin-top:6px">Al abrir el archivo, Android puede pedir permiso para "instalar apps de origen desconocido": acéptalo solo para Chrome.</p><h4 style="margin-top:12px">O instálala desde Chrome</h4>`:''}
+   <ol style="font-size:14px;line-height:1.6;padding-left:20px;margin-top:10px"><li>Abre este panel en <b>Chrome</b>.</li><li>Toca <b>⋮</b> arriba a la derecha.</li><li>Toca <b>Instalar app</b> (o "Añadir a pantalla de inicio" → Instalar).</li><li>Ábrela desde el icono <b>EC Panel</b> y activa los avisos.</li></ol>`;
+  else h=`<ol style="font-size:14px;line-height:1.6;padding-left:20px;margin-top:10px"><li>Abre el panel en <b>Chrome</b> o <b>Edge</b>.</li><li>En la barra de direcciones, toca el icono <b>Instalar</b> (⊕ o una pantalla con flecha).</li><li>Toca <b>Instalar</b>. Queda en el escritorio y en el menú Inicio.</li><li>Activa los avisos para que suene cada pedido.</li></ol>`;
+  $('md').innerHTML=`<h2>📲 Instalar en ${esIOS?'iPhone':esAnd?'Android':'el ordenador'}<button class="x" onclick="cerrarMd()">✕</button></h2>${h}`;$('ov').classList.remove('hidden');}
 
 /* ---------- roles: dueño, cocina, camarero ---------- */
 let ROL='dueno',YO='';
@@ -717,7 +747,7 @@ const colMin=(p,m)=>m>=(p.eta||30)?'var(--red)':m>=(p.eta||30)*.6?'#C27A0E':'var
 const hRoma=d=>new Date(d).toLocaleTimeString('it-IT',{timeZone:'Europe/Rome',hour:'2-digit',minute:'2-digit'});
 const resumen=p=>esc((p.lineas||[]).map(l=>l.q+'× '+l.n).join(' · '));
 function enPausa(){const z=M&&AJ().pausa?Date.parse(AJ().pausa):0;return z>Date.now()?z:0;}
-function renderAhora(){if(!M||!$('ahH'))return;const hoyP=$('pFecha').value===HOY?PED:[];const vivos=hoyP.filter(p=>p.estado!=='cancelado');
+function renderAhora(){if(!M||!$('ahH'))return;if(!$('instA').innerHTML&&!instalada)pintarInst();const hoyP=$('pFecha').value===HOY?PED:[];const vivos=hoyP.filter(p=>p.estado!=='cancelado');
   const rHoy=RALL.filter(r=>r.fecha===HOY&&!['rechazada','noshow'].includes(r.estado)),pers=rHoy.reduce((a,r)=>a+r.personas,0);
   const z=enPausa();
   $('ahH').innerHTML=`<div class="ahh"><div class="r1">${z?`<div class="stp pz"><i></i>En pausa hasta las ${hRoma(z)}</div><button class="gb" onclick="pausar(0)">${ic('play',14)}Reanudar</button>`:`<div class="stp"><i></i>Recibiendo pedidos</div><button class="gb" onclick="menuPausa()">${ic('flame',15)}Cocina llena</button>`}</div>
@@ -1004,7 +1034,7 @@ function renderEnvio(){const e=AJ().envio,f=v=>v==null||v===''||v===0?'':String(
 function numE(k,v){v=v.trim().replace(',','.');const n=parseFloat(v);const e=AJ().envio;
   if(k==='costo')e.costo=v===''||isNaN(n)?null:n;else if(k==='minimo')e.minimo=isNaN(n)?0:n;else e.gratisDesde=v===''||isNaN(n)?null:n;dirty();}
 const LG=()=>AJ().legal;
-function renderMas(){renderAuto();renderEquipo();const all=allItems();const g=LG();if($('gRa')){$('gRa').value=g.razon||'';$('gIva').value=g.piva||'';$('gEm').value=g.email||'';$('gSe').value=g.sede||'';}
+function renderMas(){renderAuto();pintarInst();renderEquipo();const all=allItems();const g=LG();if($('gRa')){$('gRa').value=g.razon||'';$('gIva').value=g.piva||'';$('gEm').value=g.email||'';$('gSe').value=g.sede||'';}
   if($('qrUrl')&&!$('qrUrl').value){$('qrUrl').value=location.origin+'/';pintarQR();}
   $('recoList').innerHTML=M.recomendados.filter(id=>all[id]).map(id=>`<span class="pill">⭐ ${esc(all[id].nombre)}</span>`).join('')||'<span style="color:var(--mut);font-size:13px">Ninguno</span>';
   const a=AJ(),cu=a.cupones;$('cupList').innerHTML=cu.length?'<div class="lrow cu"><small>Código</small><small>Tipo</small><small>Valor</small><small>Mín. €</small><small></small></div>'+cu.map((c,i)=>`<div class="lrow cu"><input class="fi" style="text-transform:uppercase" value="${esc(c.codigo)}" placeholder="BENVENUTO" oninput="AJ().cupones[${i}].codigo=this.value.trim().toUpperCase();dirty()"><select class="fi" onchange="AJ().cupones[${i}].tipo=this.value;dirty()"><option${c.tipo==='%'?' selected':''}>%</option><option${c.tipo==='€'?' selected':''}>€</option></select><input class="fi" inputmode="decimal" value="${String(c.valor??'').replace('.',',')}" oninput="AJ().cupones[${i}].valor=parseFloat(this.value.replace(',','.'))||0;dirty()"><input class="fi" inputmode="decimal" value="${c.minimo?String(c.minimo).replace('.',','):''}" placeholder="—" oninput="AJ().cupones[${i}].minimo=parseFloat(this.value.replace(',','.'))||0;dirty()"><div style="display:flex;flex-direction:column;gap:4px;align-items:center"><label class="sw" style="transform:scale(.8)"><input type="checkbox" ${c.activo!==false?'checked':''} onchange="AJ().cupones[${i}].activo=this.checked;dirty()"><i></i></label><button class="mini-x" onclick="AJ().cupones.splice(${i},1);dirty();renderMas()">✕</button></div></div>`).join(''):'<div style="font-size:13px;color:var(--mut)">Todavía no hay cupones.</div>';
