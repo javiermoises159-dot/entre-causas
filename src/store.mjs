@@ -39,6 +39,11 @@ export function getStore({ name }) {
       }
       return keys.map((k) => out[k] ?? null);
     },
+    // Todos los valores cuyas claves empiezan por prefix (una sola consulta)
+    async values(prefix = "") {
+      const { results } = await db().prepare("SELECT v FROM blobs WHERE s = ? AND substr(k, 1, ?) = ?").bind(name, prefix.length, prefix).all();
+      return results.map((r) => JSON.parse(r.v));
+    },
     async delete(key) { await db().prepare("DELETE FROM blobs WHERE s = ? AND k = ?").bind(name, key).run(); },
     async list({ prefix = "" } = {}) {
       const { results } = await db().prepare("SELECT k FROM blobs WHERE s = ? AND substr(k, 1, ?) = ?").bind(name, prefix.length, prefix).all();

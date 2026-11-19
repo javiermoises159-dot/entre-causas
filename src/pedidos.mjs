@@ -23,10 +23,12 @@ async function leerMenu(req) {
 
 // Recalcula precios con la carta guardada: el total no depende de lo que mande el navegador
 const DOWR = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 };
-const diaRoma = () => DOWR[new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Rome", weekday: "short" }).format(new Date())];
+const diaRoma = (d = new Date()) => DOWR[new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Rome", weekday: "short" }).format(d)];
+// Día del que sale el stock: el de la entrega si el pedido es programado
+const diaStock = (p) => (p.prog && p.prog.fecha) || p.fecha;
 // Platos que hoy no se pueden pedir (agotados o fuera de sus días)
-function noDisponibles(menu, lineas) {
-  const items = {}, hoy = diaRoma(), out = [];
+function noDisponibles(menu, lineas, dia = new Date()) {
+  const items = {}, hoy = diaRoma(dia), out = [];
   (menu.categorias || []).forEach((c) => (c.items || []).forEach((i) => (items[i.id] = i)));
   for (const l of Array.isArray(lineas) ? lineas : []) {
     const it = items[l?.id];
@@ -84,12 +86,15 @@ export default async (req) => {
     const palmare = porTel && b.origen === "palmare";
     const pz = menu.ajustes?.pausa ? Date.parse(menu.ajustes.pausa) : 0;
     if (!porTel && pz > Date.now() && !(b.prog && b.prog.hora)) return json({ error: "pausa", hasta: horaRoma(new Date(pz)) }, 423);
-    const nd = noDisponibles(menu, b.lineas);
+    // pedido programado para mañana: disponibilidad y stock de mañana
+    const manana = !!(b.prog && /^\d\d:\d\d$/.test(String(b.prog.hora || "")) && Number(b.prog.dia) === 1);
+    const diaEntrega = new Date(Date.now() + (manana ? 86400000 : 0)), fStock = fechaRoma(diaEntrega);
+    const nd = noDisponibles(menu, b.lineas, diaEntrega);
     if (nd.length) return json({ error: "no-disponible", items: nd }, 409);
     const lineas = armar(menu, b.lineas);
     if (!lineas.length) return json({ error: "Pedido vacío" }, 400);
     // stock del día
-    const rest = await restante(menu);
+    const rest = await restante(menu, fStock);
     const pide = {};
     lineas.forEach((l) => { if (rest[l.id] !== undefined) pide[l.id] = (pide[l.id] || 0) + l.q; });
     const sinStock = Object.keys(pide).filter((k) => pide[k] > rest[k]);
@@ -123,8 +128,7 @@ export default async (req) => {
     // pedido programado
     let prog = null;
     if (b.prog && /^\d\d:\d\d$/.test(String(b.prog.hora || ""))) {
-      const dia = Number(b.prog.dia) === 1 ? 1 : 0;
-      prog = { fecha: fechaRoma(new Date(ahora.getTime() + dia * 86400000)), hora: b.prog.hora };
+      prog = { fecha: fStock, hora: b.prog.hora };
     }
     // límite de deliveries por franja de 30 min
     const FR = AJ.franja || {};
@@ -145,9 +149,9 @@ export default async (req) => {
     }
     // stock: se reserva aquí, ya validado todo lo demás
     let falta;
-    try { falta = await reservar(menu, fecha, lineas); } catch { return json({ error: "Inténtalo de nuevo" }, 503); }
+    try { falta = await reservar(menu, fStock, lineas); } catch { return json({ error: "Inténtalo de nuevo" }, 503); }
     if (falta) return json({ error: "no-disponible", items: falta.map((x) => ({ id: x.id, n: lineas.find((l) => l.id === x.id).n, quedan: x.quedan })) }, 409);
-    const devolver = () => contar(menu, fecha, lineas, -1).catch(() => {});
+    const devolver = () => contar(menu, fStock, lineas, -1).catch(() => {});
     // teléfono y fidelidad
     const tel = txt(String(b.tel || "").replace(/[^\d+]/g, ""), 20);
     const telKey = claveTel(tel);
@@ -156,8 +160,7 @@ export default async (req) => {
       try {
         const F = AJ.fidelidad || {}, cada = parseInt(F.cada, 10) || 0;
         const cs = getStore({ name: "entrecausas-clientes", consistency: "strong" });
-        const r = await modificar(cs, "todos", { lista: {} }, (d) => {
-          const c = d.lista[telKey] || (d.lista[telKey] = { tel, nombre: "", n: 0, total: 0, primero: fecha });
+        const r = await modificar(cs, "c/" + telKey, { tel, nombre: "", n: 0, total: 0, primero: fecha }, (c) => {
           c.tel = tel; c.nombre = txt(b.cliente?.nombre, 60) || c.nombre; c.n++;
           // el cupón de primera compra no vale si ya había pedido antes: se suma lo que de verdad paga
           const total = num(sub - (cu && cu.primera && c.n > 1 ? 0 : desc) + (envio || 0));
@@ -263,10 +266,10 @@ export default async (req) => {
       return p;
     });
     // stock: el plato anulado se devuelve una vez; al cancelar o reactivar solo cuentan los platos no anulados
-    if (out && quitar) { try { await contar(await leerMenu(req), out.fecha, quitar, -1); } catch {} }
+    if (out && quitar) { try { await contar(await leerMenu(req), diaStock(out), quitar, -1); } catch {} }
     if (out && (antes === "cancelado") !== (out.estado === "cancelado") && out.origen !== "local") {
       const activas = (out.lineas || []).filter((x) => !x.anulado);
-      if (activas.length) { try { await contar(await leerMenu(req), out.fecha, activas, out.estado === "cancelado" ? -1 : 1); } catch {} }
+      if (activas.length) { try { await contar(await leerMenu(req), diaStock(out), activas, out.estado === "cancelado" ? -1 : 1); } catch {} }
     }
     if (out && antes === "espera" && out.estado === "nuevo") await avisar("sala"); // segundos marchados
     return out ? json({ ok: true, pedido: out }) : json({ error: "No encontrado" }, 404);
