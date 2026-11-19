@@ -1,0 +1,38 @@
+[
+ {
+  "relation": [
+   "delegate_permission/common.handle_all_urls"
+  ],
+  "target": {
+   "namespace": "android_app",
+   "package_name": "app.entrecausas.panel",
+   "sha256_cert_fingerprints": [
+    "87:3A:C1:26:94:B0:CC:7E:00:56:82:B6:09:85:10:64:78:52:97:7D:7C:A7:29:07:F5:83:9B:A0:F6:C8:3D:65"
+   ]
+  }
+ },
+ {
+  "relation": [
+   "delegate_permission/common.handle_all_urls"
+  ],
+  "target": {
+   "namespace": "android_app",
+   "package_name": "app.entrecausas.palmare",
+   "sha256_cert_fingerprints": [
+    "87:3A:C1:26:94:B0:CC:7E:00:56:82:B6:09:85:10:64:78:52:97:7D:7C:A7:29:07:F5:83:9B:A0:F6:C8:3D:65"
+   ]
+  }
+ },
+ {
+  "relation": [
+   "delegate_permission/common.handle_all_urls"
+  ],
+  "target": {
+   "namespace": "android_app",
+   "package_name": "app.entrecausas.cocina",
+   "sha256_cert_fingerprints": [
+    "87:3A:C1:26:94:B0:CC:7E:00:56:82:B6:09:85:10:64:78:52:97:7D:7C:A7:29:07:F5:83:9B:A0:F6:C8:3D:65"
+   ]
+  }
+ }
+]
