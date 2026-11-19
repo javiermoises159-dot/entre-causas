@@ -33,6 +33,26 @@ export async function contar(menu, fecha, lineas, signo) {
   });
 }
 
+// Descuenta el stock solo si alcanza para todo el pedido (todo o nada, sin que dos pedidos a la vez se lleven el último).
+// Devuelve null si se pudo, o la lista de platos que no alcanzan.
+export async function reservar(menu, fecha, lineas) {
+  const base = conStock(menu), pide = {};
+  (lineas || []).forEach((l) => { if (base[l.id]) pide[l.id] = (pide[l.id] || 0) + l.q; });
+  const ids = Object.keys(pide);
+  if (!ids.length) return null;
+  let falta = null;
+  await modificar(st(), "dia/" + fecha, { v: {}, aj: {} }, (d) => {
+    d.v = d.v || {}; const aj = d.aj || {};
+    falta = ids.filter((id) => pide[id] > base[id] - (d.v[id] || 0) + (aj[id] || 0))
+      .map((id) => ({ id, quedan: Math.max(0, base[id] - (d.v[id] || 0) + (aj[id] || 0)) }));
+    if (falta.length) return false;
+    falta = null;
+    ids.forEach((id) => (d.v[id] = (d.v[id] || 0) + pide[id]));
+    return true;
+  });
+  return falta;
+}
+
 export default async (req) => {
   const menu = await menuDe(req);
   if (req.method === "GET") return json(await restante(menu));

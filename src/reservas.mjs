@@ -12,6 +12,8 @@ function claveTel(t) {
   else if (d.length >= 11 && d.startsWith("39")) d = d.slice(2);
   return d.length >= 8 ? d : "";
 }
+// Libera la promo solo si la marca es la de esta reserva (no la de otra posterior)
+const liberarPromo = (store, tk, marca) => modificar(store, "usadas", { tels: {} }, (d) => { if (d.tels[tk] !== marca) return false; delete d.tels[tk]; return true; });
 const dow = (f) => (new Date(f + "T12:00:00Z").getUTCDay() + 6) % 7;
 async function ajustes(req) {
   const m = await getStore({ name: "entrecausas", consistency: "strong" }).get("menu", { type: "json" });
@@ -43,16 +45,20 @@ export default async (req) => {
     const nombre = txt(b.nombre, 60).trim(), tel = txt(String(b.tel || "").replace(/[^\d+]/g, ""), 20), tk = claveTel(tel);
     if (!nombre || !tk) return json({ error: "Faltan nombre o teléfono" }, 400);
     const AJ = await ajustes(req), P = AJ.resPromo || {};
-    let desc = 0;
+    const r = { id: codigo(), fecha: b.fecha, hora: b.hora, personas, nombre, tel, nota: txt(b.nota, 300),
+      lang: ["it", "en"].includes(b.lang) ? b.lang : "es", desc: 0, estado: "pendiente", origen: "app", ts: new Date().toISOString() };
+    let marca = "";
     if (P.activo && (P.dias || []).includes(dow(b.fecha))) {
-      if (!P.primera) desc = Number(P.pct) || 0;
+      if (!P.primera) r.desc = Number(P.pct) || 0;
       else {
-        const ok = await modificar(store, "usadas", { tels: {} }, (d) => { if (d.tels[tk]) return false; d.tels[tk] = b.fecha; return true; });
-        if (ok) desc = Number(P.pct) || 0;
+        // el teléfono queda apuntado con una marca propia; si la reserva no se guarda o se rechaza, se libera
+        marca = crypto.randomUUID();
+        const ok = await modificar(store, "usadas", { tels: {} }, (d) => { if (d.tels[tk]) return false; d.tels[tk] = marca; return true; });
+        if (ok) { r.desc = Number(P.pct) || 0; r.promo = marca; } else marca = "";
       }
     }
-    const r = { id: codigo(), fecha: b.fecha, hora: b.hora, personas, nombre, tel, nota: txt(b.nota, 300),
-      lang: ["it", "en"].includes(b.lang) ? b.lang : "es", desc, estado: "pendiente", origen: "app", ts: new Date().toISOString() };
+    const desc = r.desc;
+    const liberar = () => (marca ? liberarPromo(store, tk, marca).catch(() => {}) : null);
     try {
       const ok = await modificar(store, "dia/" + b.fecha, { reservas: [] }, (d) => {
         if (d.reservas.length >= 300) return false;
@@ -60,8 +66,8 @@ export default async (req) => {
         d.reservas.push(r);
         return true;
       });
-      if (!ok) return json({ error: "Día completo" }, 429);
-    } catch { return json({ error: "Inténtalo de nuevo" }, 503); }
+      if (!ok) { await liberar(); return json({ error: "Día completo" }, 429); }
+    } catch { await liberar(); return json({ error: "Inténtalo de nuevo" }, 503); }
     await avisar("reserva");
     return json({ ok: true, id: r.id, fecha: r.fecha, desc });
   }
@@ -83,7 +89,7 @@ export default async (req) => {
   if (req.method === "GET") {
     const desde = esFecha(url.searchParams.get("desde")) ? url.searchParams.get("desde") : fechaRoma();
     const hasta = esFecha(url.searchParams.get("hasta")) ? url.searchParams.get("hasta") : desde;
-    const res = await Promise.all(rangoDias(desde, hasta, 62).map((f) => store.get("dia/" + f, { type: "json" })));
+    const res = await store.getMany(rangoDias(desde, hasta, 62).map((f) => "dia/" + f));
     const reservas = [];
     res.forEach((d) => d && reservas.push(...d.reservas));
     const fl = (await store.get("faltas", { type: "json" }))?.tels || {};
@@ -105,8 +111,15 @@ export default async (req) => {
       if (b.recordado === true) r.recordado = true;
       return r;
     });
-    // quien no viene: se cuenta por teléfono
     const tk = out && claveTel(out.tel);
+    // promo de primera reserva: si se rechaza, el cliente la recupera; si se vuelve a aceptar, se gasta de nuevo
+    if (tk && out.promo && (b.estado === "rechazada") !== (antes === "rechazada")) {
+      try {
+        if (b.estado === "rechazada") await liberarPromo(store, tk, out.promo);
+        else await modificar(store, "usadas", { tels: {} }, (d) => { if (d.tels[tk] && d.tels[tk] !== out.promo) return false; d.tels[tk] = out.promo; return true; });
+      } catch {}
+    }
+    // quien no viene: se cuenta por teléfono
     if (tk && (b.estado === "noshow") !== (antes === "noshow") && (b.estado === "noshow" || antes === "noshow")) {
       await modificar(store, "faltas", { tels: {} }, (d) => { d.tels[tk] = Math.max(0, (d.tels[tk] || 0) + (b.estado === "noshow" ? 1 : -1)); return true; });
     }

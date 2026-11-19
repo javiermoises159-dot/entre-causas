@@ -21,7 +21,7 @@ export default async (req) => {
   if (req.method === "GET") {
     const desde = esFecha(url.searchParams.get("desde")) ? url.searchParams.get("desde") : fechaRoma().slice(0, 8) + "01";
     const hasta = esFecha(url.searchParams.get("hasta")) ? url.searchParams.get("hasta") : fechaRoma();
-    const docs = await Promise.all(meses(desde, hasta).map((m) => store.get("gastos/" + m, { type: "json" })));
+    const docs = await store.getMany(meses(desde, hasta).map((m) => "gastos/" + m));
     const gastos = [];
     docs.forEach((d) => d && gastos.push(...d.gastos.filter((g) => g.fecha >= desde && g.fecha <= hasta)));
     return json({ desde, hasta, gastos, categorias: CATS });

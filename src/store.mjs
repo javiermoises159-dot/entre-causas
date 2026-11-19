@@ -29,6 +29,16 @@ export function getStore({ name }) {
       else res = await db().prepare("INSERT INTO blobs (s, k, v, etag) VALUES (?, ?, ?, ?) ON CONFLICT (s, k) DO UPDATE SET v = excluded.v, etag = excluded.etag").bind(name, key, v, e).run();
       return { modified: (res.meta?.changes || 0) > 0, etag: e };
     },
+    // Lee muchas claves con pocas consultas (de 90 en 90), para no pasar el límite de consultas de D1
+    async getMany(keys) {
+      const out = {};
+      for (let i = 0; i < keys.length; i += 90) {
+        const parte = keys.slice(i, i + 90);
+        const { results } = await db().prepare(`SELECT k, v FROM blobs WHERE s = ? AND k IN (${parte.map(() => "?").join(",")})`).bind(name, ...parte).all();
+        for (const r of results) out[r.k] = JSON.parse(r.v);
+      }
+      return keys.map((k) => out[k] ?? null);
+    },
     async delete(key) { await db().prepare("DELETE FROM blobs WHERE s = ? AND k = ?").bind(name, key).run(); },
     async list({ prefix = "" } = {}) {
       const { results } = await db().prepare("SELECT k FROM blobs WHERE s = ? AND substr(k, 1, ?) = ?").bind(name, prefix.length, prefix).all();

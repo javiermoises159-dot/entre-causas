@@ -1,6 +1,6 @@
 import { getStore, ENV } from "./store.mjs";
 import { avisar } from "./push.mjs";
-import { restante, contar } from "./stock.mjs";
+import { restante, contar, reservar } from "./stock.mjs";
 import { json, pinOk, fechaRoma, horaRoma, esFecha, rangoDias, txt, num, modificar } from "./comun.mjs";
 
 // Misma persona aunque escriba +39, 0039 o espacios
@@ -143,6 +143,11 @@ export default async (req) => {
         return json({ error: "franja", siguiente: hh }, 409);
       }
     }
+    // stock: se reserva aquí, ya validado todo lo demás
+    let falta;
+    try { falta = await reservar(menu, fecha, lineas); } catch { return json({ error: "Inténtalo de nuevo" }, 503); }
+    if (falta) return json({ error: "no-disponible", items: falta.map((x) => ({ id: x.id, n: lineas.find((l) => l.id === x.id).n, quedan: x.quedan })) }, 409);
+    const devolver = () => contar(menu, fecha, lineas, -1).catch(() => {});
     // teléfono y fidelidad
     const tel = txt(String(b.tel || "").replace(/[^\d+]/g, ""), 20);
     const telKey = claveTel(tel);
@@ -151,10 +156,12 @@ export default async (req) => {
       try {
         const F = AJ.fidelidad || {}, cada = parseInt(F.cada, 10) || 0;
         const cs = getStore({ name: "entrecausas-clientes", consistency: "strong" });
-        const total = num(sub - desc + (envio || 0));
         const r = await modificar(cs, "todos", { lista: {} }, (d) => {
           const c = d.lista[telKey] || (d.lista[telKey] = { tel, nombre: "", n: 0, total: 0, primero: fecha });
-          c.tel = tel; c.nombre = txt(b.cliente?.nombre, 60) || c.nombre; c.n++; c.total = num(c.total + total);
+          c.tel = tel; c.nombre = txt(b.cliente?.nombre, 60) || c.nombre; c.n++;
+          // el cupón de primera compra no vale si ya había pedido antes: se suma lo que de verdad paga
+          const total = num(sub - (cu && cu.primera && c.n > 1 ? 0 : desc) + (envio || 0));
+          c.total = num(c.total + total);
           c.ultimo = fecha; c.promos = b.promos === true; c.lang = ["it", "en"].includes(b.lang) ? b.lang : "es";
           // lo que más pide y sus últimos pedidos (para la ficha del cliente)
           c.fav = c.fav || {};
@@ -196,9 +203,8 @@ export default async (req) => {
         d.pedidos.push(p);
         return true;
       });
-      if (!ok) return json({ error: "Límite diario alcanzado" }, 429);
-    } catch { return json({ error: "Inténtalo de nuevo" }, 503); }
-    await contar(menu, fecha, lineas, 1);
+      if (!ok) { await devolver(); return json({ error: "Límite diario alcanzado" }, 429); }
+    } catch { await devolver(); return json({ error: "Inténtalo de nuevo" }, 503); }
     // aviso al móvil: pedido de la app → dueño y cocina; comanda de sala / teléfono → cocina
     if (!porTel) await avisar("pedido"); else if (p.estado !== "espera") await avisar("sala");
     return json({ ok: true, id: p.id, fecha: p.fecha, total: p.total, envio: p.envio, fid });
@@ -224,7 +230,7 @@ export default async (req) => {
     const desde = esFecha(url.searchParams.get("desde")) ? url.searchParams.get("desde") : fechaRoma();
     const hasta = esFecha(url.searchParams.get("hasta")) ? url.searchParams.get("hasta") : desde;
     const dias = rangoDias(desde, hasta, 400);
-    const res = await Promise.all(dias.map((f) => store.get("dia/" + f, { type: "json" })));
+    const res = await store.getMany(dias.map((f) => "dia/" + f));
     const pedidos = [];
     res.forEach((d) => d && pedidos.push(...d.pedidos));
     return json({ desde, hasta, hoy: fechaRoma(), pedidos });
@@ -256,9 +262,11 @@ export default async (req) => {
       if (b.envio !== undefined) { p.envio = b.envio === null ? null : num(b.envio); p.total = num(p.subtotal - (p.desc || 0) + (p.envio || 0)); }
       return p;
     });
-    if (out && quitar && out.estado !== "cancelado") { try { await contar(await leerMenu(req), out.fecha, quitar, -1); } catch {} }
-    else if (out && (antes === "cancelado") !== (out.estado === "cancelado") && out.origen !== "local") {
-      try { await contar(await leerMenu(req), out.fecha, out.lineas, out.estado === "cancelado" ? -1 : 1); } catch {}
+    // stock: el plato anulado se devuelve una vez; al cancelar o reactivar solo cuentan los platos no anulados
+    if (out && quitar) { try { await contar(await leerMenu(req), out.fecha, quitar, -1); } catch {} }
+    if (out && (antes === "cancelado") !== (out.estado === "cancelado") && out.origen !== "local") {
+      const activas = (out.lineas || []).filter((x) => !x.anulado);
+      if (activas.length) { try { await contar(await leerMenu(req), out.fecha, activas, out.estado === "cancelado" ? -1 : 1); } catch {} }
     }
     if (out && antes === "espera" && out.estado === "nuevo") await avisar("sala"); // segundos marchados
     return out ? json({ ok: true, pedido: out }) : json({ error: "No encontrado" }, 404);
