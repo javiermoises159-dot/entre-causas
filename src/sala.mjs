@@ -61,7 +61,8 @@ export default async (req) => {
           total: n(x.total), coperto: n(x.coperto), pagos: (d.mesas[m].pagos || []).map((p) => ({ metodo: p.metodo, monto: p.monto })), por: txt(b.por, 30) }]).slice(-200);
       }
       if (b.estado === "libre") delete d.mesas[m];
-      else d.mesas[m] = { estado: b.estado, desde: d.mesas[m]?.desde || new Date().toISOString(), personas: parseInt(b.personas, 10) || d.mesas[m]?.personas || 0, nombre: txt(b.nombre, 50) || d.mesas[m]?.nombre || "" };
+      else d.mesas[m] = { ...(d.mesas[m] || {}), estado: b.estado, desde: d.mesas[m]?.desde || new Date().toISOString(), personas: parseInt(b.personas, 10) || d.mesas[m]?.personas || 0, nombre: txt(b.nombre, 50) || d.mesas[m]?.nombre || "",
+        coperti: b.coperti !== undefined ? Math.max(0, Math.min(40, parseInt(b.coperti, 10) || 0)) : d.mesas[m]?.coperti || 0 };
       return d;
     }
     if (req.method === "PATCH" && b.llamada) {
