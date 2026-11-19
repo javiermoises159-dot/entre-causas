@@ -452,7 +452,7 @@ const $=id=>document.getElementById(id);
 const eur=v=>Number(v).toFixed(2).replace('.',',')+' €';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
-const DEF={modo:'abierto',horario:Array.from({length:7},()=>({abre:'12:00',cierra:'23:00',cerrado:false})),envio:{tiempo:'',costo:null,minimo:0,gratisDesde:null,zona:''},direccion:'',instagram:'',whatsapp:'393493633317',aviso:{texto:'',activo:false}};
+const DEF={modo:'abierto',horario:Array.from({length:7},()=>({abre:'12:00',cierra:'23:00',cerrado:false})),envio:{tiempo:'',costo:null,minimo:0,gratisDesde:null,zona:''},direccion:'',instagram:'',whatsapp:'393208329786',aviso:{texto:'',activo:false}};
 let AJ=DEF,CATS=[],ITEMS={},RECO=[],SUG=[],CART=LS.get('ed_cart',[]),P=null,EST={open:true},ACT=null;
 let CLI={nom:'',dir:'',modo:'Delivery',pago:'Efectivo',tel:'',comune:'',cuando:'ya',pdia:'0',phora:'',cupon:'',promos:false,...LS.get('ed_cli',{})};
 const N=it=>LANG==='it'&&it.n_it?it.n_it:it.n, D=it=>LANG==='it'&&it.d_it?it.d_it:it.d, B=it=>LANG==='it'&&it.b_it?it.b_it:it.b;

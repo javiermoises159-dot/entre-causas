@@ -1,6 +1,6 @@
 # Entre Causas · App de pedidos y reservas + Panel del local
 
-Basado en el proyecto El Dorado (Cloudflare Pages + Functions + D1 + KV).
+Proyecto independiente: Cloudflare Pages + Functions + base de datos D1 y fotos en KV propias.
 
 - `public/index.html` → app de clientes (Inicio, Carta, Reservar, Perfil · ES/IT/EN)
 - `public/admin.html` → panel del dueño (PIN = variable secreta `ADMIN_PIN`)
