@@ -11,9 +11,24 @@ const PAGINA = `<!doctype html>
 </head><body><div><h1>Sitio temporalmente no disponible</h1><p>Vuelve a intentarlo más tarde.</p></div></body></html>`;
 
 export async function onRequest(context) {
-  if (!SUSPENDIDO) return context.next();
+  if (!SUSPENDIDO) return menuMesas(context);
   return new Response(PAGINA, {
     status: 503,
     headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "retry-after": "86400" },
   });
+}
+
+// QR / NFC de las mesas: "/" abre el menú en PDF que el dueño subió desde el panel.
+// Si todavía no hay PDF, se muestra la carta de la app como siempre. La app completa está en /pedir.
+async function menuMesas(context) {
+  const { request, env } = context;
+  const u = new URL(request.url);
+  if (request.method === "GET" && u.pathname === "/" && !u.searchParams.has("app") && env.DB) {
+    try {
+      const r = await env.DB.prepare("SELECT v FROM blobs WHERE s = ? AND k = ?").bind("entrecausas", "menupdf").first();
+      const d = r && JSON.parse(r.v);
+      if (d && d.ok) return new Response(null, { status: 302, headers: { location: "/api/menupdf?v=" + encodeURIComponent(d.ts), "cache-control": "no-store" } });
+    } catch {}
+  }
+  return context.next();
 }

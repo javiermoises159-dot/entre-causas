@@ -424,6 +424,7 @@ body.app-palmare #vApp,body.app-palmare #bn,body.app-palmare #saveBar,body.app-p
     <div id="setup"></div>
     <div class="box" id="instBox"></div>
     <div class="box" id="equipoBox"></div>
+    <div class="box" id="pdfBox"></div>
     <div class="box" id="autoBox"></div>
     <div class="lk" style="margin:12px 0 14px"><button onclick="tab('pedidos')">📋 Historial de pedidos</button><button onclick="tab('local')">🕒 Horario y local</button><button onclick="tab('delivery')">🛵 Envío y zonas</button></div>
     <div class="box"><h3>⭐ Recomendados</h3><p>Salen en el inicio de la app. Se eligen dentro de cada plato (✎).</p><div id="recoList"></div></div>
@@ -534,7 +535,7 @@ document.querySelectorAll('#tabs button,#bn button').forEach(b=>b.onclick=()=>ta
 function tab(t){TAB=t;const bt=['pedidos','local','delivery'].includes(t)?'mas':t;document.querySelectorAll('#tabs button,#bn button').forEach(b=>b.classList.toggle('act',b.dataset.t===(b.closest('#bn')?bt:t)));
   if(t==='ahora'||t==='sala'){if($('pFecha').value!==HOY){$('pFecha').value=HOY;cargarPedidos(true);}if($('rFecha').value!==HOY){$('rFecha').value=HOY;cargarReservas(true);}renderAhora();}
   ['ahora','sala','pedidos','reservas','cuentas','carta','local','delivery','mas'].forEach(x=>$('p-'+x).classList.toggle('hidden',x!==t));if(t==='sala'){cargarSala();renderSalaV();}if(t==='reservas')cargarReservas();
-  if(t==='pedidos')cargarPedidos();if(t==='cuentas'){cargarCuentas();renderCierre();}if(t==='reservas'){renderSala();renderEspera();}if(t==='mas')cargarBackups();renderAll();scrollTo(0,0);}
+  if(t==='pedidos')cargarPedidos();if(t==='cuentas'){cargarCuentas();renderCierre();}if(t==='reservas'){renderSala();renderEspera();}if(t==='mas'){cargarBackups();pintarPdf();}renderAll();scrollTo(0,0);}
 function dirty(){clearTimeout(window._st);window._st=setTimeout(renderSetup,400);DIRTY=true;$('saveBar').classList.remove('hidden');$('saveTxt').textContent='Tienes cambios sin guardar';$('bSave').disabled=false;$('bSave').textContent='Guardar cambios';}
 const allItems=()=>{const o={};M.categorias.forEach(c=>c.items.forEach(i=>o[i.id]=i));return o;};
 
@@ -1526,6 +1527,20 @@ function descargarCarta(){bajarBlob(JSON.stringify(M,null,1),`Entre-Causas-carta
 function restaurar(m,origen){if(!m||!Array.isArray(m.categorias)||!m.ajustes){toast('Ese archivo no es una carta válida',true);return;}
   M=normalizar(m);OPEN=new Set();dirty();renderAll();toast('Carta cargada desde '+origen+' · revisa y toca Guardar');tab('carta');}
 function restaurarArchivo(inp){const f=inp.files[0];inp.value='';if(!f)return;const r=new FileReader();r.onload=()=>{try{restaurar(JSON.parse(r.result),'el archivo');}catch(e){toast('No se pudo leer el archivo',true);}};r.readAsText(f);}
+/* ---------- menú de las mesas en PDF (lo abre el QR / NFC de las mesas) ---------- */
+async function pintarPdf(){const el=$('pdfBox');if(!el)return;let d={};try{d=await (await fetch('/api/menupdf?info',{cache:'no-store'})).json();}catch(e){}
+  const link=location.origin+'/';
+  el.innerHTML=`<h3>📄 Menú de las mesas (PDF)</h3><p>Es lo que abre el QR y el NFC de las mesas (${esc(link)}). La app de pedidos y reservas va aparte, en ${esc(location.origin)}/pedir.</p>
+   ${d.ok?`<div class="crow" style="margin:8px 0"><span>✅</span><b style="flex:1">Subido el ${new Date(d.ts).toLocaleString('es-ES',{dateStyle:'medium',timeStyle:'short'})} · ${(d.size/1048576).toFixed(1)} MB</b><a class="btn b-lt" style="padding:7px 10px;font-size:12px;text-decoration:none" href="/api/menupdf?v=${encodeURIComponent(d.ts)}" target="_blank" rel="noopener">Ver</a></div>`
+     :`<div class="nt" style="margin:8px 0">Todavía no hay PDF: el QR de las mesas muestra la carta de la app.</div>`}
+   <input type="file" id="pdfF" accept="application/pdf,.pdf" class="hidden" onchange="subirPdf(this)">
+   <div class="grid2"><button class="btn b-dk" id="pdfB" onclick="$('pdfF').click()">⬆️ ${d.ok?'Cambiar el PDF':'Subir el PDF'}</button>${d.ok?`<button class="btn b-lt" onclick="quitarPdf()">Quitar el PDF</button>`:''}</div>
+   <p style="font-size:11.5px;color:var(--mut);margin-top:8px">Máximo 20 MB. Para que cargue rápido en el móvil, mejor que pese menos de 5 MB.</p>`;}
+async function subirPdf(inp){const f=inp.files[0];inp.value='';if(!f)return;if(f.size>20*1048576){toast('El PDF pesa demasiado (máximo 20 MB)',true);return;}
+  const b=$('pdfB');b.disabled=true;b.innerHTML='<span class="spin"></span> Subiendo…';
+  try{const r=await api('/api/menupdf?nombre='+encodeURIComponent(f.name),{method:'POST',headers:{'content-type':'application/pdf'},body:f});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'');toast('✅ Menú subido: el QR de las mesas ya lo abre');}
+  catch(e){toast(e.message||'No se pudo subir el PDF',true);}pintarPdf();}
+async function quitarPdf(){if(!confirm('¿Quitar el PDF? El QR de las mesas volverá a mostrar la carta de la app.'))return;try{const r=await api('/api/menupdf',{method:'DELETE'});if(!r.ok)throw 0;toast('PDF quitado');}catch(e){toast('No se pudo quitar',true);}pintarPdf();}
 async function descargarTodo(){try{const r=await api('/api/backups?todo');if(!r.ok)throw 0;bajarBlob(await r.text(),`Entre-Causas-copia-completa-${HOY||fechaRoma()}.json`,'application/json');toast('⬇️ Copia completa descargada');}catch(e){toast('No se pudo descargar la copia',true);}}
 async function cargarBackups(){try{const r=await api('/api/backups');const {copias}=await r.json();
   $('backs').innerHTML=copias.length?copias.map(k=>{const d=new Date(k.slice(7));return `<div class="crow"><span>🕒</span><b>${d.toLocaleString('es-ES',{dateStyle:'medium',timeStyle:'short'})}</b><button class="btn b-lt" style="padding:7px 10px;font-size:12px" onclick="restaurarCopia('${esc(k)}')">Restaurar</button></div>`;}).join(''):'<span style="color:var(--mut);font-size:13px">Todavía no hay copias. Se crean solas al guardar cambios.</span>';}
