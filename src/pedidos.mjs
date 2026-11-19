@@ -183,7 +183,7 @@ export default async (req) => {
       const ok = Array.isArray(b.lineas) && b.lineas.length === lineas.length;
       p.asientos = lineas.map((_, i) => (ok ? Math.max(0, Math.min(30, parseInt(b.lineas[i].c, 10) || 0)) : 0));
       p.notasL = lineas.map((_, i) => (ok ? txt(b.lineas[i].nt, 60) : ""));
-      p.salida = Math.max(1, Math.min(3, parseInt(b.salida, 10) || 1));
+      p.salida = Math.max(0, Math.min(3, Number.isInteger(+b.salida) ? +b.salida : 1));
       p.mozo = txt(b.mozo, 30);
     }
     if (porTel) { const m = parseInt(b.eta, 10); if (m >= 5 && m <= 120) { p.eta = m; p.etaHora = horaRoma(new Date(Date.now() + m * 60000)); } }
