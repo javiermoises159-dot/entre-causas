@@ -706,7 +706,8 @@ function pmAbrir(n){PM={mesa:n||'',c:1,sel:1,draft:[],cat:null,q:''};if(n){const
   if(PM.mesa){PM.step=(pmLineas().length||CPN())?'carta':'cop';}
   $('pm').classList.remove('hidden');pmPinta();}
 function pmCerrar(){if(PM&&PM.draft.length&&!confirm('Hay platos sin enviar. ¿Salir igual?'))return;if(PALM){if(PM&&PM.mesa){PM.draft=[];PM.mesa='';pmPinta();}else salir();return;}PM=null;$('pm').classList.add('hidden');}
-const pmDesde=()=>{const s=SALA.mesas[PM.mesa];return s?Date.parse(s.desde)-60000:0;};
+/* la mesa empieza de cero al cobrarla: solo cuentan los pedidos desde que se abrió (o desde el último cierre) */
+const pmDesde=()=>{const s=SALA.mesas[PM.mesa];if(s)return Date.parse(s.desde)-60000;const h=(SALA.historial||[]).filter(x=>x.mesa===PM.mesa).map(x=>Date.parse(x.cierra));return h.length?Math.max(...h)+1:0;};
 function pmPedidos(){const d=pmDesde();return ($('pFecha').value===HOY?PED:[]).filter(p=>p.mesa===PM.mesa&&p.estado!=='cancelado'&&Date.parse(p.ts)>=d);}
 function pmLineas(){const out=[];pmPedidos().forEach(p=>(p.lineas||[]).forEach((l,i)=>out.push({pid:p.id,f:p.fecha,i,an:!!l.anulado,mot:l.motivo||'',sal:p.salida??1,n:l.n+(l.o&&l.o.length?' ('+l.o.map(x=>x.v.join(', ')).join(' · ')+')':''),q:l.q,t:l.anulado?0:l.total,c:p.asientos?p.asientos[i]:0,nt:p.notasL?p.notasL[i]:'',est:p.estado})));return out;}
 const COP=()=>(M&&+AJ().coperto>0)?+AJ().coperto:0;
@@ -802,7 +803,8 @@ async function pmPagarTodo(metodo){const L=pmLineas(),pax=Math.max(PM.pax||1,1),
 async function pmLiberar(falta){if(falta&&!confirm('Todavía falta cobrar una parte. ¿Liberar la mesa igual?'))return;
   const L=pmLineas(),pax=Math.max(PM.pax||1,1),cop=COP()*CPN(),total=L.reduce((a,l)=>a+l.t,0)+cop,pag=(SALA.mesas[PM.mesa]?.pagos)||[];
   const tar=pag.filter(x=>x.metodo==='Tarjeta').reduce((a,x)=>a+x.monto,0),ef=pag.filter(x=>x.metodo!=='Tarjeta').reduce((a,x)=>a+x.monto,0),met=tar>ef?'Tarjeta':'Efectivo';
-  for(const p of pmPedidos())if(p.pago!==met&&p.estado!=='cancelado'){try{await api('/api/pedidos',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({fecha:p.fecha,id:p.id,pago:met})});}catch(e){}}
+  // al cobrar: los pedidos de la mesa se cierran (salen de la cocina y de "en curso"); todo queda como entregado
+  for(const p of pmPedidos()){if(p.estado==='cancelado')continue;const est='entregado',body={fecha:p.fecha,id:p.id,pago:met};if(p.estado!=='entregado')body.estado=est;try{await api('/api/pedidos',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify(body)});}catch(e){}}
   if(cop>0){try{await api('/api/pedidos?manual=1',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({total:cop,fecha:HOY,modo:'Coperto',pago:met,nota:'Coperto mesa '+PM.mesa+' · '+pax+' pax'})});}catch(e){}}
   cerrarMd();await salaPost('PATCH',{mesa:PM.mesa,estado:'libre',cierre:{pax,total,coperto:cop},por:YO});toast('✓ Mesa '+PM.mesa+' cerrada · '+eur(total));PM.draft=[];if(PALM){PM.mesa='';pmPinta();}else{PM=null;$('pm').classList.add('hidden');}cargarPedidos(true);}
 async function pmMarchar(n){for(const p of pmPedidos().filter(x=>x.estado==='espera'&&(!n||(x.salida??1)===n)))await patchPed(p.fecha,p.id,{estado:'nuevo'});toast('✓ '+(n?SALN[n]+' marchados':'Marchado')+': la cocina ya los tiene');pmPinta();}
