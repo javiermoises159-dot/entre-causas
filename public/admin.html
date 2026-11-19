@@ -495,7 +495,8 @@ const banAlerg=p=>{const a=pedAlerg(p);return a?`<div style="background:#C8373A;
 function espera(modo){const platos=(($('pFecha')?.value===HOY)?PED:[]).filter(p=>['nuevo','preparando'].includes(p.estado)).reduce((a,p)=>a+(p.lineas||[]).filter(l=>!l.anulado&&!l.listo).reduce((b,l)=>b+(l.q||0),0),0);
   const base=modo==='Delivery'?25:10,m=Math.round((base+Math.max(0,platos-3)*2.5)/5)*5;return{platos,min:Math.min(modo==='Delivery'?90:60,Math.max(base,m))};}
 const clone=o=>JSON.parse(JSON.stringify(o));
-const fechaRoma=(d=new Date())=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Rome'}).format(d);
+// jornada del local: termina a las 5:00 (igual que el servidor)
+const fechaRoma=(d=new Date())=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Rome'}).format(new Date(d.getTime()-5*3600000));
 const addD=(f,n)=>{const d=new Date(f+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);};
 const fmtF=f=>f?f.slice(8,10)+'/'+f.slice(5,7):'';
 function bajarBlob(data,name,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);}
@@ -504,7 +505,7 @@ function bajarBlob(data,name,type){const a=document.createElement('a');a.href=UR
 async function entrar(){const p=$('pin').value.trim();if(!p){$('lErr').textContent='Escribe tu PIN';return;}
   $('bIn').innerHTML='<span class="spin"></span>';$('lErr').textContent='';PIN=p;
   let guardado='';try{guardado=localStorage.getItem('ed_pin')||''}catch(e){}
-  try{let r;try{r=await api('/api/menu?check=1',{method:'POST'});}catch(err){if(guardado&&guardado===p){OFF=OFF||Date.now();await cargar();return;}throw err;}if(r.status===401){$('lErr').textContent='PIN incorrecto';PIN='';return;}if(!r.ok)throw 0;
+  try{let r;try{r=await api('/api/menu?check=1',{method:'POST'});}catch(err){if(guardado&&guardado===p){OFF=OFF||Date.now();await cargar();return;}throw err;}if(r.status===401){$('lErr').textContent='PIN incorrecto';PIN='';return;}if(r.status===429){$('lErr').textContent='Demasiados intentos de PIN desde esta red. Espera 15 minutos.';PIN='';return;}if(!r.ok)throw 0;
     try{localStorage.setItem('ed_pin',PIN)}catch(e){}await cargar();}
   catch(e){$('lErr').textContent='No se pudo conectar. Revisa tu internet.';PIN='';}finally{$('bIn').textContent='Entrar';}}
 function normalizar(m){const a=m.ajustes||{};
@@ -545,7 +546,7 @@ const esIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(/Macintosh/.test(nav
 let AV_OK=null,AV_ROLES=null;const AVD=4;
 const AV_TWA=(()=>{try{const r=document.referrer||'';if(r.startsWith('android-app://'))sessionStorage.setItem('ec_twa',r.slice(14).split('/')[0]);return sessionStorage.getItem('ec_twa')||'';}catch(e){return '';}})();
 async function avDiag(){let q='?';try{q=(await navigator.permissions.query({name:'notifications'})).state;}catch(e){}const b=(navigator.userAgent.match(/(SamsungBrowser|EdgA|OPR|Firefox|Chrome)\/(\d+)/)||[])[0]||'?';return `Diagnóstico: permiso ${Notification.permission}/${q} · ${AV_TWA?'app '+AV_TWA:'navegador'} · ${b}`;}
-const avObl=()=>!(navigator.webdriver&&!window.__AVTEST)&&(window.APP==='cocina'||(window.APP==='panel'&&ROL==='dueno'));
+const avObl=()=>!(navigator.webdriver&&!window.__AVTEST)&&(window.APP==='cocina'||window.APP==='palmare'||(window.APP==='panel'&&ROL==='dueno'));
 const enApp=/FBAN|FBAV|Instagram|WhatsApp|TikTok|musical_ly|BytedanceWebview|Line\/|Snapchat|; wv\)/i.test(navigator.userAgent);
 let AV_ERR='';const avSkip=()=>{try{return Number(sessionStorage.getItem('av_skip')||0)>Date.now();}catch(e){return false;}};
 function avSaltar(){try{sessionStorage.setItem('av_skip',String(Date.now()+10*60000));}catch(e){}$('avObl').classList.add('hidden');AV_OK=null;toast('Sin avisos: te lo volveremos a pedir en 10 minutos',true);}
@@ -561,7 +562,7 @@ async function avEstado(){
     if(r.ok){AV_ROLES=await r.json();if(!AV_ROLES.registrado){const r2=await api('/api/push',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...sub.toJSON(),nombre:navigator.platform||''})});if(!r2.ok)return 'off';}}}catch(e){}
   try{localStorage.setItem('ec_ep',sub.endpoint);}catch(e){}
   return 'ok';}
-function avPinta(e){const el=$('avObl');el.className='avo v'+AVD;const quien=window.APP==='cocina'?'la cocina':'el panel';
+function avPinta(e){const el=$('avObl');el.className='avo v'+AVD;const quien=window.APP==='cocina'?'la cocina':window.APP==='palmare'?'el palmare':'el panel';
   const T={off:['🔔','Activa los avisos',`Sin avisos no te enteras de los pedidos nuevos. Son obligatorios para usar ${quien}.`,'',`<button onclick="avActivar()">Activar avisos</button>`],
    denied:['🔕','Los avisos están bloqueados','Así no te llega ningún pedido. Vuelve a permitirlos:',`<ol><li><b>Android:</b> cierra la app del todo (botón de apps recientes → desliza la app hacia arriba) y vuelve a abrirla. Si en este móvil tienes también la app de Cocina o Palmare, permite también sus notificaciones o desinstálalas. Si sigue igual: abre <b>Chrome</b> → ⋮ → Configuración → Configuración de sitios → Notificaciones → <b>${location.hostname}</b> → Permitir.</li><li><b>iPhone:</b> Ajustes → Notificaciones → Entre Causas → Permitir notificaciones.</li><li><b>Ordenador:</b> toca el candado junto a la dirección → Notificaciones → Permitir.</li></ol>`,`<button onclick="avVigilar(1)">Ya lo hice</button>`],
    inapp:['🌐','Ábrelo en Safari o Chrome','Estás dentro de WhatsApp, Instagram o TikTok, y desde aquí los avisos no funcionan.',`<ol><li>Toca los tres puntos ⋯ o el icono de brújula.</li><li>Elige "Abrir en Safari" o "Abrir en Chrome".</li><li>En Android, mejor aún: instala la app con el APK.</li></ol>`,`<button onclick="navigator.clipboard?.writeText(location.origin+SWS);toast('Link copiado: pégalo en Safari o Chrome')">Copiar el link</button>`],
@@ -616,7 +617,7 @@ function msgPed(p){const n=nomR(p),it=p.lang==='it';
    listo:it?`Ciao ${n}! 🏪 Il tuo ordine #${p.id} è pronto da ritirare.`:`¡Hola ${n}! 🏪 Tu pedido #${p.id} está listo para retirar.`};return M[p.estado]||M.nuevo;}
 async function cargarReservas(silent){const f=$('rFecha').value||HOY;if(!f)return;
   const hasta=new Date(new Date(f+'T12:00:00Z').getTime()+13*86400000).toISOString().slice(0,10);
-  try{const r=await api('/api/reservas?desde='+(HOY&&HOY<f?HOY:f)+'&hasta='+hasta);if(r.status===401){salir();return;}const j=await r.json();HOY=j.hoy||HOY;const all=j.reservas||[];
+  try{const r=await api('/api/reservas?desde='+(HOY&&HOY<f?HOY:f)+'&hasta='+hasta);if(r.status===401){salir();return;}if(!r.ok)throw 0;const j=await r.json();nuevoHoy(j.hoy);const all=j.reservas||[];
     RALL=all;RES=all.filter(x=>x.fecha===f);RPROX=all.filter(x=>x.fecha>f);
     const nuevas=all.filter(x=>x.origen==='app'&&!RVISTAS.has(x.id));if(!RPRIMERA&&nuevas.length){beep();toast('📅 '+nuevas.length+(nuevas.length===1?' reserva nueva':' reservas nuevas'));}
     all.forEach(x=>RVISTAS.add(x.id));RPRIMERA=false;const pend=all.filter(x=>x.estado==='pendiente'&&x.fecha>=HOY).length;$('nbR').textContent=pend;$('nbR').classList.toggle('hidden',!pend);}
@@ -1184,10 +1185,13 @@ setInterval(()=>{if(document.hidden)return;if(!$('kc').classList.contains('hidde
 
 /* ---------- pedidos ---------- */
 function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.18].forEach(t=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=880;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.25,a.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+t+.15);o.start(a.currentTime+t);o.stop(a.currentTime+t+.16);});}catch(e){}}
+// cambio de jornada con el panel abierto: la pantalla que mostraba "hoy" pasa al día nuevo
+function nuevoHoy(h){if(!h||h===HOY)return false;const ant=HOY;HOY=h;if(!ant)return false;let cambio=false;if($('pFecha').value===ant){$('pFecha').value=h;cambio=true;setTimeout(()=>cargarPedidos(true),0);}if($('rFecha').value===ant){$('rFecha').value=h;setTimeout(()=>cargarReservas(true),0);}cargarSala();return cambio;}
+let BLQT=0;function avisoBloq(){if(Date.now()-BLQT>120000){BLQT=Date.now();toast('⚠️ Demasiados intentos de PIN en esta red. Los datos se actualizan en unos minutos.',true);}}
 async function cargarPedidos(silent){const f=$('pFecha').value||HOY;
   if(COLA.length)await enviarCola();
   let igual=false;
-  try{const r=await api('/api/pedidos?desde='+f+'&hasta='+f);if(r.status===401){salir();return;}const j=await r.json();HOY=j.hoy||HOY;
+  try{const r=await api('/api/pedidos?desde='+f+'&hasta='+f);if(r.status===401){salir();return;}if(r.status===429)avisoBloq();if(!r.ok)throw 0;const j=await r.json();if(nuevoHoy(j.hoy))return;
     // si nada cambió, no se repinta (así no molesta al que está escribiendo o eligiendo platos)
     const firma=f+'|'+JSON.stringify(j.pedidos||[]);igual=silent&&firma===window._pedFirma&&!COLA.length;window._pedFirma=firma;PED=j.pedidos||[];
     try{localStorage.setItem('ec_ped_'+f,JSON.stringify(PED))}catch(e){}conexion(true);aplicarCola();}

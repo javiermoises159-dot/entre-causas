@@ -11,7 +11,8 @@ self.addEventListener('push', (e) => {
     try { (await self.clients.matchAll({ type: 'window', includeUncontrolled: true })).forEach((c) => c.postMessage('recargar')); } catch {}
     let [title, body] = TXT[SC()] || ['Entre Causas', '🔔 Nuevo pedido o reserva. Toca para verlo.'];
     try {
-      const u = await Promise.race([fetch('/api/push?ultimo', { cache: 'no-store' }).then((r) => r.json()), new Promise((r) => setTimeout(() => r({}), 2500))]);
+      const rol = { '/cocina': 'cocina', '/palmare': 'camarero' }[SC()] || 'dueno';
+      const u = await Promise.race([fetch('/api/push?ultimo&rol=' + rol, { cache: 'no-store' }).then((r) => r.json()), new Promise((r) => setTimeout(() => r({}), 2500))]);
       if (u.tipo && TIPO[u.tipo] && Date.now() - u.ts < 120000 && (u.tipo === 'prueba' || SC() !== '/cocina' || u.tipo === 'sala')) [title, body] = TIPO[u.tipo];
       else if (u.tipo === 'pedido' && SC() !== '/cocina') [title, body] = ['🛵 Nuevo pedido', 'Toca para aceptarlo.'];
     } catch {}

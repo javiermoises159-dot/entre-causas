@@ -42,7 +42,11 @@ export async function notificar(tipo = "pedido", soloEp = "", soloRol = "") {
     const roles = PARA[tipo] || PARA.pedido;
     const subs = (d?.lista || []).filter((s) => soloEp ? s.endpoint === soloEp : soloRol ? (s.rol || "dueno") === soloRol : roles.includes(s.rol || "dueno"));
     if (!subs.length) return 0;
-    try { await st().setJSON("ultimo", { tipo, ts: Date.now() }); } catch {}
+    // el texto del aviso lo elige el móvil leyendo esto: se guarda por rol, para que dos avisos seguidos no se pisen
+    try {
+      const u = { tipo, ts: Date.now() }, rs = [...new Set(subs.map((s) => s.rol || "dueno"))];
+      await modificar(st(), "ultimo", {}, (d) => { Object.assign(d, u); d.por = d.por || {}; rs.forEach((r) => (d.por[r] = u)); return true; });
+    } catch {}
     const k = await claves(), muertos = [];
     let enviados = 0;
     await Promise.all(subs.map(async (s) => {
@@ -64,7 +68,10 @@ export const avisar = (tipo) => Promise.race([notificar(tipo), new Promise((r) =
 
 export default async (req) => {
   const url = new URL(req.url);
-  if (req.method === "GET" && url.searchParams.has("ultimo")) return json((await st().get("ultimo", { type: "json" })) || {});
+  if (req.method === "GET" && url.searchParams.has("ultimo")) {
+    const u = (await st().get("ultimo", { type: "json" })) || {}, r = url.searchParams.get("rol");
+    return json(r && u.por && u.por[r] ? u.por[r] : { tipo: u.tipo, ts: u.ts });
+  }
   if (req.method === "GET") return json({ key: (await claves()).pub });
   const q = await quien(req);
   if (!q) return json({ error: "PIN incorrecto" }, 401);
@@ -87,7 +94,7 @@ export default async (req) => {
   if (!/^https:\/\//.test(ep)) return json({ error: "Suscripción inválida" }, 400);
   if (req.method === "POST") {
     await modificar(st(), "subs", { lista: [] }, (x) => {
-      x.lista = x.lista.filter((s) => s.endpoint !== ep).concat({ endpoint: ep, rol: q.rol, nombre: (q.nombre ? q.nombre + " · " : "") + String(b.nombre || "").slice(0, 40), alta: new Date().toISOString() }).slice(-40);
+      x.lista = x.lista.filter((s) => s.endpoint !== ep).concat({ endpoint: ep, rol: q.rol, pid: q.id || "", nombre: (q.nombre ? q.nombre + " · " : "") + String(b.nombre || "").slice(0, 40), alta: new Date().toISOString() }).slice(-40);
       return true;
     });
     return json({ ok: true });

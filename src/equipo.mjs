@@ -32,7 +32,17 @@ export default async (req) => {
   }
   if (req.method === "DELETE") {
     const id = url.searchParams.get("id");
-    const out = await modificar(store, "lista", { personas: [] }, (d) => { d.personas = d.personas.filter((x) => x.id !== id); return d; });
+    let borrada = null;
+    const out = await modificar(store, "lista", { personas: [] }, (d) => { borrada = d.personas.find((x) => x.id === id) || null; d.personas = d.personas.filter((x) => x.id !== id); return d; });
+    // sus móviles dejan de recibir avisos
+    if (borrada) {
+      try {
+        await modificar(getStore({ name: "entrecausas-push", consistency: "strong" }), "subs", { lista: [] }, (x) => {
+          x.lista = x.lista.filter((s) => !(s.pid === borrada.id || (!s.pid && s.rol === borrada.rol && String(s.nombre || "").startsWith(borrada.nombre + " · "))));
+          return true;
+        });
+      } catch {}
+    }
     return json({ ok: true, personas: out.personas });
   }
   return json({ error: "Método no permitido" }, 405);

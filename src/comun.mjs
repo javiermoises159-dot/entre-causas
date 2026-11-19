@@ -6,8 +6,12 @@ export const json = (data, status = 200) =>
     headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
   });
 
-// Comprueba el PIN. Tras 10 intentos fallidos desde la misma IP, bloquea 15 minutos.
-const BLOQUEO = 15 * 60 * 1000, MAX_FALLOS = 10;
+// Comprueba el PIN. Tras 10 intentos fallidos desde la misma IP, esa red queda bloqueada 15 minutos
+// para PIN nuevos; los PIN que ya entraron bien desde esa red (24 h) siguen funcionando, salvo que
+// haya más de 100 fallos (alguien probando PIN a lo loco): entonces se bloquea todo.
+const BLOQUEO = 15 * 60 * 1000, MAX_FALLOS = 10, MAX_TOTAL = 100, DIA = 864e5;
+export const BLOQ = new WeakSet(); // peticiones rechazadas por bloqueo (se responden con 429, sin cerrar sesión)
+const huella = async (pin) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode("ec|" + pin)))].slice(0, 8).map((b) => b.toString(16).padStart(2, "0")).join("");
 // Quién entra: el dueño (ADMIN_PIN) o una persona del equipo con su PIN (cocina, camarero)
 export async function quien(req) {
   const real = ENV.ADMIN_PIN;
@@ -17,8 +21,7 @@ export async function quien(req) {
   const key = "fallos/" + ip, ahora = Date.now();
   let f = null;
   try { f = await st.get(key, { type: "json" }); } catch {}
-  const vigente = f && ahora - f.t < BLOQUEO;
-  if (vigente && f.n >= MAX_FALLOS) return null;
+  const vigente = f && ahora - f.t < BLOQUEO, bloqueada = vigente && f.n >= MAX_FALLOS;
   const pin = req.headers.get("x-admin-pin") || "";
   let q = null;
   if (pin && pin === real) q = { rol: "dueno", nombre: "Dueño", id: "" };
@@ -29,8 +32,17 @@ export async function quien(req) {
       if (p) q = { rol: p.rol, nombre: p.nombre, id: p.id };
     } catch {}
   }
-  if (q) { if (f) { try { await st.delete(key); } catch {} } return q; }
-  try { await st.setJSON(key, { n: (vigente ? f.n : 0) + 1, t: vigente ? f.t : ahora }); } catch {}
+  if (q) {
+    const hh = await huella(pin), ok = Object.fromEntries(Object.entries(f?.ok || {}).filter(([, t]) => ahora - t < DIA));
+    if (bloqueada && (!ok[hh] || f.n >= MAX_TOTAL)) { BLOQ.add(req); return null; } // PIN bueno, pero la red está bloqueada
+    if (!ok[hh] || ahora - ok[hh] > 36e5 || (f && f.n && !bloqueada)) { // se apunta como PIN conocido de esta red (como mucho una vez por hora)
+      ok[hh] = ahora;
+      try { await st.setJSON(key, bloqueada ? { ...f, ok } : { n: 0, t: ahora, ok }); } catch {}
+    }
+    return q;
+  }
+  try { await st.setJSON(key, { n: (vigente ? f.n : 0) + 1, t: vigente ? f.t : ahora, ok: f?.ok || {} }); } catch {}
+  if (bloqueada) BLOQ.add(req);
   return null;
 }
 // roles: si se indica, solo esos roles pueden pasar
@@ -39,9 +51,12 @@ export async function pinOk(req, roles) {
   return !!q && (!roles || roles.includes(q.rol));
 }
 
-// Fecha y hora siempre en hora de Italia
+// Fecha y hora siempre en hora de Italia.
+// La jornada del local termina a las 5:00: lo que pasa a las 00:30 cuenta en el día del servicio
+// (así la cocina y las mesas no se vacían a medianoche y la caja del día sale completa).
+export const CORTE_JORNADA = 5 * 3600000;
 export const fechaRoma = (d = new Date()) =>
-  new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Rome", year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+  new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Rome", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(d.getTime() - CORTE_JORNADA));
 export const horaRoma = (d = new Date()) =>
   new Intl.DateTimeFormat("it-IT", { timeZone: "Europe/Rome", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(d);
 
