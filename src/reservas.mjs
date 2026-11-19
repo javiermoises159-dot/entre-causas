@@ -59,12 +59,6 @@ export default async (req) => {
       }
     }
     const desc = r.desc;
-    // señal para grupos grandes o para quien ya faltó alguna vez
-    const SE = AJ.senal || {};
-    if (SE.activo && Number(SE.monto) > 0) {
-      const falto = ((await store.get("faltas", { type: "json" }))?.tels || {})[tk] > 0;
-      if (personas >= (parseInt(SE.desde, 10) || 8) || (SE.faltas !== false && falto)) r.senal = Math.round(Number(SE.monto) * personas * 100) / 100;
-    }
     const liberar = () => (marca ? liberarPromo(store, tk, marca).catch(() => {}) : null);
     try {
       const ok = await modificar(store, "dia/" + b.fecha, { reservas: [] }, (d) => {
@@ -76,7 +70,7 @@ export default async (req) => {
       if (!ok) { await liberar(); return json({ error: "Día completo" }, 429); }
     } catch { await liberar(); return json({ error: "Inténtalo de nuevo" }, 503); }
     await avisar("reserva");
-    return json({ ok: true, id: r.id, fecha: r.fecha, desc, senal: r.senal || 0 });
+    return json({ ok: true, id: r.id, fecha: r.fecha, desc });
   }
 
   if (!(await pinOk(req))) return json({ error: "PIN incorrecto" }, 401);
@@ -116,8 +110,6 @@ export default async (req) => {
       if (b.estado) r.estado = b.estado;
       if (b.mesa !== undefined) r.mesa = txt(String(b.mesa || ""), 4);
       if (b.recordado === true) r.recordado = true;
-      if (b.senalPagada !== undefined) r.senalPagada = !!b.senalPagada;
-      if (b.senal !== undefined) { const m = Math.round((Number(b.senal) || 0) * 100) / 100; if (m > 0) r.senal = m; else { delete r.senal; delete r.senalPagada; } }
       return r;
     });
     const tk = out && claveTel(out.tel);
