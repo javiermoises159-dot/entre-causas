@@ -1302,8 +1302,8 @@ let qrT=null;function pintarQR(){clearTimeout(qrT);qrT=setTimeout(async()=>{qrOp
   y.fillStyle='#C8373A';y.fillRect(0,0,W,26);
   let top=110;const lg=await loadImg('logo-claro.png');if(lg){const lw=480,lh=lw*lg.height/lg.width;y.imageSmoothingQuality='high';y.drawImage(lg,(W-lw)/2,top,lw,lh);top+=lh;}
   y.textAlign='center';y.fillStyle='#1F1A17';y.font='800 70px Poppins, Arial, sans-serif';
-  if(mesa){y.fillText('Mesa '+mesa,W/2,top+120);y.fillText('Escanea y pide',W/2,top+205);}else{y.fillText('¿Te gustó?',W/2,top+120);y.fillText('Pide a domicilio',W/2,top+205);}
-  y.font='500 38px Poppins, Arial, sans-serif';y.fillStyle='#8A817A';y.fillText(mesa?'Scansiona e ordina · chiama il cameriere':'Escanea · 10% en tu primer pedido',W/2,top+268);
+  if(mesa){y.fillText('Mesa '+mesa,W/2,top+120);y.fillText('Escanea la carta',W/2,top+205);}else{y.fillText('¿Te gustó?',W/2,top+120);y.fillText('Pide a domicilio',W/2,top+205);}
+  y.font='500 38px Poppins, Arial, sans-serif';y.fillStyle='#8A817A';y.fillText(mesa?'Llama al camarero o pide la cuenta · Menù e cameriere':'Escanea · 10% en tu primer pedido',W/2,top+268);
   const qs=640,qy=top+320;y.drawImage(c,(W-qs)/2,qy,qs,qs);
   const ch=mesa?[['CARTA',1],['CAMARERO',0],['CUENTA',0]]:[['DELIVERY',1],['RETIRO',0],['RESERVA',0]];y.font='700 32px Poppins, Arial, sans-serif';
   const pw=ch.map(([t])=>y.measureText(t).width+56),tot=pw.reduce((a,b)=>a+b,0)+(ch.length-1)*22;let x=(W-tot)/2;const cy=qy+qs+60;

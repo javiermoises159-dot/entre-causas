@@ -95,6 +95,8 @@ export default async (req) => {
     const sinStock = Object.keys(pide).filter((k) => pide[k] > rest[k]);
     if (sinStock.length) return json({ error: "no-disponible", items: sinStock.map((k) => ({ id: k, n: lineas.find((l) => l.id === k).n, quedan: rest[k] })) }, 409);
     const mesa = txt(String(b.mesa || "").replace(/\D/g, ""), 3);
+    // en la mesa pide el camarero (palmare), no el cliente desde el QR
+    if (mesa && !porTel) return json({ error: "mesa-camarero" }, 403);
     const modo = mesa ? "Mesa" : b.modo === "Retiro en local" ? "Retiro en local" : "Delivery";
     const sub = num(lineas.reduce((a, l) => a + l.total, 0));
     const AJ = menu.ajustes || {}, E = AJ.envio || {};
