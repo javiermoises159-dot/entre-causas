@@ -24,7 +24,7 @@ export default async (req) => {
       nueva = true;
       return true;
     });
-    if (nueva) await avisar();
+    if (nueva) await avisar("llamada");
     return json({ ok: true });
   }
   if (!(await pinOk(req))) return json({ error: "PIN incorrecto" }, 401);

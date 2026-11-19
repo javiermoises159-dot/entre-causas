@@ -199,7 +199,8 @@ export default async (req) => {
       if (!ok) return json({ error: "Límite diario alcanzado" }, 429);
     } catch { return json({ error: "Inténtalo de nuevo" }, 503); }
     await contar(menu, fecha, lineas, 1);
-    if (!porTel) await avisar();
+    // aviso al móvil: pedido de la app → dueño y cocina; comanda de sala / teléfono → cocina
+    if (!porTel) await avisar("pedido"); else if (p.estado !== "espera") await avisar("sala");
     return json({ ok: true, id: p.id, fecha: p.fecha, total: p.total, envio: p.envio, fid });
   }
 
@@ -259,6 +260,7 @@ export default async (req) => {
     else if (out && (antes === "cancelado") !== (out.estado === "cancelado") && out.origen !== "local") {
       try { await contar(await leerMenu(req), out.fecha, out.lineas, out.estado === "cancelado" ? -1 : 1); } catch {}
     }
+    if (out && antes === "espera" && out.estado === "nuevo") await avisar("sala"); // segundos marchados
     return out ? json({ ok: true, pedido: out }) : json({ error: "No encontrado" }, 404);
   }
 

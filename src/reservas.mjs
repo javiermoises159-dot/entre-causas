@@ -62,7 +62,7 @@ export default async (req) => {
       });
       if (!ok) return json({ error: "Día completo" }, 429);
     } catch { return json({ error: "Inténtalo de nuevo" }, 503); }
-    await avisar();
+    await avisar("reserva");
     return json({ ok: true, id: r.id, fecha: r.fecha, desc });
   }
 
