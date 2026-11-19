@@ -1,11 +1,11 @@
 {
  "name": "Entre Causas · Panel",
  "short_name": "EC Panel",
- "start_url": "/admin.html",
+ "start_url": "/admin",
  "scope": "/admin",
  "display": "standalone",
- "background_color": "#FBF5EC",
- "theme_color": "#3A0F0B",
+ "background_color": "#0E0C0B",
+ "theme_color": "#0E0C0B",
  "lang": "es",
  "icons": [
   {
@@ -24,5 +24,7 @@
    "type": "image/png",
    "purpose": "maskable"
   }
- ]
+ ],
+ "id": "/admin",
+ "description": "Panel de pedidos, reservas y sala de Entre Causas"
 }
