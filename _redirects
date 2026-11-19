@@ -1,2 +1,4 @@
+/palmare /public/admin 200
+/cocina /public/admin 200
 / /public/index.html 200
 /* /public/:splat 200

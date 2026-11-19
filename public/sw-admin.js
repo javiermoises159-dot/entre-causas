@@ -1,5 +1,5 @@
 // Avisos del panel de Entre Causas (pedidos y reservas nuevas)
-self.addEventListener('install', (e) => { self.skipWaiting(); e.waitUntil(caches.open('ec-panel-v1').then((k) => Promise.all(['/admin', '/admin.html', '/qr.js', '/logo-claro.png', '/icon-192.png', '/menu.json', '/admin.webmanifest'].map((u) => k.add(u).catch(() => {}))))); });
+self.addEventListener('install', (e) => { self.skipWaiting(); e.waitUntil(caches.open('ec-panel-v1').then((k) => Promise.all(['/admin', '/admin.html', '/palmare', '/cocina', '/qr.js', '/logo-claro.png', '/icon-192.png', '/menu.json', '/admin.webmanifest'].map((u) => k.add(u).catch(() => {}))))); });
 self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
 self.addEventListener('push', (e) => {
   let body = '🔔 Nuevo pedido o reserva. Toca para verlo.';

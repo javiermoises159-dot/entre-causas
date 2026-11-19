@@ -8,7 +8,8 @@
 <title>Entre Causas · Panel</title>
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="manifest" href="admin.webmanifest">
+<link rel="manifest" href="admin.webmanifest" id="mfst">
+<script>{const q=location.pathname.replace(/\/$/,"");window.APP=q.endsWith("/palmare")?"palmare":q.endsWith("/cocina")?"cocina":"panel";if(APP!=="panel"){document.title="Entre Causas · "+(APP==="palmare"?"Palmare":"Cocina");document.getElementById("mfst").href="/"+APP+".webmanifest";}}</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="EC Panel">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Permanent+Marker&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -235,6 +236,7 @@ body:not(.rol-dueno) #setup,body:not(.rol-dueno) .ahk div:nth-child(2){display:n
 .al .lat{display:block;margin:18px auto 0;background:none;border:none;color:#888;font:500 12.5px Poppins;text-decoration:underline}
 
 /* palmare */
+body.app-palmare #vApp,body.app-palmare #bn,body.app-palmare #saveBar,body.app-palmare #al,body.app-cocina #vApp,body.app-cocina #bn,body.app-cocina #saveBar,body.app-cocina #al{display:none!important}
 .ov{z-index:64!important}.toast{z-index:90!important}
 .pm{position:fixed;inset:0;z-index:62;background:var(--bg);overflow:auto;padding-bottom:110px}
 .pm .hd{background:var(--mar);color:#F6E7C1;padding:14px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:2}
@@ -270,7 +272,7 @@ body:not(.rol-dueno) #setup,body:not(.rol-dueno) .ahk div:nth-child(2){display:n
 <body>
 <div class="login" id="vLogin">
   <img src="logo-claro.png" alt="Entre Causas">
-  <h1>Panel de administración</h1>
+  <h1 id="lgT">Panel de administración</h1>
   <p>Ingresa tu PIN para entrar</p>
   <input class="pin" id="pin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="12" placeholder="••••••" onkeydown="if(event.key==='Enter')entrar()">
   <button class="btn b-or" style="width:220px;margin-top:12px" id="bIn" onclick="entrar()">Entrar</button>
@@ -479,15 +481,15 @@ const aforo=()=>(M&&AJ().mesas||[]).reduce((a,m)=>a+(+m.c||0),0)||32;
 function b64ToU8(b){const p='='.repeat((4-b.length%4)%4),s=atob((b+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(s,c=>c.charCodeAt(0));}
 const esIOS=/iphone|ipad|ipod/i.test(navigator.userAgent),instalada=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
 async function avisosInit(){if(!('serviceWorker' in navigator)){$('avisos').innerHTML='';return;}
-  try{await navigator.serviceWorker.register('/sw-admin.js',{scope:'/admin'});}catch(e){}
+  try{await navigator.serviceWorker.register('/sw-admin.js',{scope:SWS});}catch(e){}
   pintarAvisos();}
 async function pintarAvisos(){const box=$('avisos');if(!box)return;
   if(!('PushManager' in window)||!('Notification' in window)){box.innerHTML=esIOS&&!instalada?`<div class="box" style="padding:12px 14px;background:#FFF6DB"><b>🔔 Para recibir avisos en iPhone</b><p style="margin:4px 0 0;font-size:12.5px;color:var(--mut)">Toca Compartir ⬆️ → "Añadir a pantalla de inicio", abre el panel desde ese icono y activa los avisos.</p></div>`:'';return;}
-  let sub=null;try{const r=await navigator.serviceWorker.getRegistration('/admin');sub=r&&await r.pushManager.getSubscription();}catch(e){}
+  let sub=null;try{const r=await navigator.serviceWorker.getRegistration(SWS);sub=r&&await r.pushManager.getSubscription();}catch(e){}
   if(sub&&Notification.permission==='granted'){box.innerHTML=`<div class="box" style="padding:10px 14px;display:flex;align-items:center;gap:10px"><span style="flex:1;font-size:13px">🔔 <b>Avisos activados</b> en este dispositivo</span><button class="pill2" onclick="probarAviso()">Probar</button></div>`;return;}
   box.innerHTML=`<div class="box" style="padding:12px 14px;background:#FFF1E6;display:flex;align-items:center;gap:10px"><span style="flex:1;font-size:13px"><b>🔔 Activa los avisos</b><br><span style="color:var(--mut);font-size:12px">Te suena y vibra cada pedido o reserva nueva, aunque tengas el móvil bloqueado.</span></span><button class="btn b-or" style="padding:10px 14px;font-size:13px" onclick="activarAvisos()">Activar</button></div>`;}
 async function activarAvisos(){try{const perm=await Notification.requestPermission();if(perm!=='granted'){toast('Permiso de avisos denegado. Actívalo en los ajustes del navegador.',true);return;}
-  const reg=await navigator.serviceWorker.register('/sw-admin.js',{scope:'/admin'});await navigator.serviceWorker.ready;
+  const reg=await navigator.serviceWorker.register('/sw-admin.js',{scope:SWS});await navigator.serviceWorker.ready;
   const k=(await (await fetch('/api/push',{cache:'no-store'})).json()).key;
   const sub=(await reg.pushManager.getSubscription())||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToU8(k)});
   const r=await api('/api/push',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...sub.toJSON(),nombre:navigator.platform||''})});if(!r.ok)throw 0;
@@ -563,7 +565,7 @@ async function instalar(){if(!BIP){instMd();return;}BIP.prompt();const r=await B
 function instHTML(corto){const plat=esIOS?'iPhone':esAnd?'Android':'ordenador';
   const btn=esIOS?`<button class="btn b-dk" style="width:100%" onclick="instMd()">📱 Cómo instalarla en iPhone</button>`
    :`<button class="btn b-dk" style="width:100%" onclick="instalar()">📲 Instalar la app ${esAnd?'en este Android':'en este ordenador'}</button>${esAnd&&APK?`<a class="btn b-lt" style="display:block;text-align:center;text-decoration:none;margin-top:8px" href="/panel.apk" download>⬇️ Descargar APK</a>`:''}`;
-  return `<div class="row" style="align-items:flex-start;gap:12px"><img src="icon-192.png" alt="" style="width:48px;height:48px;border-radius:12px;flex:0 0 auto"><div style="flex:1"><b style="font-size:14px">Instala el panel en tu ${plat}</b><p style="margin:2px 0 10px;font-size:12.5px;color:var(--mut)">Queda como una app con su icono, se abre a pantalla completa y te avisa de cada pedido aunque tengas el móvil bloqueado.</p>${btn}
+  return `<div class="row" style="align-items:flex-start;gap:12px"><img src="icon-192.png" alt="" style="width:48px;height:48px;border-radius:12px;flex:0 0 auto"><div style="flex:1"><b style="font-size:14px">Instala ${window.APP==='palmare'?'el palmare':window.APP==='cocina'?'la cocina':'el panel'} en tu ${plat}</b><p style="margin:2px 0 10px;font-size:12.5px;color:var(--mut)">Queda como una app con su icono, se abre a pantalla completa y te avisa de cada pedido aunque tengas el móvil bloqueado.</p>${btn}
    ${corto?`<button class="pill2" style="margin-top:8px" onclick="try{localStorage.setItem('ec_inst_no','1')}catch(e){};pintarInst()">Ahora no</button>`:`<button class="pill2" style="margin-top:8px" onclick="instMd()">Ver los pasos</button>`}</div></div>`;}
 function pintarInst(){const a=$('instA'),b=$('instBox');if(!a||!b)return;let no=false;try{no=localStorage.getItem('ec_inst_no')==='1'}catch(e){}
   if(instalada){a.innerHTML='';b.innerHTML='<h3>📲 App del panel</h3><p>✓ Estás usando el panel como app instalada.</p>';return;}
@@ -587,7 +589,11 @@ let ROL='dueno',YO='';
 async function quienSoy(){try{const r=await api('/api/equipo?yo=1');if(r.ok){const j=await r.json();ROL=j.rol;YO=j.nombre;try{localStorage.setItem('ec_rol',JSON.stringify(j))}catch(e){}}}catch(e){try{const j=JSON.parse(localStorage.getItem('ec_rol')||'null');if(j){ROL=j.rol;YO=j.nombre;}}catch(x){}}
   document.body.classList.add('rol-'+ROL);
   if(ROL!=='dueno')['carta','cuentas','mas'].forEach(t=>{const b=document.querySelector(`#bn button[data-t="${t}"]`);if(b)b.classList.add('hidden');});
-  if(ROL==='cocina')setTimeout(abrirCocina,300);}
+  // cada uno entra solo a lo suyo: camarero → /palmare, cocina → /cocina; el dueño puede abrir todo
+  const dest={camarero:'palmare',cocina:'cocina'}[ROL];
+  if(dest&&APP!==dest){location.replace('/'+dest);return new Promise(()=>{});}
+  if(APP==='palmare'){document.body.classList.add('app-palmare');PALM=true;setTimeout(()=>pmAbrir(),100);return;}
+  if(APP==='cocina'){document.body.classList.add('app-cocina');setTimeout(abrirCocina,100);return;}}
 /* ---------- llamadas desde la mesa ---------- */
 const LLV=new Set();let LLP=true;
 function llamCards(){const L=(SALA.llamadas||[]).slice().sort((a,b)=>a.ts.localeCompare(b.ts));if(!L.length)return '';
@@ -607,11 +613,11 @@ function repMd(fecha,id){const p=PED.find(x=>x.id===id);if(!p)return;
 let EQ=null,EROL='camarero';
 async function renderEquipo(){const el=$('equipoBox');if(!el)return;if(ROL!=='dueno'){el.classList.add('hidden');return;}
   if(!EQ){el.innerHTML='<h3>👥 Equipo y accesos</h3><p>Cargando…</p>';try{const r=await api('/api/equipo');EQ=r.ok?(await r.json()).personas:[];}catch(e){EQ=[];}}
-  const RL={cocina:['Cocina','Solo el modo cocina','var(--red)'],camarero:['Camarero','Ahora, sala, reservas y espera','#9A6B12'],repartidor:['Repartidor','Solo su link de reparto','var(--mut)']};
-  el.innerHTML=`<h3>👥 Equipo y accesos</h3><p>Tú entras con el PIN del dueño y lo ves todo. Cada persona del equipo entra con su PIN y solo ve lo suyo. Si alguien se va, bórralo y ya no entra.</p>
+  const RL={cocina:['Cocina','Solo la cocina · /cocina','var(--red)'],camarero:['Camarero','Solo el palmare · /palmare','#9A6B12'],repartidor:['Repartidor','Solo su link de reparto','var(--mut)']};
+  el.innerHTML=`<h3>👥 Equipo y accesos</h3><p>Tú entras con el PIN del dueño y lo ves todo. Cada uno tiene su propia app: el camarero el <b>palmare</b>, la cocina su <b>pantalla de cocina</b> y el repartidor su <b>link</b>. Si alguien se va, bórralo y ya no entra.</p><div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 4px"><a class="pill2" style="text-decoration:none" href="/palmare" target="_blank">📝 Abrir palmare</a><a class="pill2" style="text-decoration:none" href="/cocina" target="_blank">👨‍🍳 Abrir cocina</a></div>
    ${EQ.map(x=>{const L=location.origin+'/reparto.html?k='+x.token;return `<div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)"><div style="width:36px;height:36px;border-radius:50%;background:${RL[x.rol][2]};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800">${esc(x.nombre[0]||'?')}</div>
     <div style="flex:1;min-width:0"><b style="font-size:13.5px">${esc(x.nombre)}</b><div style="font-size:11.5px;color:var(--mut)">${RL[x.rol][0]} · ${RL[x.rol][1]}${x.pin?` · PIN <span onclick="this.textContent='${esc(x.pin)}'" style="letter-spacing:2px;font-weight:700;color:var(--ink)">••••</span>`:''}</div>
-    ${x.rol==='repartidor'?`<div style="display:flex;gap:6px;margin-top:6px"><a class="pill2" style="text-decoration:none" href="https://wa.me/?text=${encodeURIComponent('Tu link de reparto de Entre Causas: '+L)}" target="_blank" rel="noopener">💬 Enviarle su link</a><button class="pill2" onclick="navigator.clipboard?.writeText('${L}');toast('Link copiado')">Copiar</button></div>`:''}</div>
+    ${x.rol==='cocina'?`<div style="display:flex;gap:6px;margin-top:6px"><a class="pill2" style="text-decoration:none" href="https://wa.me/?text=${encodeURIComponent('Pantalla de cocina de Entre Causas: '+location.origin+'/cocina · entra con tu PIN')}" target="_blank" rel="noopener">💬 Enviarle la cocina</a></div>`:''}${x.rol==='camarero'?`<div style="display:flex;gap:6px;margin-top:6px"><a class="pill2" style="text-decoration:none" href="https://wa.me/?text=${encodeURIComponent('Tu palmare de Entre Causas: '+location.origin+'/palmare · entra con tu PIN')}" target="_blank" rel="noopener">💬 Enviarle el palmare</a></div>`:''}${x.rol==='repartidor'?`<div style="display:flex;gap:6px;margin-top:6px"><a class="pill2" style="text-decoration:none" href="https://wa.me/?text=${encodeURIComponent('Tu link de reparto de Entre Causas: '+L)}" target="_blank" rel="noopener">💬 Enviarle su link</a><button class="pill2" onclick="navigator.clipboard?.writeText('${L}');toast('Link copiado')">Copiar</button></div>`:''}</div>
     <button class="mini-x" onclick="borrarEq('${x.id}',this)">✕</button></div>`}).join('')||'<div class="empty" style="padding:12px">Todavía no hay nadie del equipo.</div>'}
    <label class="f">Añadir persona</label><div class="grid2"><input class="fi" id="eqNom" placeholder="Nombre"><input class="fi" id="eqPin" inputmode="numeric" maxlength="8" placeholder="PIN (4-8 números)"></div>
    <div class="seg" style="margin-top:8px">${Object.entries(RL).map(([k,v])=>`<button class="${k===EROL?'act':''}" onclick="EROL='${k}';renderEquipo()">${v[0]}</button>`).join('')}</div>
@@ -652,17 +658,18 @@ async function regLista(){try{const r=await api('/api/regalos');const L=(await r
 
 
 /* ---------- palmare del camarero (por comensal) ---------- */
-let PM=null;const PMN=['Sin cebolla','Poco picante','Bien picante','Sin gluten','Salsa aparte','Para compartir'];
+if(window.APP!=='panel'){const t=document.getElementById('lgT');if(t)t.textContent=window.APP==='palmare'?'Palmare · Camarero':'Cocina';}
+let PM=null,PALM=false;const SWS=window.APP==='panel'?'/admin':'/'+window.APP;const PMN=['Sin cebolla','Poco picante','Bien picante','Sin gluten','Salsa aparte','Para compartir'];
 function pmAbrir(n){PM={mesa:n||'',c:1,sel:1,draft:[],cat:null,q:''};if(n){const s=SALA.mesas[n],m=AJ().mesas.find(x=>x.n===n);PM.pax=s?.personas||0;}
   if(PM.mesa){const prev=pmLineas().reduce((a,l)=>Math.max(a,l.c),0);PM.pax=Math.max(PM.pax||0,prev,1);PM.sel=1;}
   $('pm').classList.remove('hidden');pmPinta();}
-function pmCerrar(){if(PM&&PM.draft.length&&!confirm('Hay platos sin enviar. ¿Salir igual?'))return;PM=null;$('pm').classList.add('hidden');}
+function pmCerrar(){if(PM&&PM.draft.length&&!confirm('Hay platos sin enviar. ¿Salir igual?'))return;if(PALM){if(PM&&PM.mesa){PM.draft=[];PM.mesa='';pmPinta();}else salir();return;}PM=null;$('pm').classList.add('hidden');}
 const pmDesde=()=>{const s=SALA.mesas[PM.mesa];return s?Date.parse(s.desde)-60000:0;};
 function pmPedidos(){const d=pmDesde();return ($('pFecha').value===HOY?PED:[]).filter(p=>p.mesa===PM.mesa&&p.estado!=='cancelado'&&Date.parse(p.ts)>=d);}
 function pmLineas(){const out=[];pmPedidos().forEach(p=>(p.lineas||[]).forEach((l,i)=>out.push({pid:p.id,f:p.fecha,i,an:!!l.anulado,mot:l.motivo||'',n:l.n+(l.o&&l.o.length?' ('+l.o.map(x=>x.v.join(', ')).join(' · ')+')':''),q:l.q,t:l.anulado?0:l.total,c:p.asientos?p.asientos[i]:0,nt:p.notasL?p.notasL[i]:'',est:p.estado})));return out;}
 const COP=()=>(M&&+AJ().coperto>0)?+AJ().coperto:0;
 function pmPinta(){const el=$('pm');if(!PM)return;
-  if(!PM.mesa){el.innerHTML=`<div class="hd"><b style="font-size:17px;color:#fff;flex:1">📝 Palmare · elige la mesa</b><button class="gb" onclick="pmCerrar()">${ic('x',15)}Salir</button></div><div class="in"><div class="mg">${AJ().mesas.map(m=>{const i=mesaInfo(m);return `<button onclick="pmAbrir('${esc(m.n)}')" style="${i.e!=='libre'?'border-color:var(--gold);background:#FBF1DC':''}">${esc(m.n)}<small>${m.c} pax${i.e!=='libre'?' · '+SC[i.e][2].toLowerCase():''}</small></button>`}).join('')}</div></div>`;return;}
+  if(!PM.mesa){const LL=(SALA.llamadas||[]);el.innerHTML=`<div class="hd"><div style="flex:1"><b style="font-size:17px;color:#fff">📝 Palmare${PALM&&YO?' · '+esc(YO):''}</b><div style="font-size:11.5px;opacity:.7">Elige la mesa</div></div><button class="gb" onclick="pmCerrar()">${ic('x',15)}${PALM?'Cerrar sesión':'Salir'}</button></div><div class="in">${PALM&&!instalada&&!(()=>{try{return localStorage.getItem('ec_inst_no')}catch(e){}})()?`<div class="box" style="padding:12px 14px">${instHTML(true).replace('pintarInst()','pmPinta()')}</div>`:''}${LL.map(x=>`<div class="cs" style="display:flex;align-items:center;gap:10px;cursor:default;${x.tipo==='cuenta'?'background:var(--mar);color:#fff':''}"><b style="font-size:15px;flex:1">🙋 Mesa ${esc(x.mesa)} ${x.tipo==='cuenta'?'pide la cuenta':'te llama'}</b><button class="btn" style="background:var(--grn);color:#fff;padding:9px 14px" onclick="atender('${x.id}').then(pmPinta)">Voy</button></div>`).join('')}<div class="mg">${AJ().mesas.map(m=>{const i=mesaInfo(m);return `<button onclick="pmAbrir('${esc(m.n)}')" style="${i.e!=='libre'?'border-color:var(--gold);background:#FBF1DC':''}">${esc(m.n)}<small>${m.c} pax${i.e!=='libre'?' · '+SC[i.e][2].toLowerCase():''}</small></button>`}).join('')}</div></div>`;return;}
   const L=pmLineas(),pax=Math.max(PM.pax||1,1),seats=[...Array(pax)].map((_,k)=>k+1).concat([0]);
   const tot=c=>L.filter(l=>l.c===c).reduce((a,l)=>a+l.t,0)+PM.draft.filter(d=>d.c===c).reduce((a,d)=>a+d.p*d.q,0);
   const total=seats.reduce((a,c)=>a+tot(c),0)+COP()*pax,nd=PM.draft.reduce((a,d)=>a+d.q,0);
@@ -726,7 +733,7 @@ async function pmLiberar(falta){if(falta&&!confirm('Todavía falta cobrar una pa
   const tar=pag.filter(x=>x.metodo==='Tarjeta').reduce((a,x)=>a+x.monto,0),ef=pag.filter(x=>x.metodo!=='Tarjeta').reduce((a,x)=>a+x.monto,0),met=tar>ef?'Tarjeta':'Efectivo';
   for(const p of pmPedidos())if(p.pago!==met&&p.estado!=='cancelado'){try{await api('/api/pedidos',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({fecha:p.fecha,id:p.id,pago:met})});}catch(e){}}
   if(cop>0){try{await api('/api/pedidos?manual=1',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({total:cop,fecha:HOY,modo:'Coperto',pago:met,nota:'Coperto mesa '+PM.mesa+' · '+pax+' pax'})});}catch(e){}}
-  cerrarMd();await salaPost('PATCH',{mesa:PM.mesa,estado:'libre',cierre:{pax,total,coperto:cop},por:YO});toast('✓ Mesa '+PM.mesa+' cerrada · '+eur(total));PM.draft=[];PM=null;$('pm').classList.add('hidden');cargarPedidos(true);}
+  cerrarMd();await salaPost('PATCH',{mesa:PM.mesa,estado:'libre',cierre:{pax,total,coperto:cop},por:YO});toast('✓ Mesa '+PM.mesa+' cerrada · '+eur(total));PM.draft=[];if(PALM){PM.mesa='';pmPinta();}else{PM=null;$('pm').classList.add('hidden');}cargarPedidos(true);}
 async function pmMarchar(){for(const p of pmPedidos().filter(x=>x.estado==='espera'))await patchPed(p.fecha,p.id,{estado:'nuevo'});toast('✓ Marchado: la cocina ya lo tiene');pmPinta();}
 function pmAnular(f,id,i,n){$('md').innerHTML=`<h2>Anular · ${esc(n)}<button class="x" onclick="cerrarMd()">✕</button></h2><p style="font-size:12.5px;color:var(--mut);margin:4px 0 10px">No se cobra y la cocina lo ve tachado.</p>
    <div style="display:flex;flex-direction:column;gap:8px">${['El cliente cambió de idea','Error al apuntar','Se acabó en cocina','Otro motivo'].map(m=>`<button class="btn b-lt" style="text-align:left" onclick="cerrarMd();patchPed('${f}','${id}',{anular:{i:${i},motivo:'${m}'}},'Plato anulado')">${m}</button>`).join('')}</div>`;$('ov').classList.remove('hidden');}
@@ -734,7 +741,7 @@ function pmAnular(f,id,i,n){$('md').innerHTML=`<h2>Anular · ${esc(n)}<button cl
 /* ---------- sala: plano de mesas y lista de espera ---------- */
 let SALA={mesas:{},espera:[]},RV='lista';
 document.querySelectorAll('#rSeg button').forEach(b=>b.onclick=()=>{RV=b.dataset.v;document.querySelectorAll('#rSeg button').forEach(x=>x.classList.toggle('act',x===b));['lista','sala','espera'].forEach(v=>$('rv'+v[0].toUpperCase()+v.slice(1)).classList.toggle('hidden',v!==RV));if(RV==='lista'&&$('rFecha').value!==HOY){}renderSala();renderEspera();});
-async function cargarSala(){try{const r=await api('/api/sala?f='+HOY);if(!r.ok)return;SALA=await r.json();}catch(e){return;}const nv=(SALA.llamadas||[]).filter(x=>!LLV.has(x.id));if(nv.length&&!LLP){beep();setTimeout(beep,700);toast('🙋 '+nv.map(x=>'Mesa '+x.mesa+(x.tipo==='cuenta'?' pide la cuenta':' te llama')).join(' · '));}(SALA.llamadas||[]).forEach(x=>LLV.add(x.id));LLP=false;renderSala();renderEspera();renderAhora();}
+async function cargarSala(){try{const r=await api('/api/sala?f='+HOY);if(!r.ok)return;SALA=await r.json();}catch(e){return;}const nv=(SALA.llamadas||[]).filter(x=>!LLV.has(x.id));if(nv.length&&!LLP){beep();setTimeout(beep,700);toast('🙋 '+nv.map(x=>'Mesa '+x.mesa+(x.tipo==='cuenta'?' pide la cuenta':' te llama')).join(' · '));}(SALA.llamadas||[]).forEach(x=>LLV.add(x.id));LLP=false;renderSala();renderEspera();renderAhora();if(PM&&!PM.mesa&&$('ov').classList.contains('hidden'))pmPinta();}
 async function salaPost(method,body){try{const r=await api('/api/sala',{method,headers:{'content-type':'application/json'},body:JSON.stringify({f:HOY,...body})});if(!r.ok)throw 0;const j=await r.json();SALA.mesas=j.mesas;SALA.espera=j.espera;SALA.llamadas=j.llamadas||[];SALA.historial=j.historial||[];renderSala();renderEspera();return true;}catch(e){toast('No se pudo guardar',true);}}
 const resHoy=()=>RALL.filter(r=>r.fecha===HOY&&['pendiente','confirmada'].includes(r.estado));
 function mesaInfo(m){const ll=(SALA.llamadas||[]).find(x=>x.mesa===m.n);if(ll)return{e:'llama',t:ll.tipo==='cuenta'?'¡pide cuenta!':'¡llama!',ll,s:SALA.mesas[m.n]};const s=SALA.mesas[m.n];if(s)return{e:s.estado,t:s.estado==='cuenta'?'pide cuenta':Math.round((Date.now()-Date.parse(s.desde))/60000)+' min',s};
@@ -904,7 +911,7 @@ function menuPausa(){$('md').innerHTML=`<h2>Cocina llena<button class="x" onclic
   <div class="grid2">${[15,30,45,60].map(m=>`<button class="btn b-dk" onclick="cerrarMd();pausar(${m}).then(renderAhora)">${m} min</button>`).join('')}</div>`;$('ov').classList.remove('hidden');}
 /* alerta de pedido nuevo */
 let ALID=null,ALT=null;const LUEGO={};
-function revisarAlerta(){if($('pFecha').value!==HOY)return;if(ALID){const p=PED.find(x=>x.id===ALID);if(!p||p.estado!=='nuevo')cerrarAlerta();else return;}
+function revisarAlerta(){if(window.APP!=='panel')return;if($('pFecha').value!==HOY)return;if(ALID){const p=PED.find(x=>x.id===ALID);if(!p||p.estado!=='nuevo')cerrarAlerta();else return;}
   const p=PED.filter(x=>x.estado==='nuevo'&&x.origen==='app'&&!(LUEGO[x.id]>Date.now())).sort((a,b)=>(a.ts||'').localeCompare(b.ts||''))[0];if(p)verAlerta(p.id,true);}
 function verAlerta(id,sonar){const p=PED.find(x=>x.id===id);if(!p)return;ALID=id;const ml=p.modo==='Delivery'?[20,30,45]:[10,15,25],def=ml[1];
   $('al').innerHTML=`<div class="in"><div class="bell">${ic('bell',30,'#fff')}</div><h2>Nuevo pedido</h2><div class="sub">${sonar?'Suena hasta que lo atiendas · ':''}#${esc(p.id)} · ${esc(p.hora)}</div>
@@ -927,7 +934,7 @@ async function patchPed(fecha,id,body,msg){if(OFF){encolar(fecha,id,body);if(msg
 async function aceptar(id,m){const p=PED.find(x=>x.id===id);if(!p)return;cerrarAlerta();await patchPed(p.fecha,id,{estado:'preparando',eta:m},'#'+id+' aceptado · '+m+' min');}
 async function rechazar(id,k){const p=PED.find(x=>x.id===id);if(!p)return;cerrarAlerta();await patchPed(p.fecha,id,{estado:'cancelado',motivo:k},'#'+id+' rechazado');}
 /* modo cocina */
-function abrirCocina(){if($('pFecha').value!==HOY){$('pFecha').value=HOY;cargarPedidos(true);}$('kc').classList.remove('hidden');renderCocina();try{document.documentElement.requestFullscreen?.();navigator.wakeLock?.request('screen').catch(()=>{});}catch(e){}}
+function abrirCocina(){if($('pFecha').value!==HOY){$('pFecha').value=HOY;cargarPedidos(true);}$('kc').classList.remove('hidden');renderCocina();try{document.documentElement.requestFullscreen?.()?.catch?.(()=>{});navigator.wakeLock?.request('screen').catch(()=>{});}catch(e){}}
 function cerrarCocina(){$('kc').classList.add('hidden');try{document.fullscreenElement&&document.exitFullscreen();}catch(e){}}
 function kCard(p,col){const m=minDesde(p),c=col==='lis'?'#7FD3A0':colMin(p,m);const sig=col==='new'?['preparando','Empezar','var(--red)']:col==='coc'?[p.modo==='Delivery'?'encamino':'listo',p.modo==='Delivery'?'Listo · sale':'Listo','var(--grn)']:['entregado','Entregado','#3A3430'];
   return `<div class="k" style="border-top-color:${col==='new'?'var(--red)':col==='coc'?'var(--gold)':'var(--grn)'}"><div class="h"><b>${p.mesa?'Mesa '+esc(p.mesa):'#'+esc(p.id)}</b><span>${p.mesa?'Sala':p.modo==='Delivery'?'Delivery'+(repN(p.rep)?' · 🛵 '+esc(repN(p.rep)):''):'Llevar'}${p.cliente&&!p.mesa?' · '+esc(p.cliente):''}</span><em style="color:${c}">${ic('clock',16)}${col==='lis'?(p.estado==='encamino'?'en camino':'listo'):m+' min'}</em></div>
@@ -941,7 +948,7 @@ function renderCocina(){const hp=$('pFecha').value===HOY?PED:[],ord=L=>L.sort((a
   const nv=new Set(hp.filter(p=>p.estado==='nuevo').map(p=>p.id));if(KVIS&&[...nv].some(id=>!KVIS.has(id)))beep();KVIS=nv;
   $('kc').innerHTML=`<div class="top2"><span style="font-family:'Permanent Marker',cursive;font-size:20px;color:var(--gold)">Entre Causas</span><span style="font-size:13px;color:#aaa">· Modo cocina</span>
    <span style="margin-left:auto"></span>${chipOffline()}${z?`<button class="gb" onclick="pausar(0).then(renderCocina)">${ic('play',14)}Reanudar (pausa hasta ${hRoma(z)})</button>`:`<button class="gb" onclick="pausar(30).then(renderCocina)">${ic('flame',15)}Cocina llena 30 min</button>`}
-   <b style="font-size:20px">${hRoma(Date.now())}</b><button class="gb" onclick="${ROL==='cocina'?'salir()':'cerrarCocina()'}">${ic('x',15)}${ROL==='cocina'?'Cerrar sesión':'Salir'}</button></div>
+   <b style="font-size:20px">${hRoma(Date.now())}</b>${window.APP==='cocina'&&!instalada&&BIP?`<button class="gb" onclick="instalar()">📲 Instalar</button>`:''}<button class="gb" onclick="${window.APP==='cocina'?'salir()':'cerrarCocina()'}">${ic('x',15)}${window.APP==='cocina'?'Cerrar sesión':'Salir'}</button></div>
    <div class="cols">${C.map(([k,t,c,L])=>`<div><div class="ch"><i style="background:${c}"></i>${t}<span style="color:#888;font-weight:600">${L.length}</span></div>${L.map(p=>kCard(p,k)).join('')||'<div class="vac">Nada por aquí</div>'}${k==='new'&&Object.keys(espM).length?Object.entries(espM).map(([m,n])=>`<div class="vac" style="margin-top:10px;text-align:left">⏸ Mesa ${esc(m)} · ${n} ${n===1?'plato':'platos'} en espera<br><small>Te llegan cuando el camarero los marche</small></div>`).join(''):''}</div>`).join('')}</div>`;}
 setInterval(()=>{if(document.hidden)return;if(!$('kc').classList.contains('hidden'))renderCocina();else if(TAB==='ahora')renderAhora();},30000);
 
