@@ -266,7 +266,7 @@ body:not(.rol-dueno) #setup,body:not(.rol-dueno) .ahk div:nth-child(2){display:n
   </div>
 
   <!-- AHORA -->
-  <div id="p-ahora"><div id="ahH"></div><div id="instA"></div><div id="avisos"></div><div id="ahL"></div><div id="setup" style="margin-top:18px"></div></div>
+  <div id="p-ahora"><div id="ahH"></div><div id="instA"></div><div id="avisos"></div><div id="ahL"></div></div>
 
   <!-- PEDIDOS -->
   <div id="p-pedidos" class="hidden">
@@ -353,6 +353,7 @@ body:not(.rol-dueno) #setup,body:not(.rol-dueno) .ahk div:nth-child(2){display:n
 
   <!-- MAS -->
   <div id="p-mas" class="hidden">
+    <div id="setup"></div>
     <div class="box" id="instBox"></div>
     <div class="box" id="equipoBox"></div>
     <div class="box" id="autoBox"></div>
@@ -366,12 +367,13 @@ body:not(.rol-dueno) #setup,body:not(.rol-dueno) .ahk div:nth-child(2){display:n
       <div class="grid2" style="margin-top:8px"><div><label class="f">Premio cada (pedidos)</label><input class="fi" id="fCada" inputmode="numeric" oninput="AJ().fidelidad.cada=parseInt(this.value,10)||0;dirty()"></div>
         <div><label class="f">Premio</label><input class="fi" id="fPre" placeholder="½ pollo gratis" oninput="AJ().fidelidad.premio=this.value;dirty()"></div></div></div>
     <div class="box"><h3>📱 Código QR</h3><p>Para imprimir y poner en las mesas, el mostrador o las bolsas de delivery. Al escanearlo se abre la app.</p>
+      <label class="f">Cartel para</label><select class="fi" id="qrPara" onchange="pintarQR()"></select>
       <label class="f">Link de la app</label><input class="fi" id="qrUrl" oninput="pintarQR()">
       <div style="display:flex;gap:12px;align-items:flex-start;margin-top:14px;flex-wrap:wrap">
         <img id="qrImg" alt="QR" style="width:150px;height:150px;border-radius:12px;border:1px solid var(--line);background:#fff">
         <img id="qrCard" alt="Cartel QR" style="width:150px;border-radius:12px;border:1px solid var(--line);background:#fff">
       </div>
-      <div class="grid2" style="margin-top:12px"><button class="btn b-dk" onclick="bajar('qrImg','QR-Entre-Causas.png')">⬇️ QR solo</button><button class="btn b-or" onclick="bajar('qrCard','Cartel-QR-Entre-Causas.png')">⬇️ Cartel para imprimir</button></div>
+      <div class="grid2" style="margin-top:12px"><button class="btn b-dk" onclick="bajar('qrImg','QR-Entre-Causas-'+qrNom()+'.png')">⬇️ QR solo</button><button class="btn b-or" onclick="bajar('qrCard','Cartel-Entre-Causas-'+qrNom()+'.png')">⬇️ Cartel para imprimir</button></div>
       <p style="font-size:11.5px;color:var(--mut);margin-top:8px">En iPhone también puedes mantener el dedo sobre la imagen y tocar "Guardar en Fotos".</p></div>
     <div class="box"><h3>🔒 Datos legales</h3><p>Aparecen en la página de privacidad de la app (obligatoria en Italia porque se piden nombre y dirección).</p>
       <label class="f">Razón social</label><input class="fi" id="gRa" placeholder="Ej: Entre Causas S.R.L.S." oninput="LG().razon=this.value;dirty()">
@@ -982,6 +984,7 @@ function renderAll(){renderCarta();renderLocal();renderEnvio();renderMas();rende
 function irA(t,id,abrirCat){tab(t);setTimeout(()=>{const e=$(id);if(!e)return;e.scrollIntoView({behavior:'smooth',block:'center'});const b=e.closest('.box')||e;b.classList.remove('hl');void b.offsetWidth;b.classList.add('hl');if(e.focus&&e.tagName==='INPUT')e.focus({preventScroll:true});},150);}
 function primerPlato(f){for(let ci=0;ci<M.categorias.length;ci++){const ii=M.categorias[ci].items.findIndex(f);if(ii>=0)return[ci,ii];}return null;}
 function irPlato(f){const p=primerPlato(f);if(!p)return;tab('carta');OPEN.add(p[0]);renderCarta();setTimeout(()=>abrir(p[0],p[1]),120);}
+let SUO=false;
 function renderSetup(){if(!M)return;const a=AJ(),e=a.envio,g=a.legal,su=a.setup,its=Object.values(allItems()).filter(i=>!i.oculto);
   const nF=its.filter(i=>!i.fotos.length).length,nD=its.filter(i=>!i.desc).length,nA=its.filter(i=>!i.alergenosRev).length;
   const L=[
@@ -996,15 +999,15 @@ function renderSetup(){if(!M)return;const a=AJ(),e=a.envio,g=a.legal,su=a.setup,
    [nA===0,'Alérgenos de cada plato',nA?nA+' platos sin revisar':'',"irPlato(i=>!i.alergenosRev)",nA],
    [nF===0,'Fotos de los platos',nF?nF+' platos sin foto':'',"irPlato(i=>!i.fotos.length)",nF],
    [nD===0,'Descripción de los platos',nD?nD+' platos sin descripción':'',"irPlato(i=>!i.desc)",nD],
-   [!!su.opciones,'Revisar opciones (presa, cremas, gaseosa)','Abre los platos con opciones y deja solo las que tienes. Luego toca aquí',"AJ().setup.opciones=!AJ().setup.opciones;dirty();renderSetup()"],
    [!!su.qr,'Imprimir el QR para las mesas','Descarga el cartel en ⚙️ Más. Luego toca aquí',"AJ().setup.qr=!AJ().setup.qr;dirty();renderSetup()"],
   ];
   const ok=L.filter(x=>x[0]).length;
-  if(ok===L.length||su.oculto){$('setup').innerHTML=ok===L.length?'':`<button class="pill2" style="margin-bottom:12px" onclick="AJ().setup.oculto=false;dirty();renderSetup()">✅ Ver lista para lanzar (${ok}/${L.length})</button>`;return;}
+  if(ok===L.length){$('setup').innerHTML='';return;}
+  if(!SUO){$('setup').innerHTML=`<button class="box" style="width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:none;font:inherit;cursor:pointer;padding:12px 14px" onclick="SUO=true;renderSetup()"><span style="font-size:18px">🚀</span><span style="flex:1"><b style="font-size:13.5px">Te ${L.length-ok===1?'falta 1 cosa':'faltan '+(L.length-ok)+' cosas'} para lanzar la app</b><br><small style="color:var(--mut)">${ok} de ${L.length} listas · toca para ver</small></span><b style="color:var(--mut)">›</b></button>`;return;}
   $('setup').innerHTML=`<div class="setup"><h3>🚀 Para lanzar la app <small style="font-size:12px;color:var(--mut);font-weight:600">${ok}/${L.length}</small></h3>
    <div class="pb"><i style="width:${ok/L.length*100}%"></i></div><p style="font-size:12px;color:var(--mut);margin-bottom:4px">Toca cada punto y completa lo que falta. Al final toca <b>Guardar cambios</b>.</p>
    ${L.map(([d,t,s,fn,n])=>`<button class="su${d?' ok':''}" onclick="${fn}"><i>${d?'✓':''}</i><span>${t}${s&&!d?`<small>${s}</small>`:''}</span>${!d?'<b>›</b>':''}</button>`).join('')}
-   <button class="pill2" style="margin-top:8px;font-size:11.5px" onclick="AJ().setup.oculto=true;dirty();renderSetup()">Ocultar esta lista</button></div>`;}
+   <button class="pill2" style="margin-top:8px;font-size:11.5px" onclick="SUO=false;renderSetup()">Cerrar</button></div>`;}
 function renderCarta(){renderStock();
   $('cats').innerHTML=M.categorias.map((c,ci)=>`<div class="cat${OPEN.has(ci)?' open':''}" id="cat${ci}">
     <button class="ch" onclick="tog(${ci})"><span class="ic">${esc(c.icono)}</span><b>${esc(c.nombre)}<br><small>${c.items.length} platos · ${c.items.filter(i=>i.agotado).length} agotados · ${c.items.filter(i=>!i.fotos.length).length} sin foto</small></b><span class="ar">▶</span></button>
@@ -1149,21 +1152,27 @@ async function restaurarCopia(k){try{const r=await api('/api/backups?key='+encod
 
 /* ----- QR ----- */
 const IMG={};function loadImg(src){return IMG[src]||(IMG[src]=new Promise(ok=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=src;}));}
-function qrCanvas(text,px){const {QRCode,Level}=window.QRCodeLib;const q=new QRCode(-1,Level.H);q.addData(unescape(encodeURIComponent(text)));q.make();
+function qrCanvas(text,px){const {QRCode,Level}=window.QRCodeLib;const q=new QRCode(-1,Level.M);q.addData(unescape(encodeURIComponent(text)));q.make();
   const n=q.getModuleCount(),qz=4,cell=Math.floor(px/(n+qz*2)),size=cell*(n+qz*2);const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');
   x.fillStyle='#fff';x.fillRect(0,0,size,size);x.fillStyle='#1F1A17';for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect((k+qz)*cell,(r+qz)*cell,cell,cell);return c;}
-let qrT=null;function pintarQR(){clearTimeout(qrT);qrT=setTimeout(async()=>{const url=$('qrUrl').value.trim();if(!url||!window.QRCodeLib)return;
-  const c=qrCanvas(url,900),x=c.getContext('2d'),m=await loadImg('mascota.png'),S=c.width,L=Math.round(S*0.24);
-  x.fillStyle='#fff';x.beginPath();x.arc(S/2,S/2,L*0.62,0,7);x.fill();if(m)x.drawImage(m,S/2-L/2,S/2-L/2*m.height/m.width,L,L*m.height/m.width);
-  $('qrImg').src=c.toDataURL('image/png');
+const qrNom=()=>{const v=$('qrPara')?.value||'';return v?'mesa-'+v:'delivery';};
+function qrOpts(){const el=$('qrPara');if(!el||!M)return;const v=el.value;el.innerHTML='<option value="">Bolsas de delivery y mostrador (general)</option>'+AJ().mesas.map(m=>`<option value="${esc(m.n)}">Mesa ${esc(m.n)}</option>`).join('');el.value=v;}
+function rr(y,x0,y0,w,h,r){y.beginPath();y.moveTo(x0+r,y0);y.arcTo(x0+w,y0,x0+w,y0+h,r);y.arcTo(x0+w,y0+h,x0,y0+h,r);y.arcTo(x0,y0+h,x0,y0,r);y.arcTo(x0,y0,x0+w,y0,r);y.closePath();}
+let qrT=null;function pintarQR(){clearTimeout(qrT);qrT=setTimeout(async()=>{qrOpts();const base=$('qrUrl').value.trim();if(!base||!window.QRCodeLib)return;const mesa=$('qrPara').value;
+  const url=mesa?base.replace(/\/?$/,'/')+'?mesa='+encodeURIComponent(mesa):base;
+  const c=qrCanvas(url,900);$('qrImg').src=c.toDataURL('image/png');
+  await document.fonts?.load('800 80px Poppins').catch(()=>{});
   const W=1240,H=1748,k=document.createElement('canvas');k.width=W;k.height=H;const y=k.getContext('2d');y.fillStyle='#fff';y.fillRect(0,0,W,H);
-  y.fillStyle='#D7372B';y.fillRect(0,0,W,22);y.fillRect(0,H-22,W,22);
-  const lg=await loadImg('logo-claro.png');if(lg){const lw=640,lh=lw*lg.height/lg.width;y.drawImage(lg,(W-lw)/2,90,lw,lh);}
-  y.textAlign='center';y.fillStyle='#1F1A17';y.font='800 78px Poppins, Arial, sans-serif';y.fillText('Escanea y pide',W/2,520);
-  y.font='600 44px Poppins, Arial, sans-serif';y.fillStyle='#7A716B';y.fillText('Scansiona e ordina',W/2,585);
-  const qs=820;y.drawImage(c,(W-qs)/2,640,qs,qs);
-  y.font='600 42px Poppins, Arial, sans-serif';y.fillStyle='#1F1A17';y.fillText('🛵 Delivery  ·  🏪 Retiro en local',W/2,1560);
-  y.font='500 34px Poppins, Arial, sans-serif';y.fillStyle='#7A716B';y.fillText(url.replace(/^https?:\/\//,'').replace(/\/$/,''),W/2,1630);
+  y.fillStyle='#C8373A';y.fillRect(0,0,W,26);
+  let top=110;const lg=await loadImg('logo-claro.png');if(lg){const lw=480,lh=lw*lg.height/lg.width;y.imageSmoothingQuality='high';y.drawImage(lg,(W-lw)/2,top,lw,lh);top+=lh;}
+  y.textAlign='center';y.fillStyle='#1F1A17';y.font='800 70px Poppins, Arial, sans-serif';
+  if(mesa){y.fillText('Mesa '+mesa,W/2,top+120);y.fillText('Escanea y pide',W/2,top+205);}else{y.fillText('¿Te gustó?',W/2,top+120);y.fillText('Pide a domicilio',W/2,top+205);}
+  y.font='500 38px Poppins, Arial, sans-serif';y.fillStyle='#8A817A';y.fillText(mesa?'Scansiona e ordina · chiama il cameriere':'Escanea · 10% en tu primer pedido',W/2,top+268);
+  const qs=640,qy=top+320;y.drawImage(c,(W-qs)/2,qy,qs,qs);
+  const ch=mesa?[['CARTA',1],['CAMARERO',0],['CUENTA',0]]:[['DELIVERY',1],['RETIRO',0],['RESERVA',0]];y.font='700 32px Poppins, Arial, sans-serif';
+  const pw=ch.map(([t])=>y.measureText(t).width+56),tot=pw.reduce((a,b)=>a+b,0)+(ch.length-1)*22;let x=(W-tot)/2;const cy=qy+qs+60;
+  ch.forEach(([t,dk],i)=>{y.fillStyle=dk?'#0E0C0B':'#F6F3EF';rr(y,x,cy,pw[i],70,18);y.fill();y.fillStyle=dk?'#E9B54A':'#1F1A17';y.fillText(t,x+pw[i]/2,cy+47);x+=pw[i]+22;});
+  y.font='500 30px Poppins, Arial, sans-serif';y.fillStyle='#B3A99F';y.fillText(base.replace(/^https?:\/\//,'').replace(/\/$/,''),W/2,H-70);
   $('qrCard').src=k.toDataURL('image/png');},150);}
 function bajar(id,name){const a=document.createElement('a');a.href=$(id).src;a.download=name;document.body.appendChild(a);a.click();a.remove();}
 
