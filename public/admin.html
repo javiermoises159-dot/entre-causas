@@ -11,10 +11,10 @@
 <link rel="manifest" href="admin.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="EC Panel">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 
-:root{--bg:#FBF5EC;--ink:#2B0E0A;--mar:#3A0F0B;--or:#E8552B;--gold:#F6B21B;--grn:#1E9C7A;--mut:#8C7B70;--line:#EFE4D5;--red:#C2361C;--soft:#FFF1E6}
+:root{--bg:#F6F3EF;--ink:#1F1A17;--mar:#0E0C0B;--or:#1F1A17;--gold:#E9B54A;--grn:#2E7D4F;--mut:#8A817A;--line:#EAE3DB;--red:#C8373A;--soft:#F1ECE6}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Poppins,system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-tap-highlight-color:transparent}
 button{font-family:Poppins;cursor:pointer;color:inherit}
@@ -181,6 +181,70 @@ textarea.fi{resize:vertical;min-height:70px}
 .su span{flex:1}.su small{display:block;color:var(--mut);font-size:11.5px;text-decoration:none}.su b{color:var(--or);font-size:18px}
 .hl{animation:hl 1.6s}@keyframes hl{0%,60%{box-shadow:0 0 0 4px var(--gold)}}
 .nlb .save{padding-bottom:calc(84px + env(safe-area-inset-bottom))}.nlb .md{padding-bottom:96px}.nlb .mact{padding-bottom:74px}.nlb body{padding-bottom:80px}
+
+/* ---- panel práctico ---- */
+.tabs{display:none!important}
+.wrap{padding-bottom:150px}
+.save{bottom:64px}
+.bn{position:fixed;left:0;right:0;bottom:0;z-index:25;background:#fff;border-top:1px solid var(--line);display:flex;padding:7px 4px calc(8px + env(safe-area-inset-bottom))}
+.bn button{flex:1;border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font:600 10.5px Poppins;color:var(--mut);position:relative}
+.bn button.act{color:var(--ink)}.bn svg{width:22px;height:22px}
+.bn .nb{position:absolute;top:-4px;left:calc(50% + 4px);background:var(--red);color:#fff;border-radius:9px;font-size:9.5px;padding:0 5px;line-height:16px}
+.ico{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.ahh{background:var(--mar);color:#F6E7C1;border-radius:20px;padding:14px;margin:12px 0}
+.ahh .r1{display:flex;gap:8px}
+.stp{flex:1;display:flex;align-items:center;gap:7px;border-radius:12px;padding:9px 10px;font-size:12.5px;font-weight:600;background:rgba(46,125,79,.22);border:1px solid rgba(46,125,79,.6);color:#BFE6CC}
+.stp i{width:8px;height:8px;border-radius:50%;background:#4CC07A}
+.stp.pz{background:rgba(200,55,58,.2);border-color:rgba(200,55,58,.6);color:#F5C2C3}.stp.pz i{background:#F0686B}
+.gb{display:flex;align-items:center;gap:6px;border:1px solid rgba(233,181,74,.5);background:none;border-radius:12px;padding:9px 10px;font:600 12.5px Poppins;color:var(--gold)}
+.ahk{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;text-align:center}
+.ahk b{display:block;font-size:19px;color:#fff}.ahk span{font-size:10.5px;opacity:.7}
+.ah2{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:800;margin:16px 0 8px}
+.ah2 .c{background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:11px}
+.ac{background:#fff;border-radius:16px;padding:12px 13px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:10px;border-left:4px solid var(--red)}
+.ac.res{border-color:var(--gold)}.ac.lis{border-color:var(--grn)}
+.ac .h{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mut)}.ac .h b{margin-left:auto;color:var(--ink);font-size:14px}
+.tg{font-size:10px;font-weight:700;letter-spacing:.4px;border-radius:6px;padding:3px 6px;background:#FBE3E3;color:var(--red)}
+.res .tg{background:#FBF1DC;color:#9A6B12}.lis .tg{background:#E2F2E8;color:var(--grn)}
+.ac .n{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:14px;font-weight:700}
+.ac .d{font-size:12px;color:var(--mut);margin-top:2px}
+.ac .bb{display:flex;gap:8px;margin-top:10px}
+.ac .bb>*{border:none;border-radius:11px;padding:10px 12px;font:700 12.5px Poppins;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:5px;background:var(--soft);color:var(--ink)}
+.ac .bb .p{flex:1;background:var(--ink);color:#fff}.ac .bb .g{flex:1;background:var(--grn);color:#fff}
+.ecl{background:#fff;border-radius:16px;padding:2px 13px}
+.ecl div{display:flex;align-items:center;gap:8px;padding:11px 0;border-bottom:1px solid #EEE8E1;font-size:13px}.ecl div:last-child{border:none}
+.ecl span{color:var(--mut)}.ecl em{margin-left:auto;font-style:normal;font-weight:700}
+.lk{display:flex;gap:8px;margin-top:12px}.lk button{flex:1;border:none;background:#fff;border-radius:12px;padding:11px 8px;font:600 12.5px Poppins;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.vacio{background:#fff;border-radius:16px;padding:18px;text-align:center;font-size:13px;color:var(--mut)}
+/* alerta */
+.al{position:fixed;inset:0;z-index:70;background:var(--mar);color:#fff;overflow:auto;padding:22px 18px calc(22px + env(safe-area-inset-bottom))}
+.al .in{max-width:460px;margin:0 auto}
+.al .bell{width:64px;height:64px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;margin:6px auto 0;animation:pl 1.4s infinite}
+@keyframes pl{0%{box-shadow:0 0 0 0 rgba(200,55,58,.6)}100%{box-shadow:0 0 0 26px rgba(200,55,58,0)}}
+.al h2{text-align:center;font-size:24px;margin-top:18px}.al .sub{text-align:center;font-size:12.5px;color:#F6E7C1;opacity:.75}
+.al .bx{background:#1C1816;border-radius:18px;padding:14px;margin-top:16px}
+.al .ln{display:flex;gap:8px;align-items:center;margin-top:6px;font-size:12.5px;color:#ddd}
+.al .alit{font-size:14px;line-height:1.7;margin-top:10px;border-top:1px solid #2E2825;padding-top:8px}.al .alit small{display:block;color:#aaa;font-size:11.5px;line-height:1.3;margin:-2px 0 4px 22px}
+.al .nt2{background:rgba(233,181,74,.14);color:var(--gold);border-radius:9px;padding:7px 10px;font-size:12.5px;margin-top:8px}
+.al .q{font-size:12.5px;font-weight:700;color:#F6E7C1;margin:16px 0 8px}
+.al .mins{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.al .mins button{border:none;background:#24201D;color:#fff;border-radius:14px;padding:14px 0;font:800 22px Poppins}.al .mins button small{display:block;font-size:11px;font-weight:500;opacity:.75}
+.al .mins button.def{background:var(--grn)}
+.al .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.al .chips button{background:none;border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:8px 12px;font:500 12.5px Poppins;color:#ddd}
+.al .lat{display:block;margin:18px auto 0;background:none;border:none;color:#888;font:500 12.5px Poppins;text-decoration:underline}
+/* cocina */
+.kc{position:fixed;inset:0;z-index:65;background:var(--mar);color:#fff;overflow:auto;padding:14px 16px}
+.kc .top2{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.kc .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.kc .ch{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;letter-spacing:.5px;margin-bottom:10px;color:#F6E7C1}.kc .ch i{width:9px;height:9px;border-radius:50%}
+.kc .k{background:#1C1816;border-radius:16px;padding:13px;margin-bottom:12px;border-top:4px solid var(--red)}
+.kc .k .h{display:flex;align-items:center;gap:8px}.kc .k .h b{font-size:19px}.kc .k .h span{font-size:12px;color:#aaa}
+.kc .k .h em{margin-left:auto;font-style:normal;font-weight:800;font-size:15px;display:flex;align-items:center;gap:4px}
+.kc .k .l{font-size:17px;line-height:1.55;margin-top:4px}.kc .k .l b{color:var(--gold)}.kc .k .l small{display:block;font-size:12.5px;color:#aaa;line-height:1.3;margin:-2px 0 3px 24px}
+.kc .k .nt2{background:#3A2E12;color:var(--gold);border-radius:8px;padding:6px 9px;font-size:13px;font-weight:600;margin-top:6px}
+.kc .k button{width:100%;margin-top:10px;border:none;border-radius:12px;padding:13px;font:800 15px Poppins;color:#fff}
+.kc .vac{border:1px dashed #3A3430;border-radius:16px;padding:16px;text-align:center;font-size:12.5px;color:#888}
+@media(max-width:700px){.kc .cols{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -197,13 +261,14 @@ textarea.fi{resize:vertical;min-height:70px}
   <div class="top" style="position:sticky;top:0;z-index:10;background:var(--bg);padding:12px 0 6px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)"><img src="logo-claro.png" alt="" style="height:42px"><div class="t" style="flex:1;min-width:0"><b style="display:block;font-size:15px">Panel Entre Causas</b><span id="upd" style="font-size:12px;color:var(--mut)">Carta del local</span></div>
     <a class="btn b-lt" href="/" target="_blank" rel="noopener" style="text-decoration:none;font-size:12.5px;padding:10px 12px">Ver app ↗</a></div>
   <div class="tabs" id="tabs">
-    <button data-t="pedidos" class="act">📋 Pedidos<span class="nb hidden" id="nbN">0</span></button><button data-t="reservas">📅 Reservas<span class="nb hidden" id="nbR">0</span></button><button data-t="cuentas">💰 Cuentas</button><button data-t="carta">🐟 Carta</button><button data-t="local">🕒 Local</button><button data-t="delivery">🛵 Envío</button><button data-t="mas">⚙️ Más</button>
+    <button data-t="ahora" class="act">⚡ Ahora</button><button data-t="pedidos">📋 Pedidos<span class="nb hidden" id="nbN">0</span></button><button data-t="reservas">📅 Reservas<span class="nb hidden" id="nbR">0</span></button><button data-t="cuentas">💰 Cuentas</button><button data-t="carta">🐟 Carta</button><button data-t="local">🕒 Local</button><button data-t="delivery">🛵 Envío</button><button data-t="mas">⚙️ Más</button>
   </div>
 
+  <!-- AHORA -->
+  <div id="p-ahora"><div id="ahH"></div><div id="avisos"></div><div id="ahL"></div><div id="setup" style="margin-top:18px"></div></div>
+
   <!-- PEDIDOS -->
-  <div id="p-pedidos">
-    <div id="avisos"></div>
-    <div id="setup"></div>
+  <div id="p-pedidos" class="hidden">
     <div class="box" id="pzBox" style="padding:12px 14px"></div>
     <div class="bar2"><input type="date" id="pFecha" onchange="cargarPedidos()"><button class="pill2" onclick="$('pFecha').value=HOY;cargarPedidos()">Hoy</button><button class="pill2" onclick="cargarPedidos()">↻ Actualizar</button></div>
     <div class="kpis"><div class="kp"><span>Pedidos</span><b id="kN">0</b></div><div class="kp"><span>Vendido</span><b id="kV">0 €</b></div><div class="kp"><span>En curso</span><b id="kC">0</b></div></div>
@@ -280,6 +345,7 @@ textarea.fi{resize:vertical;min-height:70px}
 
   <!-- MAS -->
   <div id="p-mas" class="hidden">
+    <div class="lk" style="margin:12px 0 14px"><button onclick="tab('pedidos')">📋 Historial de pedidos</button><button onclick="tab('local')">🕒 Horario y local</button><button onclick="tab('delivery')">🛵 Envío y zonas</button></div>
     <div class="box"><h3>⭐ Recomendados</h3><p>Salen en el inicio de la app. Se eligen dentro de cada plato (✎).</p><div id="recoList"></div></div>
     <div class="box"><h3>💡 Sugerencias del carrito</h3><p>Aparecen como "¿Le agregas algo más?" antes de enviar el pedido. Se eligen dentro de cada plato (✎).</p><div id="sugList"></div></div>
     <div class="box"><h3>🏷️ Cupones de descuento</h3><p>El cliente escribe el código en el carrito. Tipo <b>%</b> = porcentaje, <b>€</b> = monto fijo. "Mín." = compra mínima. El interruptor lo activa o pausa.</p>
@@ -310,6 +376,9 @@ textarea.fi{resize:vertical;min-height:70px}
   </div>
 </div>
 
+<nav class="bn" id="bn"><button data-t="ahora" class=act><svg viewBox="0 0 24 24" class="ico"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg><span>Ahora</span><span class="nb hidden" id="nbA">0</span></button><button data-t="reservas"><svg viewBox="0 0 24 24" class="ico"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Reservas</span></button><button data-t="carta"><svg viewBox="0 0 24 24" class="ico"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg><span>Carta</span></button><button data-t="cuentas"><svg viewBox="0 0 24 24" class="ico"><path d="M17 6a7 7 0 1 0 0 12"/><path d="M4 10h9M4 14h9"/></svg><span>Cuentas</span></button><button data-t="mas"><svg viewBox="0 0 24 24" class="ico"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg><span>Más</span></button></nav>
+<div class="al hidden" id="al"></div>
+<div class="kc hidden" id="kc"></div>
 <div class="save hidden" id="saveBar"><div><span id="saveTxt">Tienes cambios sin guardar</span><button class="btn" id="bSave" onclick="guardar()">Guardar cambios</button></div></div>
 <div class="ov hidden" id="ov" onclick="if(event.target===this)cerrarMd()"><div class="md" id="md"></div></div>
 <script src="qr.js"></script>
@@ -317,7 +386,7 @@ textarea.fi{resize:vertical;min-height:70px}
 <input type="file" id="fRest" accept="application/json,.json" class="hidden" onchange="restaurarArchivo(this)">
 
 <script>
-let PIN='',M=null,DIRTY=false,ED=null,DR=null,OPEN=new Set(),HOY='',PED=[],FIL='todos',TAB='pedidos',VISTOS=new Set(),PRIMERA=true;
+let PIN='',M=null,DIRTY=false,ED=null,DR=null,OPEN=new Set(),HOY='',PED=[],FIL='todos',TAB='ahora',VISTOS=new Set(),PRIMERA=true;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const eur=v=>Number(v||0).toFixed(2).replace('.',',')+' €';
@@ -359,9 +428,10 @@ async function cargar(){let m=null;
   $('rFecha').value=HOY;cargarReservas(true);setInterval(()=>{if(!document.hidden)cargarReservas(true)},30000);avisosInit();
   navigator.serviceWorker?.addEventListener('message',e=>{if(e.data==='recargar'){cargarPedidos(true);cargarReservas(true);}});document.addEventListener('visibilitychange',()=>{if(!document.hidden){cargarPedidos(true);cargarReservas(true);}});}
 function salir(){try{localStorage.removeItem('ed_pin')}catch(e){};location.reload();}
-document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
-function tab(t){TAB=t;document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('act',b.dataset.t===t));
-  ['pedidos','reservas','cuentas','carta','local','delivery','mas'].forEach(x=>$('p-'+x).classList.toggle('hidden',x!==t));if(t==='reservas')cargarReservas();
+document.querySelectorAll('#tabs button,#bn button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
+function tab(t){TAB=t;const bt=['pedidos','local','delivery'].includes(t)?'mas':t;document.querySelectorAll('#tabs button,#bn button').forEach(b=>b.classList.toggle('act',b.dataset.t===(b.closest('#bn')?bt:t)));
+  if(t==='ahora'){if($('pFecha').value!==HOY){$('pFecha').value=HOY;cargarPedidos(true);}if($('rFecha').value!==HOY){$('rFecha').value=HOY;cargarReservas(true);}renderAhora();}
+  ['ahora','pedidos','reservas','cuentas','carta','local','delivery','mas'].forEach(x=>$('p-'+x).classList.toggle('hidden',x!==t));if(t==='reservas')cargarReservas();
   if(t==='pedidos')cargarPedidos();if(t==='cuentas')cargarCuentas();if(t==='mas')cargarBackups();renderAll();scrollTo(0,0);}
 function dirty(){clearTimeout(window._st);window._st=setTimeout(renderSetup,400);DIRTY=true;$('saveBar').classList.remove('hidden');$('saveTxt').textContent='Tienes cambios sin guardar';$('bSave').disabled=false;$('bSave').textContent='Guardar cambios';}
 const allItems=()=>{const o={};M.categorias.forEach(c=>c.items.forEach(i=>o[i.id]=i));return o;};
@@ -387,7 +457,7 @@ async function activarAvisos(){try{const perm=await Notification.requestPermissi
 async function probarAviso(){const r=await api('/api/push?prueba=1',{method:'POST'});toast(r.ok?'Aviso de prueba enviado':'No se pudo enviar',!r.ok);}
 
 /* ---------- reservas ---------- */
-let RES=[],RPROX=[],RVISTAS=new Set(),RPRIMERA=true;
+let RES=[],RPROX=[],RALL=[],RVISTAS=new Set(),RPRIMERA=true;
 const REST={pendiente:'Por confirmar',confirmada:'Confirmada',rechazada:'Rechazada',llego:'Llegó',noshow:'No vino'};
 const DSEM=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 const fLarga=f=>DSEM[new Date(f+'T12:00:00Z').getUTCDay()]+' '+f.slice(8,10)+'/'+f.slice(5,7);
@@ -405,11 +475,11 @@ function msgPed(p){const n=nomR(p),it=p.lang==='it';
 async function cargarReservas(silent){const f=$('rFecha').value||HOY;if(!f)return;
   const hasta=new Date(new Date(f+'T12:00:00Z').getTime()+13*86400000).toISOString().slice(0,10);
   try{const r=await api('/api/reservas?desde='+(HOY&&HOY<f?HOY:f)+'&hasta='+hasta);if(r.status===401){salir();return;}const j=await r.json();HOY=j.hoy||HOY;const all=j.reservas||[];
-    RES=all.filter(x=>x.fecha===f);RPROX=all.filter(x=>x.fecha>f);
+    RALL=all;RES=all.filter(x=>x.fecha===f);RPROX=all.filter(x=>x.fecha>f);
     const nuevas=all.filter(x=>x.origen==='app'&&!RVISTAS.has(x.id));if(!RPRIMERA&&nuevas.length){beep();toast('📅 '+nuevas.length+(nuevas.length===1?' reserva nueva':' reservas nuevas'));}
     all.forEach(x=>RVISTAS.add(x.id));RPRIMERA=false;const pend=all.filter(x=>x.estado==='pendiente'&&x.fecha>=HOY).length;$('nbR').textContent=pend;$('nbR').classList.toggle('hidden',!pend);}
   catch(e){if(!silent)toast('No se pudieron cargar las reservas',true);return;}
-  renderReservas();}
+  renderReservas();renderAhora();}
 function cardRes(r){return `<div class="ped ${r.estado}"><div class="ph"><div><b>${esc(r.hora)}</b> <small>· 👥 ${r.personas} · ${r.origen==='app'?'📱 App':'📞 Local'}${r.fecha!==$('rFecha').value?' · '+fLarga(r.fecha):''}</small></div><span class="est ${r.estado}">${REST[r.estado]||r.estado}</span></div>
   <div class="cl">👤 <b>${esc(r.nombre)}</b>${r.tel?` <span>· <a href="tel:${esc(r.tel)}">${esc(r.tel)}</a></span>`:''}${r.lang==='it'?' <span>· 🇮🇹</span>':r.lang==='en'?' <span>· 🇬🇧</span>':''}</div>
   ${r.desc?`<div class="nt" style="background:#1F1A17;color:#E9B54A">🏷️ <b>-${r.desc}% en toda la cuenta</b> (reserva por la app)</div>`:''}${r.nota?`<div class="nt">📝 ${esc(r.nota)}</div>`:''}
@@ -426,6 +496,83 @@ async function estRes(f,id,e){const r=await api('/api/reservas',{method:'PATCH',
 async function resManual(){const f=prompt('Día (AAAA-MM-DD)',$('rFecha').value||HOY);if(!f)return;const h=prompt('Hora (HH:MM)','20:00');if(!h)return;const n=prompt('Nombre');if(!n)return;const pe=prompt('Personas','2');const tl=prompt('Teléfono (opcional)','')||'';const no=prompt('Nota (opcional)','')||'';
   const r=await api('/api/reservas?manual=1',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({fecha:f.trim(),hora:h.trim(),nombre:n,personas:pe,tel:tl,nota:no})});if(!r.ok){toast('Revisa el día y la hora',true);return;}$('rFecha').value=f.trim();cargarReservas();toast('Reserva apuntada');}
 
+
+/* ---------- panel práctico: Ahora · alerta · cocina ---------- */
+const IC={bike:'<circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17l4-8h5l3 8M10 9l-1-3H7"/>',bag:'<path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 0 1 6 0"/>',table:'<path d="M3 9h18M5 9v10M19 9v10M8 9V6h8v3"/>',cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',chat:'<path d="M4 5h16v11H8l-4 4z"/>',flame:'<path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-3 2-4 2-7 2 1 3 2 3 4"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',pin:'<path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',chef:'<path d="M6 13a4 4 0 1 1 2-7.5A4 4 0 0 1 16 5.5 4 4 0 1 1 18 13v6H6z"/><path d="M6 17h12"/>',play:'<path d="M7 4l12 8-12 8z"/>'};
+const ic=(n,s=16,c)=>`<svg viewBox="0 0 24 24" class="ico" style="width:${s}px;height:${s}px${c?';color:'+c:''}">${IC[n]}</svg>`;
+const icModo=p=>p.mesa?'table':p.modo==='Delivery'?'bike':'bag';
+const quien=p=>p.mesa?'Mesa '+esc(p.mesa):esc(p.cliente||p.modo);
+const minDesde=p=>Math.max(0,Math.round((Date.now()-Date.parse(p.ts||Date.now()))/60000));
+const colMin=(p,m)=>m>=(p.eta||30)?'var(--red)':m>=(p.eta||30)*.6?'#C27A0E':'var(--grn)';
+const hRoma=d=>new Date(d).toLocaleTimeString('it-IT',{timeZone:'Europe/Rome',hour:'2-digit',minute:'2-digit'});
+const resumen=p=>esc((p.lineas||[]).map(l=>l.q+'× '+l.n).join(' · '));
+function enPausa(){const z=M&&AJ().pausa?Date.parse(AJ().pausa):0;return z>Date.now()?z:0;}
+function renderAhora(){if(!M||!$('ahH'))return;const hoyP=$('pFecha').value===HOY?PED:[];const vivos=hoyP.filter(p=>p.estado!=='cancelado');
+  const rHoy=RALL.filter(r=>r.fecha===HOY&&!['rechazada','noshow'].includes(r.estado)),pers=rHoy.reduce((a,r)=>a+r.personas,0);
+  const z=enPausa();
+  $('ahH').innerHTML=`<div class="ahh"><div class="r1">${z?`<div class="stp pz"><i></i>En pausa hasta las ${hRoma(z)}</div><button class="gb" onclick="pausar(0)">${ic('play',14)}Reanudar</button>`:`<div class="stp"><i></i>Recibiendo pedidos</div><button class="gb" onclick="menuPausa()">${ic('flame',15)}Cocina llena</button>`}</div>
+   <div class="ahk"><div><b>${vivos.length}</b><span>pedidos hoy</span></div><div><b>${eur(vivos.reduce((a,p)=>a+p.total,0))}</b><span>caja hoy</span></div><div><b>${pers}/${AFORO}</b><span>sala reservada</span></div></div></div>`;
+  const nuevos=hoyP.filter(p=>p.estado==='nuevo').sort((a,b)=>(a.ts||'').localeCompare(b.ts||''));
+  const pend=RALL.filter(r=>r.estado==='pendiente'&&r.fecha>=HOY).sort((a,b)=>(a.fecha+a.hora).localeCompare(b.fecha+b.hora));
+  const lis=hoyP.filter(p=>p.estado==='listo');
+  const curso=hoyP.filter(p=>['preparando','encamino'].includes(p.estado)).sort((a,b)=>(a.ts||'').localeCompare(b.ts||''));
+  const n=nuevos.length+pend.length+lis.length;$('nbA').textContent=n;$('nbA').classList.toggle('hidden',!n);
+  let h=`<div class="ah2">Necesita tu acción ${n?`<span class="c">${n}</span>`:''}</div>`;
+  if(!n)h+=`<div class="vacio">Todo al día ✓<br><small>Los pedidos y reservas nuevos aparecen aquí y suenan.</small></div>`;
+  h+=nuevos.map(p=>`<div class="ac"><div class="h"><span class="tg">NUEVO</span>hace ${minDesde(p)} min${p.prog?' · ⏰ '+esc(p.prog.hora):''}<b>${eur(p.total)}</b></div>
+    <div class="n">${ic(icModo(p))}${esc(p.mesa?'Mesa '+p.mesa:p.modo==='Delivery'?'Delivery':'Para llevar')}${p.cliente?' · '+esc(p.cliente):''}${p.comune?` <small style="font-weight:600;color:var(--mut)">· ${esc(p.comune)}</small>`:''}</div>
+    <div class="d">${resumen(p)}</div><div class="bb"><button class="p" onclick="verAlerta('${p.id}')">Aceptar</button><button onclick="verAlerta('${p.id}')">Rechazar</button></div></div>`).join('');
+  h+=pend.map(r=>`<div class="ac res"><div class="h"><span class="tg">RESERVA</span>${r.fecha===HOY?'hoy':fLarga(r.fecha)} ${esc(r.hora)}${r.desc?`<b><span class="tg" style="background:var(--gold);color:var(--mar)">-${r.desc}%</span></b>`:''}</div>
+    <div class="n">${ic('cal')}${esc(r.nombre)} · ${r.personas} ${r.personas===1?'persona':'personas'}</div>${r.nota?`<div class="d">${esc(r.nota)}</div>`:''}
+    <div class="bb">${r.tel?`<a class="g" href="https://wa.me/${waNum(r.tel)}?text=${encodeURIComponent(msgRes(r,'ok'))}" target="_blank" rel="noopener" onclick="estRes('${r.fecha}','${r.id}','confirmada')">${ic('chat',15)}Confirmar</a><a href="https://wa.me/${waNum(r.tel)}?text=${encodeURIComponent(msgRes(r,'no'))}" target="_blank" rel="noopener" onclick="estRes('${r.fecha}','${r.id}','rechazada')">No hay sitio</a>`:`<button class="g" onclick="estRes('${r.fecha}','${r.id}','confirmada')">Confirmar</button><button onclick="estRes('${r.fecha}','${r.id}','rechazada')">No hay sitio</button>`}</div></div>`).join('');
+  h+=lis.map(p=>`<div class="ac lis"><div class="h"><span class="tg">LISTO</span><b style="font-size:12px;color:var(--mut)">#${esc(p.id)}</b></div>
+    <div class="n">${ic(icModo(p))}${p.mesa?'Mesa '+esc(p.mesa):'Para llevar'}${p.cliente?' · '+esc(p.cliente):''} · ${eur(p.total)}</div>
+    <div class="bb">${p.tel?`<a class="p" href="https://wa.me/${waNum(p.tel)}?text=${encodeURIComponent(msgPed(p))}" target="_blank" rel="noopener">${ic('chat',15)}Avisar que está listo</a>`:''}<button class="${p.tel?'':'p'}" onclick="estado('${p.fecha}','${p.id}','entregado')">Entregado</button></div></div>`).join('');
+  if(curso.length)h+=`<div class="ah2">En curso</div><div class="ecl">${curso.map(p=>{const m=minDesde(p);return `<div onclick="tab('pedidos')">${ic(icModo(p),16,'var(--mut)')}<b>${quien(p)}</b><span>· ${p.estado==='encamino'?'en camino':p.etaHora?'prometido '+esc(p.etaHora):'en cocina'}</span><em style="color:${colMin(p,m)}">${m} min</em></div>`}).join('')}</div>`;
+  h+=`<div class="lk"><button onclick="abrirCocina()">👨‍🍳 Modo cocina</button><button onclick="ventaLocal()">+ Venta local</button><button onclick="tab('pedidos')">📋 Todos</button></div>`;
+  $('ahL').innerHTML=h;}
+function menuPausa(){$('md').innerHTML=`<h2>Cocina llena<button class="x" onclick="cerrarMd()">✕</button></h2><p style="font-size:13px;color:var(--mut);margin:4px 0 12px">La app deja de aceptar pedidos un rato y vuelve sola. Los programados sí entran.</p>
+  <div class="grid2">${[15,30,45,60].map(m=>`<button class="btn b-dk" onclick="cerrarMd();pausar(${m}).then(renderAhora)">${m} min</button>`).join('')}</div>`;$('ov').classList.remove('hidden');}
+/* alerta de pedido nuevo */
+let ALID=null,ALT=null;const LUEGO={};
+function revisarAlerta(){if($('pFecha').value!==HOY)return;if(ALID){const p=PED.find(x=>x.id===ALID);if(!p||p.estado!=='nuevo')cerrarAlerta();else return;}
+  const p=PED.filter(x=>x.estado==='nuevo'&&x.origen==='app'&&!(LUEGO[x.id]>Date.now())).sort((a,b)=>(a.ts||'').localeCompare(b.ts||''))[0];if(p)verAlerta(p.id,true);}
+function verAlerta(id,sonar){const p=PED.find(x=>x.id===id);if(!p)return;ALID=id;const ml=p.modo==='Delivery'?[20,30,45]:[10,15,25],def=ml[1];
+  $('al').innerHTML=`<div class="in"><div class="bell">${ic('bell',30,'#fff')}</div><h2>Nuevo pedido</h2><div class="sub">${sonar?'Suena hasta que lo atiendas · ':''}#${esc(p.id)} · ${esc(p.hora)}</div>
+   <div class="bx"><div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700">${ic(icModo(p),18,'var(--gold)')}${p.mesa?'Mesa '+esc(p.mesa):esc(p.modo)}<span style="margin-left:auto;font-size:20px;font-weight:800;color:var(--gold)">${eur(p.total)}</span></div>
+    ${p.cliente?`<div class="ln">${ic('user',15,'#8A817A')}${esc(p.cliente)}${p.nCli>1?` · <span style="color:var(--gold)">cliente habitual · ${p.nCli}º pedido</span>`:p.nCli===1?' · <span style="color:var(--gold)">primer pedido</span>':''}</div>`:''}
+    ${p.dir?`<div class="ln">${ic('pin',15,'#8A817A')}${esc(p.dir)}${p.comune?' · '+esc(p.comune):''}${p.envio?' · envío '+eur(p.envio):p.envio===null?' · envío a confirmar':''}</div>`:''}
+    ${p.prog?`<div class="ln">⏰ Programado: ${p.prog.fecha===p.fecha?'hoy':fmtF(p.prog.fecha)} a las ${esc(p.prog.hora)}</div>`:''}
+    <div class="alit">${(p.lineas||[]).map(l=>`<b>${l.q}×</b> ${esc(l.n)}${l.o&&l.o.length?`<small>${esc(l.o.map(s=>s.g+': '+s.v.join(', ')).join(' · '))}</small>`:'<br>'}`).join('')}</div>
+    ${p.nota?`<div class="nt2">Nota: ${esc(p.nota)}</div>`:''}${p.notaCli?`<div class="nt2" style="background:#2A2220;color:#ddd">Ficha: ${esc(p.notaCli)}</div>`:''}
+    <div style="font-size:12px;color:#aaa;margin-top:8px">${p.pago==='Tarjeta'?'Paga con tarjeta':'Paga en efectivo'}${p.desc?' · cupón '+esc(p.cupon)+' −'+eur(p.desc):''}</div></div>
+   <div class="q">Aceptar · ¿en cuánto está?</div><div class="mins">${ml.map(m=>`<button class="${m===def?'def':''}" onclick="aceptar('${p.id}',${m})">${m}<small>min</small></button>`).join('')}</div>
+   <div style="font-size:11.5px;color:#aaa;text-align:center;margin-top:8px">El cliente lo ve en la app al instante</div>
+   <div style="display:flex;align-items:center;gap:6px;margin-top:16px;font-size:12.5px;font-weight:700;color:#F19A9C">${ic('x',15)}Rechazar · motivo</div>
+   <div class="chips">${[['llena','Cocina llena'],['zona','Fuera de zona'],['agotado','Plato agotado'],['cierre','Cerramos ya']].map(([k,t])=>`<button onclick="rechazar('${p.id}','${k}')">${t}</button>`).join('')}</div>
+   <button class="lat" onclick="luego('${p.id}')">Verlo en 2 minutos</button></div>`;
+  $('al').classList.remove('hidden');clearInterval(ALT);if(sonar){beep();ALT=setInterval(beep,4000);}}
+function cerrarAlerta(){ALID=null;clearInterval(ALT);$('al').classList.add('hidden');}
+function luego(id){LUEGO[id]=Date.now()+120000;cerrarAlerta();setTimeout(revisarAlerta,120500);}
+async function patchPed(fecha,id,body,msg){try{const r=await api('/api/pedidos',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({fecha,id,...body})});if(!r.ok)throw 0;const {pedido}=await r.json();PED=PED.map(p=>p.id===id?pedido:p);if(msg)toast(msg);renderPedidos();return pedido;}catch(e){toast('No se pudo actualizar',true);}}
+async function aceptar(id,m){const p=PED.find(x=>x.id===id);if(!p)return;cerrarAlerta();await patchPed(p.fecha,id,{estado:'preparando',eta:m},'#'+id+' aceptado · '+m+' min');}
+async function rechazar(id,k){const p=PED.find(x=>x.id===id);if(!p)return;cerrarAlerta();await patchPed(p.fecha,id,{estado:'cancelado',motivo:k},'#'+id+' rechazado');}
+/* modo cocina */
+function abrirCocina(){if($('pFecha').value!==HOY){$('pFecha').value=HOY;cargarPedidos(true);}$('kc').classList.remove('hidden');renderCocina();try{document.documentElement.requestFullscreen?.();navigator.wakeLock?.request('screen').catch(()=>{});}catch(e){}}
+function cerrarCocina(){$('kc').classList.add('hidden');try{document.fullscreenElement&&document.exitFullscreen();}catch(e){}}
+function kCard(p,col){const m=minDesde(p),c=col==='lis'?'#7FD3A0':colMin(p,m);const sig=col==='new'?['preparando','Empezar','var(--red)']:col==='coc'?[p.modo==='Delivery'?'encamino':'listo',p.modo==='Delivery'?'Listo · sale':'Listo','var(--grn)']:['entregado','Entregado','#3A3430'];
+  return `<div class="k" style="border-top-color:${col==='new'?'var(--red)':col==='coc'?'var(--gold)':'var(--grn)'}"><div class="h"><b>${p.mesa?'Mesa '+esc(p.mesa):'#'+esc(p.id)}</b><span>${p.mesa?'Sala':p.modo==='Delivery'?'Delivery':'Llevar'}${p.cliente&&!p.mesa?' · '+esc(p.cliente):''}</span><em style="color:${c}">${ic('clock',16)}${col==='lis'?(p.estado==='encamino'?'en camino':'listo'):m+' min'}</em></div>
+   <div class="l">${(p.lineas||[]).map(l=>`<div><b>${l.q}×</b> ${esc(l.n)}${l.o&&l.o.length?`<small>${esc(l.o.map(s=>s.v.join(', ')).join(' · '))}</small>`:''}</div>`).join('')}</div>${p.nota?`<div class="nt2">${esc(p.nota)}</div>`:''}${p.etaHora&&col!=='lis'?`<div style="font-size:12px;color:#aaa;margin-top:6px">Prometido para las ${esc(p.etaHora)}</div>`:''}
+   <button style="background:${sig[2]}" onclick="patchPed('${p.fecha}','${p.id}',{estado:'${sig[0]}'})">${sig[1]}</button></div>`;}
+function renderCocina(){const hp=$('pFecha').value===HOY?PED:[],ord=L=>L.sort((a,b)=>(a.ts||'').localeCompare(b.ts||''));
+  const C=[['new','NUEVOS','var(--red)',ord(hp.filter(p=>p.estado==='nuevo'))],['coc','EN COCINA','var(--gold)',ord(hp.filter(p=>p.estado==='preparando'))],['lis','LISTOS','var(--grn)',ord(hp.filter(p=>['listo','encamino'].includes(p.estado)))]];
+  const z=enPausa();
+  $('kc').innerHTML=`<div class="top2"><span style="font-family:'Permanent Marker',cursive;font-size:20px;color:var(--gold)">Entre Causas</span><span style="font-size:13px;color:#aaa">· Modo cocina</span>
+   <span style="margin-left:auto"></span>${z?`<button class="gb" onclick="pausar(0).then(renderCocina)">${ic('play',14)}Reanudar (pausa hasta ${hRoma(z)})</button>`:`<button class="gb" onclick="pausar(30).then(renderCocina)">${ic('flame',15)}Cocina llena 30 min</button>`}
+   <b style="font-size:20px">${hRoma(Date.now())}</b><button class="gb" onclick="cerrarCocina()">${ic('x',15)}Salir</button></div>
+   <div class="cols">${C.map(([k,t,c,L])=>`<div><div class="ch"><i style="background:${c}"></i>${t}<span style="color:#888;font-weight:600">${L.length}</span></div>${L.map(p=>kCard(p,k)).join('')||'<div class="vac">Nada por aquí</div>'}</div>`).join('')}</div>`;}
+setInterval(()=>{if(document.hidden)return;if(!$('kc').classList.contains('hidden'))renderCocina();else if(TAB==='ahora')renderAhora();},30000);
+
 /* ---------- pedidos ---------- */
 function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.18].forEach(t=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=880;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.25,a.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+t+.15);o.start(a.currentTime+t);o.stop(a.currentTime+t+.16);});}catch(e){}}
 async function cargarPedidos(silent){const f=$('pFecha').value||HOY;
@@ -440,7 +587,7 @@ function renderPausa(){if(!M)return;const p=AJ().pausa?Date.parse(AJ().pausa):0,
    :`<div style="font-size:13px;font-weight:600;margin-bottom:8px">⏸️ ¿Cocina llena? Pausa los pedidos un rato (vuelve sola)</div><div class="bar2" style="margin:0">${[15,30,45,60].map(m=>`<button class="pill2" onclick="pausar(${m})">${m} min</button>`).join('')}</div>`;}
 async function pausar(min){AJ().pausa=min?new Date(Date.now()+min*60000).toISOString():'';renderPausa();await guardar();toast(min?'⏸️ Pedidos en pausa '+min+' min':'▶️ Pedidos activos otra vez');}
 setInterval(()=>{if(M&&AJ().pausa&&Date.parse(AJ().pausa)<=Date.now()){AJ().pausa='';renderPausa();}},30000);
-function renderPedidos(){renderPausa();const vivos=PED.filter(p=>p.estado!=='cancelado');
+function renderPedidos(){renderPausa();renderAhora();if(!$('kc').classList.contains('hidden'))renderCocina();revisarAlerta();const vivos=PED.filter(p=>p.estado!=='cancelado');
   $('kN').textContent=vivos.length;$('kV').textContent=eur(vivos.reduce((a,p)=>a+p.total,0));$('kC').textContent=PED.filter(enCurso).length;
   document.querySelectorAll('#pFil button').forEach(b=>{b.classList.toggle('act',b.dataset.f===FIL);b.onclick=()=>{FIL=b.dataset.f;renderPedidos();};});
   const L=PED.filter(p=>FIL==='todos'||(FIL==='curso'?enCurso(p):p.estado===FIL)).sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));

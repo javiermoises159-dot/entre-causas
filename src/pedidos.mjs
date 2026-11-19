@@ -69,7 +69,7 @@ export default async (req) => {
     if (!esFecha(f)) return json({ error: "Faltan datos" }, 400);
     const d = await store.get("dia/" + f, { type: "json" });
     const p = (d?.pedidos || []).find((x) => x.id === id);
-    return p ? json({ estado: p.estado, modo: p.modo }) : json({ error: "No encontrado" }, 404);
+    return p ? json({ estado: p.estado, modo: p.modo, eta: p.etaHora || "", motivo: p.motivo || "" }) : json({ error: "No encontrado" }, 404);
   }
 
   // ---- Cliente envía un pedido (público) ----
@@ -117,7 +117,7 @@ export default async (req) => {
     // teléfono y fidelidad
     const tel = txt(String(b.tel || "").replace(/[^\d+]/g, ""), 20);
     const telKey = claveTel(tel);
-    let fid = null, notaCli = "";
+    let fid = null, notaCli = "", nCli = 0;
     if (telKey) {
       try {
         const F = AJ.fidelidad || {}, cada = parseInt(F.cada, 10) || 0;
@@ -135,6 +135,7 @@ export default async (req) => {
         });
         notaCli = r?.nota || "";
         const n = r?.n;
+        nCli = n || 0;
         if (F.activo && cada >= 2 && n) {
           const k = ((n - 1) % cada) + 1;
           fid = { n: k, cada, toca: k === cada, premio: txt(F.premio, 60) || "premio" };
@@ -146,7 +147,7 @@ export default async (req) => {
       cliente: txt(b.cliente?.nombre, 60), dir: modo === "Delivery" ? txt(b.cliente?.dir, 160) : "",
       modo, mesa, pago: b.pago === "Tarjeta" ? "Tarjeta" : "Efectivo", nota: txt(b.nota, 300), lang: ["it", "en"].includes(b.lang) ? b.lang : "es",
       lineas, subtotal: sub, envio, total: num(sub - desc + (envio || 0)),
-      tel, comune: com ? com.n : "", cupon, desc, prog, fid, notaCli,
+      tel, comune: com ? com.n : "", cupon, desc, prog, fid, notaCli, nCli,
     };
     try {
       const ok = await modificar(store, "dia/" + fecha, { pedidos: [] }, (d) => {
@@ -196,6 +197,8 @@ export default async (req) => {
       if (!p) return false;
       if (ESTADOS.includes(b.estado)) p.estado = b.estado;
       if (b.pago === "Efectivo" || b.pago === "Tarjeta") p.pago = b.pago;
+      if (b.eta !== undefined) { const m = parseInt(b.eta, 10); if (m >= 5 && m <= 120) { p.eta = m; p.etaHora = horaRoma(new Date(Date.now() + m * 60000)); } }
+      if (b.motivo !== undefined) p.motivo = ["llena", "zona", "agotado", "cierre"].includes(b.motivo) ? b.motivo : "";
       if (b.envio !== undefined) { p.envio = b.envio === null ? null : num(b.envio); p.total = num(p.subtotal - (p.desc || 0) + (p.envio || 0)); }
       return p;
     });
