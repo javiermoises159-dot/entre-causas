@@ -516,7 +516,7 @@ function applyLang(){document.documentElement.lang=LANG;
 function setLang(l){LANG=l;LS.set('ed_lang',l);applyLang();renderAll();if(TAB==='res')renderRes();if(TAB==='perfil'&&typeof renderPerfil==='function')renderPerfil();if(AJ&&AJ.aviso)$('avisoT').textContent='📣 '+TX(AJ.aviso,'texto');if(MESA){$('mesaS').textContent='🍽️ '+t('mesaT')(MESA);document.querySelectorAll('.mll button').forEach((b,i)=>b.textContent=(i?'🧾 ':'🙋 ')+t(i?'llCuenta':'llCam'));}}
 
 /* carta */
-function ctl(id){if(MESA)return '';const it=ITEMS[id];if(it.agotado)return `<span class="sold">${lbl(it)}</span>`;
+function ctl(id){if(MESA||CARTA)return '';const it=ITEMS[id];if(it.agotado)return `<span class="sold">${lbl(it)}</span>`;
   const q=qtyOf(id);
   if(it.ops.length)return `<span class="ctl"><button class="add${q?' on':''}" aria-label="Agregar" onclick="event.stopPropagation();openP('${id}')">${q||'+'}</button></span>`;
   const l=CART.find(x=>x.k===id+'|[]');
@@ -543,7 +543,7 @@ function saveCart(){LS.set('ed_cart',CART.map(({k,id,q,o})=>({k,id,q,o})));}
 function addLine(id,q,o){o=o||[];const k=id+'|'+JSON.stringify(o);const l=CART.find(l=>l.k===k);if(l)l.q+=q;else CART.push({k,id,q,o});saveCart();refresh(id,true);}
 function chgKey(k,d){const l=CART.find(l=>l.k===k);if(!l)return;l.q+=d;if(l.q<=0)CART=CART.filter(x=>x!==l);saveCart();refresh(l.id,d>0);}
 function chgI(i,d){if(CART[i])chgKey(CART[i].k,d);}
-function quickAdd(id){if(MESA)return;const it=ITEMS[id];if(it.agotado){toast(t('noDisp'));return;}if(it.ops.length){openP(id);return;}addLine(id,1,[]);toast('✓ '+N(it)+' '+t('agregado'));}
+function quickAdd(id){if(MESA||CARTA)return;const it=ITEMS[id];if(it.agotado){toast(t('noDisp'));return;}if(it.ops.length){openP(id);return;}addLine(id,1,[]);toast('✓ '+N(it)+' '+t('agregado'));}
 function refresh(id,bump){document.querySelectorAll('.c-'+id).forEach(e=>e.innerHTML=ctl(id));updCart();if(bump){const v=$('vbar');v.classList.remove('bump');void v.offsetWidth;v.classList.add('bump');}}
 const COM=()=>((AJ.envio||{}).comunes||[]).filter(c=>c&&c.n);
 // mínimo y envío gratis: si el comune tiene los suyos, mandan sobre los generales
@@ -596,7 +596,7 @@ function toggleMode(){CLI.modo=CLI.modo==='Delivery'?'Retiro en local':'Delivery
 /* hojas */
 function openS(id){document.querySelectorAll('.sheet.open').forEach(s=>s.classList.remove('open'));$('bg').classList.add('on');$(id).classList.add('open');$(id).scrollTop=0;$('vbar').classList.remove('on');document.body.style.overflow='hidden';}
 function closeAll(){document.querySelectorAll('.sheet.open').forEach(s=>s.classList.remove('open'));$('bg').classList.remove('on');document.body.style.overflow='';P=null;updCart();}
-function openCart(){if(MESA)return;updCart();openS('cartSheet');}
+function openCart(){if(MESA||CARTA)return;updCart();openS('cartSheet');}
 
 /* ficha */
 function openP(id){const it=ITEMS[id];if(!it)return;P={id,q:1,sel:it.ops.map(()=>[]),bad:-1};renderP();openS('pSheet');}
@@ -608,7 +608,7 @@ function renderP(){const it=ITEMS[P.id];const tot=(it.p+P.sel.reduce((a,s,gi)=>a
   <div class="pm-f">${it.agotado?`<button class="pm-add" disabled>${lbl(it)}</button>`:`<span class="qty"><button onclick="P.q=Math.max(1,P.q-1);renderP()">−</button><span>${P.q}</span><button onclick="P.q++;renderP()">+</button></span><button class="pm-add" onclick="addP()"><span>${t('agregarBtn')}</span><span>${eur(tot)}</span></button>`}</div>`;}
 function galDot(g){const k=Math.round(g.scrollLeft/g.clientWidth);g.parentNode.querySelectorAll('.gd i').forEach((d,i)=>d.classList.toggle('on',i===k));}
 function pick(gi,vi){const g=ITEMS[P.id].ops[gi],s=P.sel[gi];if(g.tipo==='una')P.sel[gi]=s[0]===vi&&!g.obligatorio?[]:[vi];else P.sel[gi]=s.includes(vi)?s.filter(x=>x!==vi):[...s,vi];if(P.bad===gi)P.bad=-1;const y=$('pSheet').scrollTop;renderP();$('pSheet').scrollTop=y;}
-function addP(){if(MESA)return;const it=ITEMS[P.id];const bad=it.ops.findIndex((g,gi)=>g.obligatorio&&!P.sel[gi].length);
+function addP(){if(MESA||CARTA)return;const it=ITEMS[P.id];const bad=it.ops.findIndex((g,gi)=>g.obligatorio&&!P.sel[gi].length);
   if(bad>=0){P.bad=bad;renderP();$('og'+bad).scrollIntoView({behavior:'smooth',block:'center'});toast(t('faltaOpcion')(it.ops[bad].nombre));return;}
   const o=it.ops.map((g,gi)=>({g:g.nombre,v:P.sel[gi].slice().sort((a,b)=>a-b).map(vi=>g.valores[vi].nombre)})).filter(s=>s.v.length);
   const id=P.id,q=P.q;closeAll();addLine(id,q,o);toast('✓ '+N(it)+' '+t('agregado'));}
@@ -756,7 +756,7 @@ function renderPerfil(){const F=AJ.fidelidad||{},c=F.cada||8,n=fidN(),reg=telD()
   const R=[['repeat',t('pfPed'),last.length?last.slice(0,2).map(l=>N(ITEMS[l.id])).join(', '):t('pfNoPed'),last.length?'repetir()':"tab('menu')"],['cal',t('pfRes'),t('pfResN')(rs),"tab('res')"],['gift',t('gcT'),t('qGcS'),'openGift()'],['tag',t('pfCup'),cu.length?cu.map(x=>x.codigo).join(', '):t('pfCupNo'),'pfCupones()'],['user',t('pfDat'),reg?(CLI.nom||'')+' · '+(CLI.tel||''):t('pfDatS'),"REGNEXT='perfil';openReg()"],['globe',t('pfLang'),LBL[LANG],'setLang(NXL[LANG]);renderPerfil()'],['info',t('pfLoc'),t('infoLink'),'openInfo()']];
   h+=`<div class="pf-l">${R.map(([i,a,b,f])=>`<button class="pf-r" onclick="${f}"><span class="i">${pic2(i)}</span><span class="s"><b>${a}</b><small>${esc(b)}</small></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div>`;
   $('perfilPage').innerHTML=h;}
-function openRes(){if(!MESA){tab('res');return;}RES_T='resSheet';const ds=diasRes();if(!ds.some(x=>x.f===RES.f))RES.f=ds[0]?ds[0].f:'';renderRes();openS('resSheet');}
+function openRes(){if(CARTA)return;if(!MESA){tab('res');return;}RES_T='resSheet';const ds=diasRes();if(!ds.some(x=>x.f===RES.f))RES.f=ds[0]?ds[0].f:'';renderRes();openS('resSheet');}
 function renderRes(){const sh=$(RES_T),y=sh.scrollTop,ds=diasRes(),sl=RES.f?slots(RES.f):[];if(!sl.includes(RES.h))RES.h='';
   sh.innerHTML=`<div class="grab"></div><h2><span style="display:flex;align-items:center;gap:10px">${t('resT')}${rpPill()}</span><button class="x" onclick="closeAll()" aria-label="Cerrar">✕</button></h2>${resPromo()}
   <div class="lbl">${t('fecha')}</div><div class="dias">${ds.map(d=>`<button class="dch${d.f===RES.f?' act':''}" onclick="RES.f='${d.f}';renderRes()"><small>${esc(d.a)}</small><b>${d.n}</b></button>`).join('')}</div>
@@ -797,7 +797,7 @@ function renderHome(){
   {const P=LS.get('ed_pd',null)||AJ.platoDia,it=P&&P.activo&&ITEMS[P.id];$('pdBox').innerHTML=it&&!it.agotado?`<button class="pd5" onclick="openP('${it.id}')">${it.foto?`<img src="${esc(it.foto)}" alt="">`:`<span class="em">${esc(it.e)}</span>`}<span class="ov"><span><small>${t('pdT')}</small><b>${esc(N(it))}</b>${P.nota?`<span class="nt">${esc(TX(P,'nota'))}</span>`:''}</span><span class="pr">${eur(it.p)}</span></span></button>`:'';}
   const of=(CATS.find(c=>c.id==='ofertas')?.items||[]).map(i=>ITEMS[i]).filter(i=>!i.agotado);
   $('ofBox').classList.toggle('hidden',!of.length);
-  $('ofs').innerHTML=of.map(it=>`<button class="of" onclick="openP('${it.id}')">${it.foto?`<img src="${esc(it.foto)}" alt="">`:''}<div class="in">${B(it)?`<span class="tg">${esc(B(it))}</span>`:''}<b>${esc(N(it))}</b>${D(it)?`<p>${esc(D(it))}</p>`:''}<div class="pr">${eur(it.p)} <span>${t('pedirAhora')}</span></div></div></button>`).join('');
+  $('ofs').innerHTML=of.map(it=>`<button class="of" onclick="openP('${it.id}')">${it.foto?`<img src="${esc(it.foto)}" alt="">`:''}<div class="in">${B(it)?`<span class="tg">${esc(B(it))}</span>`:''}<b>${esc(N(it))}</b>${D(it)?`<p>${esc(D(it))}</p>`:''}<div class="pr">${eur(it.p)}${MESA||CARTA?'':` <span>${t('pedirAhora')}</span>`}</div></div></button>`).join('');
   if(of.length===1)$('ofs').firstElementChild.style.flexBasis='100%';
   $('recBox').classList.toggle('hidden',!RECO.length);
   $('rec').innerHTML=RECO.map(id=>{const it=ITEMS[id];return `<div class="rc" onclick="openP('${id}')"><div class="ph"><div class="im">${pic(it)}</div><span class="c-${id}">${ctl(id)}</span></div><b>${esc(N(it))}</b><span>${eur(it.p)}</span></div>`}).join('');}
@@ -811,9 +811,12 @@ function init(m){setTimeout(cargarEspera,300);if(!window._espT)window._espT=setI
   RECO=(m.recomendados||[]).filter(id=>ITEMS[id]);SUG=(m.sugerencias||[]).filter(id=>ITEMS[id]);
   marcarDias();CART=CART.filter(l=>ITEMS[l.id]&&!ITEMS[l.id].agotado);saveCart();
   if(AJ.aviso.activo&&AJ.aviso.texto&&LS.get('ed_aviso','')!==AJ.aviso.texto){$('avisoT').textContent='📣 '+TX(AJ.aviso,'texto');$('aviso').classList.remove('hidden');}
-  $('nom').value=CLI.nom||'';$('dir').value=CLI.dir||'';$('tel').value=CLI.tel||'';$('promos').checked=!!CLI.promos;ACT=CATS[0]?.id;{const F=AJ.fidelidad||{};if(F.activo&&F.cada>1&&!MESA){$('wFid').textContent=t('wFid')(F.cada,TX(F,'premio'));$('wFid').classList.remove('hidden');}}renderAll();if(window.__RES){window.__RES=0;openRes();}}
+  $('nom').value=CLI.nom||'';$('dir').value=CLI.dir||'';$('tel').value=CLI.tel||'';$('promos').checked=!!CLI.promos;ACT=CATS[0]?.id;{const F=AJ.fidelidad||{};if(F.activo&&F.cada>1&&!MESA&&!CARTA){$('wFid').textContent=t('wFid')(F.cada,TX(F,'premio'));$('wFid').classList.remove('hidden');}}renderAll();if(window.__RES){window.__RES=0;openRes();}}
 seg('modo','modo');seg('pago','pago');seg('cuando','cuando');applyLang();
 const MESA=(new URLSearchParams(location.search).get('mesa')||'').replace(/\D/g,'').slice(0,3);
+// "/" (lo que abre el posavasos) = solo la carta, sin pedidos ni reservas. La app completa está en /pedir.
+const CARTA=!MESA&&!/^\/pedir\/?$/.test(location.pathname)&&!new URLSearchParams(location.search).has('app');
+if(CARTA){document.body.classList.add('mesa','carta');$('wel').classList.add('hidden');CLI.modo='Mesa';CLI.cuando='ya';}
 if(MESA){document.body.classList.add('mesa');$('wel').classList.add('hidden');CLI.modo='Mesa';CLI.cuando='ya';$('mesaS').textContent='🍽️ '+t('mesaT')(MESA);$('mesaS').classList.remove('hidden');$('mesaS').insertAdjacentHTML('afterend',`<div class="mll"><button onclick="llamar('camarero',this)">🙋 ${t('llCam')}</button><button class="k" onclick="llamar('cuenta',this)">🧾 ${t('llCuenta')}</button></div>`);tab('menu');}else{tab('home');if(CLI.modo==='Mesa')CLI.modo='Delivery';if(new URLSearchParams(location.search).has('reservar')){$('wel').classList.add('hidden');window.__RES=1;}}
 const chips=$('chips');new IntersectionObserver(([e])=>chips.classList.toggle('stuck',e.intersectionRatio<1),{threshold:[1],rootMargin:'-1px 0px 0px 0px'}).observe(chips);
 async function cargar(){let m=null;try{const r=await fetch('/api/menu',{cache:'no-store'});if(r.ok)m=await r.json();}catch(e){}

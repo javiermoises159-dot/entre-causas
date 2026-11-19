@@ -2,7 +2,7 @@
 
 Proyecto independiente: Cloudflare Pages + Functions + base de datos D1 y fotos en KV propias.
 
-- `public/index.html` → app de clientes (Inicio, Carta, Reservar, Perfil · ES/IT/EN)
+- `public/index.html` → app de clientes (carta en `/`, app completa en `/pedir` · ES/IT/EN)
 - `public/admin.html` → panel del dueño (PIN = variable secreta `ADMIN_PIN`)
 - `public/menu.json` → carta inicial (se usa hasta el primer "Guardar" del panel)
 - `functions/api/` → rutas /api/… · `src/` → lógica del servidor (datos en D1, fotos en KV)
@@ -11,7 +11,16 @@ Proyecto independiente: Cloudflare Pages + Functions + base de datos D1 y fotos 
 1. Workers & Pages → Create → Pages → conectar el repo `entre-causas` (rama `main`, sin build, carpeta `public`).
 2. Crear base D1 `entrecausas` y ejecutar `schema.sql`; crear KV `FOTOS`.
 3. En el proyecto → Settings → Bindings: D1 `DB` y KV `FOTOS`. Variables: `ADMIN_PIN`.
-4. Dominio: cuando `entrecausas.app` esté pagado, Custom domains → añadirlo.
+4. Dominio: la app va en el dominio del local, `www.entrecausasrestaurant.com` (Aruba).
+   - Primero en Cloudflare: proyecto → Custom domains → `www.entrecausasrestaurant.com`.
+   - Después en Aruba → Gestione DNS: borrar el registro `www` y crear un CNAME `www` → `entre-causas.pages.dev` (no tocar los MX del correo).
+   - `entre-causas.pages.dev` sigue funcionando: las APK del equipo (panel, cocina, palmare) usan esa dirección.
+
+## Direcciones
+- `/` → **solo la carta** (es lo que abre el QR de los posavasos): sin carrito, delivery ni reservas.
+- `/?mesa=N` → la carta + "Llamar al camarero" y "Pedir la cuenta" (para el NFC de cada mesa).
+- `/pedir` → la app completa: pedidos a domicilio, retiro, reservas, perfil (links de WhatsApp y campañas).
+- `/admin`, `/cocina`, `/palmare`, `/reparto.html?k=…` → equipo.
 
 ## Qué hace (fase 2)
 - **Pedidos y reservas dentro de la app**: se guardan en el servidor y el cliente ve el estado (recibido → en cocina → en camino / listo → entregado; reserva por confirmar → confirmada). Si el servidor falla, la app cae a WhatsApp como respaldo.
