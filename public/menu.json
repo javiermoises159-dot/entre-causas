@@ -1,130 +1,1484 @@
 {
- "ajustes": {
-  "modo": "auto",
-  "horario": [
-   {"abre": "19:00", "cierra": "23:30", "cerrado": false},
-   {"abre": "19:00", "cierra": "23:30", "cerrado": false},
-   {"abre": "19:00", "cierra": "23:30", "cerrado": false},
-   {"abre": "19:00", "cierra": "23:30", "cerrado": false},
-   {"abre": "19:00", "cierra": "23:30", "cerrado": false},
-   {"abre": "12:00", "cierra": "23:30", "cerrado": false},
-   {"abre": "12:00", "cierra": "23:30", "cerrado": false}
-  ],
-  "envio": {
-   "tiempo": "",
-   "costo": 2.5,
-   "comunes": [{"n": "Napoli (Mergellina, Chiaia, centro e altre zone)", "costo": 2.5}, {"n": "Garibaldi", "costo": 4}, {"n": "Gianturco", "costo": 4}, {"n": "Arenaccia", "costo": 4}, {"n": "Camaldoli", "costo": 4}, {"n": "Quarto", "costo": 4}, {"n": "Pozzuoli", "costo": 4}, {"n": "Marano", "costo": 4}],
-   "minimo": 15,
-   "gratisDesde": null,
-   "zona": "Napoli e dintorni"
+  "ajustes": {
+    "modo": "auto",
+    "horario": [
+      {
+        "abre": "19:00",
+        "cierra": "23:30",
+        "cerrado": false
+      },
+      {
+        "abre": "19:00",
+        "cierra": "23:30",
+        "cerrado": false
+      },
+      {
+        "abre": "19:00",
+        "cierra": "23:30",
+        "cerrado": false
+      },
+      {
+        "abre": "19:00",
+        "cierra": "23:30",
+        "cerrado": false
+      },
+      {
+        "abre": "19:00",
+        "cierra": "23:30",
+        "cerrado": false
+      },
+      {
+        "abre": "12:00",
+        "cierra": "23:30",
+        "cerrado": false
+      },
+      {
+        "abre": "12:00",
+        "cierra": "23:30",
+        "cerrado": false
+      }
+    ],
+    "envio": {
+      "tiempo": "",
+      "costo": 2.5,
+      "comunes": [
+        {
+          "n": "Napoli (Mergellina, Chiaia, centro e altre zone)",
+          "costo": 2.5
+        },
+        {
+          "n": "Garibaldi",
+          "costo": 4
+        },
+        {
+          "n": "Gianturco",
+          "costo": 4
+        },
+        {
+          "n": "Arenaccia",
+          "costo": 4
+        },
+        {
+          "n": "Camaldoli",
+          "costo": 4
+        },
+        {
+          "n": "Quarto",
+          "costo": 4
+        },
+        {
+          "n": "Pozzuoli",
+          "costo": 4
+        },
+        {
+          "n": "Marano",
+          "costo": 4
+        }
+      ],
+      "minimo": 15,
+      "gratisDesde": null,
+      "zona": "Napoli e dintorni"
+    },
+    "direccion": "Via Giordano Bruno 86, Napoli (Mergellina)",
+    "instagram": "entrecausasna",
+    "whatsapp": "393208329786",
+    "horaDel": {
+      "abre": "19:00",
+      "cierra": "23:00"
+    },
+    "locales": [
+      {
+        "n": "Entre Causas · Mergellina",
+        "dir": "Via Giordano Bruno 86, Napoli"
+      }
+    ],
+    "sala": "11 tavoli · 32 posti",
+    "coperto": null,
+    "resPromo": {
+      "activo": true,
+      "pct": 20,
+      "dias": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "primera": true
+    },
+    "platoDia": {
+      "activo": true,
+      "id": "e42",
+      "nota": "Solo oggi · ricetta della casa"
+    },
+    "fidelidad": {
+      "activo": true,
+      "cada": 8,
+      "premio": "un Ceviche gratis"
+    },
+    "resena": "https://search.google.com/local/writereview?placeid=ChIJgVoofFgPOxMRtQuHFlQAGo8",
+    "cupones": [
+      {
+        "codigo": "BIENVENIDA10",
+        "tipo": "%",
+        "valor": 10,
+        "activo": true,
+        "primera": true
+      }
+    ],
+    "aviso": {
+      "texto": "🛵 Consegna dalle 19:00 alle 23:00 · Prenotazioni 320 832 9786",
+      "activo": true
+    }
   },
-  "direccion": "Via Giordano Bruno 86, Napoli (Mergellina) · Via Provinciale Napoli 65 A/B",
-  "instagram": "entrecausasna",
-  "whatsapp": "393208329786",
-  "horaDel": {"abre": "19:00", "cierra": "23:00"},
-  "locales": [{"n": "Entre Causas · Mergellina", "dir": "Via Giordano Bruno 86, Napoli"}, {"n": "Entre Causas · Via Provinciale", "dir": "Via Provinciale Napoli 65 A/B"}],
-  "sala": "11 tavoli · 32 posti",
-  "coperto": null,
-  "resPromo": {"activo": true, "pct": 20, "dias": [0, 1, 2, 3], "primera": true},
-  "platoDia": {"activo": true, "id": "e42", "nota": "Solo oggi · ricetta della casa"},
-  "fidelidad": {"activo": true, "cada": 8, "premio": "un Ceviche gratis"},
-  "resena": "https://search.google.com/local/writereview?placeid=ChIJgVoofFgPOxMRtQuHFlQAGo8",
-  "cupones": [{"codigo": "BIENVENIDA10", "tipo": "%", "valor": 10, "activo": true, "primera": true}],
-  "aviso": {"texto": "🛵 Consegna dalle 19:00 alle 23:00 · Prenotazioni 320 832 9786", "activo": true}
- },
- "recomendados": ["e10", "e32", "e23", "e15", "e40", "e21"],
- "categorias": [
-  {"id": "ofertas", "nombre": "Ofertas", "corto": "Ofertas", "icono": "🏷️", "items": [
-   {"id": "o1", "alergenos": ["pescado","moluscos","crustaceos","gluten"], "nombre": "Ceviche carretillero", "desc": "Ceviche con frittura di mare · prezzo delivery", "precio": 10.0, "emoji": "🐟", "etiqueta": "Delivery", "foto": "fotos/cevmixto.jpg", "agotado": false, "nombre_it": "", "desc_it": "Ceviche con frittura di mare · prezzo delivery", "etiqueta_it": "Delivery", "opciones": []},
-   {"id": "o2", "alergenos": ["gluten","soja","huevo","sesamo"], "nombre": "Mostrito delivery", "desc": "Chaufa di pollo con patate fritte e pollo fritto croccante", "precio": 10.0, "emoji": "🍗", "etiqueta": "Delivery", "foto": "fotos/mostrito.jpg", "agotado": false, "nombre_it": "", "desc_it": "Chaufa di pollo con patate fritte e pollo fritto croccante", "etiqueta_it": "Delivery", "opciones": []}
-  ]},
-  {"id": "antipasti", "nombre": "Antipasti", "corto": "Antipasti", "icono": "🥟", "items": [
-   {"id": "e7", "nombre": "Chicharrón patacones", "desc": "Cubi di maiale marinati e fritti con platano fritto, accompagnati da sarza criolla.", "precio": 10.0, "emoji": "🥓", "etiqueta": "", "foto": "fotos/chicharron.jpg", "agotado": false, "nombre_it": "", "desc_it": "Cubi di maiale marinati e fritti con platano fritto, accompagnati da sarza criolla.", "etiqueta_it": "", "opciones": []},
-   {"id": "e1", "alergenos": ["lacteos","gluten","huevo"], "nombre": "Papa a la huancaína", "desc": "Patate lesse servite con una crema di peperoncino giallo, latte evaporato, cracker, uova e olive nere.", "precio": 6.0, "emoji": "🥔", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Patate lesse servite con una crema di peperoncino giallo, latte evaporato, cracker, uova e olive nere.", "etiqueta_it": "", "opciones": []},
-   {"id": "e2", "alergenos": ["huevo","pescado"], "nombre": "Causa limeña", "desc": "Patate pressate e marinate con peperoncino giallo e lime, carote, piselli e tocchetti di pollo in salsa acevichada.", "precio": 9.0, "emoji": "🥔", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Patate pressate e marinate con peperoncino giallo e lime, carote, piselli e tocchetti di pollo in salsa acevichada.", "etiqueta_it": "", "opciones": []},
-   {"id": "e3", "alergenos": ["cacahuetes"], "nombre": "Tamales", "desc": "Farina di mais avvolta nella foglia di banano, ripiena di maiale, olive, arachidi e peperoncino giallo.", "precio": 6.0, "emoji": "🫔", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Farina di mais avvolta nella foglia di banano, ripiena di maiale, olive, arachidi e peperoncino giallo.", "etiqueta_it": "", "opciones": []},
-   {"id": "e4", "alergenos": ["gluten","huevo"], "nombre": "Alitas de maracuyá", "desc": "Alette fritte con impanatura croccante servite con salsa di maracuyá.", "precio": 7.0, "emoji": "🍗", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Alette fritte con impanatura croccante servite con salsa di maracuyá.", "etiqueta_it": "", "opciones": []},
-   {"id": "e5", "alergenos": ["gluten","soja","lacteos","huevo"], "nombre": "Tequeños de lomo saltado", "desc": "Pasta sfoglia croccante ripiena di lomo saltado, servita con crema alla huancaína.", "precio": 8.0, "emoji": "🥟", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Pasta sfoglia croccante ripiena di lomo saltado, servita con crema alla huancaína.", "etiqueta_it": "", "opciones": []},
-   {"id": "e6", "alergenos": ["huevo"], "nombre": "Salpicón de pollo", "desc": "Patacones croccanti serviti con pollo, carote e piselli avvolti in una salsa rosa leggermente dolce.", "precio": 8.0, "emoji": "🥗", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Patacones croccanti serviti con pollo, carote e piselli avvolti in una salsa rosa leggermente dolce.", "etiqueta_it": "", "opciones": []},
-   {"id": "e8", "alergenos": ["gluten","crustaceos","moluscos","soja","huevo"], "nombre": "Wantán de mar", "desc": "Pasta di wantán croccante ripiena di gamberi e calamari, zenzero, cipollotto e soia, con salsa al tamarindo.", "precio": 7.0, "emoji": "🥟", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Pasta di wantán croccante ripiena di gamberi e calamari, zenzero, cipollotto e soia, con salsa al tamarindo.", "etiqueta_it": "", "opciones": []},
-   {"id": "e9", "alergenos": ["gluten","lacteos","huevo"], "nombre": "Empanadas de ají de gallina", "desc": "Mini empanadas ripiene di gallina in crema di peperoncino giallo e olive disidratate.", "precio": 8.0, "emoji": "🥟", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Mini empanadas ripiene di gallina in crema di peperoncino giallo e olive disidratate.", "etiqueta_it": "", "opciones": []}
-  ]},
-  {"id": "ceviches", "nombre": "Ceviches y tiraditos", "corto": "Ceviches", "icono": "🐟", "items": [
-   {"id": "e10", "alergenos": ["pescado","moluscos","crustaceos"], "nombre": "Ceviche mixto", "desc": "Cubi di dentice, calamari, gamberi e cozze marinati con lime e leche de tigre, con mais bianco, patata dolce e cipolla rossa.", "precio": 18.0, "emoji": "🐟", "etiqueta": "Más pedido", "foto": "fotos/cevmixto.jpg", "agotado": false, "nombre_it": "", "desc_it": "Cubi di dentice, calamari, gamberi e cozze marinati con lime e leche de tigre, con mais bianco, patata dolce e cipolla rossa.", "etiqueta_it": "Più ordinato", "opciones": []},
-   {"id": "e14", "alergenos": ["pescado"], "nombre": "Tiradito de ají amarillo", "desc": "Dentice servito in una salsa di peperoncino giallo aromatica, con avocado, mais bianco e cubetti di patata dolce.", "precio": 18.0, "emoji": "🐟", "etiqueta": "", "foto": "fotos/tiradito.jpg", "agotado": false, "nombre_it": "", "desc_it": "Dentice servito in una salsa di peperoncino giallo aromatica, con avocado, mais bianco e cubetti di patata dolce.", "etiqueta_it": "", "opciones": []},
-   {"id": "e11", "alergenos": ["pescado"], "nombre": "Ceviche", "desc": "Cubi di dentice marinati con lime e leche de tigre, serviti con patata dolce, mais bianco e cipolla rossa.", "precio": 16.0, "emoji": "🐟", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Cubi di dentice marinati con lime e leche de tigre, serviti con patata dolce, mais bianco e cipolla rossa.", "etiqueta_it": "", "opciones": []},
-   {"id": "e52", "alergenos": ["moluscos","huevo","gluten"], "nombre": "Pulpo al olivo", "desc": "Tentacoli di polpo marinati in salsa di olive nere, con condimento cremoso, salsa alle erbe, mais bianco e chips di crackers.", "precio": 18.0, "emoji": "🐙", "etiqueta": "", "foto": "fotos/pulpo.jpg", "agotado": false, "nombre_it": "", "desc_it": "Tentacoli di polpo marinati in salsa di olive nere, con condimento cremoso, salsa alle erbe, mais bianco e chips di crackers.", "etiqueta_it": "", "opciones": []},
-   {"id": "e53", "alergenos": ["pescado","apio"], "nombre": "Leche de tigre", "desc": "Concentrato di pesce, zenzero, lime, aglio e cipolla rossa, servito con cubetti di pesce e patata dolce.", "precio": 10.0, "emoji": "🥛", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Concentrato di pesce, zenzero, lime, aglio e cipolla rossa, servito con cubetti di pesce e patata dolce.", "etiqueta_it": "", "opciones": []},
-   {"id": "e12", "alergenos": ["crustaceos","huevo"], "nombre": "Coktail de camarones", "desc": "Gamberoni con cipolla, pomodoro e avocado, ricoperti di salsa golf homemade.", "precio": 15.0, "emoji": "🦐", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Gamberoni con cipolla, pomodoro e avocado, ricoperti di salsa golf homemade.", "etiqueta_it": "", "opciones": []},
-   {"id": "e13", "alergenos": ["pescado","moluscos"], "nombre": "Dentice y pulpo", "desc": "Lamine di dentice e polipo con leche de tigre, avocado, patata dolce, olio di coriandolo e polvere di olive nere.", "precio": 18.0, "emoji": "🐙", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Lamine di dentice e polipo con leche de tigre, avocado, patata dolce, olio di coriandolo e polvere di olive nere.", "etiqueta_it": "", "opciones": []}
-  ]},
-  {"id": "mar", "nombre": "Mar", "corto": "Mar", "icono": "🦐", "items": [
-   {"id": "e15", "alergenos": ["crustaceos","moluscos","lacteos"], "nombre": "Arroz con mariscos", "desc": "Misto mare, gamberi, calamari e cozze con riso, salsa madre Entre Causas e parmigiano.", "precio": 18.0, "emoji": "🥘", "etiqueta": "", "foto": "fotos/arroz.jpg", "agotado": false, "nombre_it": "", "desc_it": "Misto mare, gamberi, calamari e cozze con riso, salsa madre Entre Causas e parmigiano.", "etiqueta_it": "", "opciones": []},
-   {"id": "e21", "alergenos": ["pescado","moluscos","crustaceos","gluten"], "nombre": "Jalea", "desc": "Frittura di mare croccante servita con manioca fritta e sarza criolla.", "precio": 18.0, "emoji": "🦑", "etiqueta": "", "foto": "fotos/jalea.jpg", "agotado": false, "nombre_it": "", "desc_it": "Frittura di mare croccante servita con manioca fritta e sarza criolla.", "etiqueta_it": "", "opciones": []},
-   {"id": "e16", "alergenos": ["crustaceos","lacteos"], "nombre": "Ají de langostinos", "desc": "Gamberi flambati al wok con crema di peperoncino giallo, serviti con riso bianco.", "precio": 18.0, "emoji": "🦐", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Gamberi flambati al wok con crema di peperoncino giallo, serviti con riso bianco.", "etiqueta_it": "", "opciones": []},
-   {"id": "e17", "alergenos": ["pescado","gluten","soja"], "nombre": "Pescado oriental", "desc": "Pesce del giorno fritto e croccante con riso bianco e manioca, salsa orientale homemade e verdure.", "precio": 22.0, "emoji": "🐠", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Pesce del giorno fritto e croccante con riso bianco e manioca, salsa orientale homemade e verdure.", "etiqueta_it": "", "opciones": []},
-   {"id": "e18", "alergenos": ["pescado","soja","gluten","sesamo"], "nombre": "Salmone teriyaki", "desc": "Salmone 250 g grigliato e laccato al teriyaki con riso bianco e insalata della casa.", "precio": 18.0, "emoji": "🍣", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Salmone 250 g grigliato e laccato al teriyaki con riso bianco e insalata della casa.", "etiqueta_it": "", "opciones": []},
-   {"id": "e19", "alergenos": ["crustaceos","moluscos","soja","sesamo","huevo","gluten"], "nombre": "Chaufa de mariscos", "desc": "Misto mare saltato al wok con riso, salsa di soia, olio di sesamo, cipollotto e uova.", "precio": 17.0, "emoji": "🍚", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Misto mare saltato al wok con riso, salsa di soia, olio di sesamo, cipollotto e uova.", "etiqueta_it": "", "opciones": []},
-   {"id": "e20", "alergenos": ["pescado","moluscos","crustaceos","gluten","huevo"], "nombre": "Causa Entre Causas", "desc": "Causa ripiena di frittura di mare, coronata con ceviche all'ají amarillo.", "precio": 18.0, "emoji": "🥔", "etiqueta": "De la casa", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Causa ripiena di frittura di mare, coronata con ceviche all'ají amarillo.", "etiqueta_it": "Della casa", "opciones": []}
-  ]},
-  {"id": "chifa", "nombre": "Pollo & Chifa Perú", "corto": "Pollo & Chifa", "icono": "🍚", "items": [
-   {"id": "e23", "alergenos": ["gluten","soja","huevo","sesamo"], "nombre": "Mostrito", "desc": "Pollo croccante fritto, chaufa di pollo e patate fritte con salsa homemade.", "precio": 12.0, "emoji": "🍗", "etiqueta": "", "foto": "fotos/mostrito.jpg", "agotado": false, "nombre_it": "", "desc_it": "Pollo croccante fritto, chaufa di pollo e patate fritte con salsa homemade.", "etiqueta_it": "", "opciones": []},
-   {"id": "e22", "nombre": "Pechuga a la plancha", "desc": "Petto di pollo alla brace marinato con riso bianco, insalata e patate fritte.", "precio": 14.0, "emoji": "🍗", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Petto di pollo alla brace marinato con riso bianco, insalata e patate fritte.", "etiqueta_it": "", "opciones": []},
-   {"id": "e24", "alergenos": ["gluten","soja","sesamo","huevo"], "nombre": "Tallarín saltado de pollo", "desc": "Pollo saltato al wok con salsa di soia, olio di sesamo, linguine, funghi e broccoli.", "precio": 14.0, "emoji": "🍜", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Pollo saltato al wok con salsa di soia, olio di sesamo, linguine, funghi e broccoli.", "etiqueta_it": "", "opciones": []},
-   {"id": "e25", "alergenos": ["soja","gluten"], "nombre": "Pollo saltado", "desc": "Pollo saltato al wok con pomodoro e cipolle rosse, salsa di soia e riduzione di osso buco, con riso e patate fritte.", "precio": 16.0, "emoji": "🥘", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Pollo saltato al wok con pomodoro e cipolle rosse, salsa di soia e riduzione di osso buco, con riso e patate fritte.", "etiqueta_it": "", "opciones": []},
-   {"id": "e26", "alergenos": ["gluten","soja","huevo","sesamo"], "nombre": "Combinado", "desc": "Arroz chaufa con pollo e noodles saltati di pollo con verdure.", "precio": 18.0, "emoji": "🍱", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Arroz chaufa con pollo e noodles saltati di pollo con verdure.", "etiqueta_it": "", "opciones": []},
-   {"id": "e27", "alergenos": ["soja","sesamo","huevo","gluten"], "nombre": "Chaufa", "desc": "Riso saltato nel wok con pollo, olio di sesamo, salsa di soia, uova e cipollotto.", "precio": 13.0, "emoji": "🍚", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Riso saltato nel wok con pollo, olio di sesamo, salsa di soia, uova e cipollotto.", "etiqueta_it": "", "opciones": []},
-   {"id": "e28", "alergenos": ["soja","sesamo","huevo","gluten"], "nombre": "Tipakay", "desc": "Chaufa servito con pollo fritto in agrodolce e verdure.", "precio": 16.0, "emoji": "🍚", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Chaufa servito con pollo fritto in agrodolce e verdure.", "etiqueta_it": "", "opciones": []},
-   {"id": "e29", "alergenos": ["soja","sesamo","huevo","gluten"], "nombre": "Chijaukay", "desc": "Chaufa servito con pollo fritto bagnato in una salsa aromatizzata allo zenzero.", "precio": 15.0, "emoji": "🍚", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Chaufa servito con pollo fritto bagnato in una salsa aromatizzata allo zenzero.", "etiqueta_it": "", "opciones": []},
-   {"id": "e30", "alergenos": ["soja","sesamo","huevo","gluten","crustaceos"], "nombre": "Kalu wantán", "desc": "Chaufa di pollo con wantán di gamberi, salsa agrodolce e verdure.", "precio": 17.0, "emoji": "🥟", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Chaufa di pollo con wantán di gamberi, salsa agrodolce e verdure.", "etiqueta_it": "", "opciones": []},
-   {"id": "e31", "alergenos": ["gluten","soja","sesamo","huevo","crustaceos"], "nombre": "Tallarín saltado mixto", "desc": "Pollo e gamberi al wok con salsa di soia, olio di sesamo, noodles, funghi e broccoli.", "precio": 17.0, "emoji": "🍜", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Pollo e gamberi al wok con salsa di soia, olio di sesamo, noodles, funghi e broccoli.", "etiqueta_it": "", "opciones": []}
-  ]},
-  {"id": "carnes", "nombre": "Carnes & lomo fino", "corto": "Carnes", "icono": "🥩", "items": [
-   {"id": "e32", "alergenos": ["soja","gluten"], "nombre": "Lomo saltado", "desc": "Filetto di manzo saltato al wok con pomodoro e cipolle rosse, salsa di soia e riduzione di osso buco, con riso e patate fritte.", "precio": 18.0, "emoji": "🥩", "etiqueta": "Más pedido", "foto": "fotos/lomo.jpg", "agotado": false, "nombre_it": "", "desc_it": "Filetto di manzo saltato al wok con pomodoro e cipolle rosse, salsa di soia e riduzione di osso buco, con riso e patate fritte.", "etiqueta_it": "Più ordinato", "opciones": []},
-   {"id": "e34", "alergenos": ["soja","gluten"], "nombre": "Tacu tacu c/lomo", "desc": "Riso bianco e fagioli amalgamati e fritti, con filetto di carne al wok e riduzione di osso buco.", "precio": 18.0, "emoji": "🥩", "etiqueta": "", "foto": "fotos/tacutacu.jpg", "agotado": false, "nombre_it": "", "desc_it": "Riso bianco e fagioli amalgamati e fritti, con filetto di carne al wok e riduzione di osso buco.", "etiqueta_it": "", "opciones": []},
-   {"id": "e33", "alergenos": ["soja","gluten","huevo"], "nombre": "Lomo saltado a lo pobre", "desc": "Lomo saltado con riso, patate fritte, uovo e banana fritta.", "precio": 19.0, "emoji": "🥩", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Lomo saltado con riso, patate fritte, uovo e banana fritta.", "etiqueta_it": "", "opciones": []},
-   {"id": "e35", "alergenos": ["huevo"], "nombre": "Bistec a lo pobre", "desc": "Chianina 225 g alla brace con riso bianco, uovo fritto, patate fritte e banana fritta.", "precio": 20.0, "emoji": "🥩", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Chianina 225 g alla brace con riso bianco, uovo fritto, patate fritte e banana fritta.", "etiqueta_it": "", "opciones": []},
-   {"id": "e36", "alergenos": ["gluten","lacteos","huevo","soja"], "nombre": "Linguine a la huancaína c/lomo", "desc": "Linguine alla huancaína con filetto di manzo saltato al wok con pomodoro, cipolle rosse e salsa di soia.", "precio": 18.0, "emoji": "🍝", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Linguine alla huancaína con filetto di manzo saltato al wok con pomodoro, cipolle rosse e salsa di soia.", "etiqueta_it": "", "opciones": []},
-   {"id": "e37", "alergenos": ["soja","sesamo","huevo","gluten"], "nombre": "Chaufa de carne", "desc": "Filetto di carne saltato al wok con riso, salsa di soia, olio di sesamo e uova.", "precio": 16.0, "emoji": "🍚", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Filetto di carne saltato al wok con riso, salsa di soia, olio di sesamo e uova.", "etiqueta_it": "", "opciones": []},
-   {"id": "e38", "alergenos": ["gluten","soja","huevo"], "nombre": "Tallarín saltado de carne", "desc": "Spaghetti saltati con filetto di carne, cipolle rosse e pomodoro in salsa orientale.", "precio": 16.0, "emoji": "🍜", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Spaghetti saltati con filetto di carne, cipolle rosse e pomodoro in salsa orientale.", "etiqueta_it": "", "opciones": []}
-  ]},
-  {"id": "parrillas", "nombre": "Parrillas", "corto": "Parrillas", "icono": "🔥", "items": [
-   {"id": "e39", "nombre": "Parrilla de carne", "desc": "Carne, pollo, salsiccia, trippa e cuore di manzo alla brace con salsa anticuchera e patate fritte.", "precio": 22.0, "emoji": "🥩", "etiqueta": "", "foto": "fotos/parrcarne.jpg", "agotado": false, "nombre_it": "", "desc_it": "Carne, pollo, salsiccia, trippa e cuore di manzo alla brace con salsa anticuchera e patate fritte.", "etiqueta_it": "", "opciones": []},
-   {"id": "e40", "alergenos": ["crustaceos","moluscos","pescado"], "nombre": "Parrilla de mar", "desc": "Gamberi, calamari, tonno e polipo alla brace con salsa anticuchera e patate fritte.", "precio": 24.0, "emoji": "🦐", "etiqueta": "", "foto": "fotos/parrmar.jpg", "agotado": false, "nombre_it": "", "desc_it": "Gamberi, calamari, tonno e polipo alla brace con salsa anticuchera e patate fritte.", "etiqueta_it": "", "opciones": []},
-   {"id": "e41", "alergenos": ["lacteos","gluten","huevo"], "nombre": "Anticuchos", "desc": "Cuore di manzo e trippa in salsa anticuchera alla brace, con papa a la huancaína e mais bianco.", "precio": 13.0, "emoji": "🍢", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Cuore di manzo e trippa in salsa anticuchera alla brace, con papa a la huancaína e mais bianco.", "etiqueta_it": "", "opciones": []}
-  ]},
-  {"id": "sopas", "nombre": "Caldos & sopas", "corto": "Sopas", "icono": "🍲", "items": [
-   {"id": "e42", "alergenos": ["crustaceos","huevo","lacteos"], "nombre": "Chupe de camarones", "desc": "Zuppa di gamberi, riso, patate e piselli con uova e latte evaporato.", "precio": 18.0, "emoji": "🍲", "etiqueta": "", "foto": "fotos/chupe.jpg", "agotado": false, "nombre_it": "", "desc_it": "Zuppa di gamberi, riso, patate e piselli con uova e latte evaporato.", "etiqueta_it": "", "opciones": []},
-   {"id": "e43", "alergenos": ["pescado","crustaceos","moluscos"], "nombre": "Parihuela", "desc": "Filetto di pesce bianco con misto mare in salsa madre Entre Causas, con manioca e coriandolo.", "precio": 19.0, "emoji": "🍲", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Filetto di pesce bianco con misto mare in salsa madre Entre Causas, con manioca e coriandolo.", "etiqueta_it": "", "opciones": []},
-   {"id": "e44", "alergenos": ["pescado"], "nombre": "Sudado de pescado", "desc": "Orata intera in salsa madre di pesce con cipolla e pomodoro, servita con riso bianco e manioca.", "precio": 18.0, "emoji": "🐟", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Orata intera in salsa madre di pesce con cipolla e pomodoro, servita con riso bianco e manioca.", "etiqueta_it": "", "opciones": []},
-   {"id": "e45", "alergenos": ["gluten","crustaceos","sesamo","soja","huevo"], "nombre": "Sopa wantán especial", "desc": "Brodo di pollo con verdure e wantán ripieni di gamberi, aromatizzato con zenzero e olio di sesamo.", "precio": 14.0, "emoji": "🍜", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Brodo di pollo con verdure e wantán ripieni di gamberi, aromatizzato con zenzero e olio di sesamo.", "etiqueta_it": "", "opciones": []},
-   {"id": "e46", "alergenos": ["gluten","lacteos"], "nombre": "Sopa minuta", "desc": "Carne tritata a punta di coltello con peperoncino rosso, patate, piselli, latte evaporato e spaghetti.", "precio": 12.0, "emoji": "🍲", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Carne tritata a punta di coltello con peperoncino rosso, patate, piselli, latte evaporato e spaghetti.", "etiqueta_it": "", "opciones": []}
-  ]},
-  {"id": "bebidas", "nombre": "Bebidas", "corto": "Bebidas", "icono": "🥤", "items": [
-   {"id": "b5", "nombre": "Chicha morada", "desc": "Bevanda peruviana di mais viola, ananas e cannella", "precio": 6.0, "emoji": "🍇", "etiqueta": "Della casa", "foto": "", "agotado": false, "opciones": [{"nombre": "Formato", "tipo": "una", "obligatorio": true, "valores": [{"nombre": "0,5 L", "precio": 0}, {"nombre": "1 L", "precio": 4}]}]},
-   {"id": "b6", "nombre": "Jugo de maracuyá", "desc": "Succo di frutto della passione", "precio": 7.0, "emoji": "🥭", "etiqueta": "", "foto": "", "agotado": false, "opciones": [{"nombre": "Formato", "tipo": "una", "obligatorio": true, "valores": [{"nombre": "0,5 L", "precio": 0}, {"nombre": "1 L", "precio": 5}]}]},
-   {"id": "b7", "nombre": "Limonada", "desc": "Limonata fresca", "precio": 5.0, "emoji": "🍋", "etiqueta": "", "foto": "", "agotado": false, "opciones": [{"nombre": "Formato", "tipo": "una", "obligatorio": true, "valores": [{"nombre": "0,5 L", "precio": 0}, {"nombre": "1 L", "precio": 3}]}]},
-   {"id": "b4", "nombre": "Inca Kola", "desc": "La bibita peruviana per eccellenza · 30 cl", "precio": 3.5, "emoji": "🥤", "etiqueta": "", "foto": "", "agotado": false, "opciones": []},
-   {"id": "b1", "nombre": "Coca-Cola", "desc": "33 cl", "precio": 2.5, "emoji": "🥤", "etiqueta": "", "foto": "", "agotado": false, "opciones": []},
-   {"id": "b2", "nombre": "Coca-Cola Zero", "desc": "33 cl", "precio": 2.5, "emoji": "🥤", "etiqueta": "", "foto": "", "agotado": false, "opciones": []},
-   {"id": "b3", "nombre": "Fanta", "desc": "33 cl", "precio": 2.5, "emoji": "🍊", "etiqueta": "", "foto": "", "agotado": false, "opciones": []},
-   {"id": "b8", "nombre": "Acqua naturale", "desc": "75 cl", "precio": 3.0, "emoji": "💧", "etiqueta": "", "foto": "", "agotado": false, "opciones": []},
-   {"id": "b9", "nombre": "Acqua frizzante", "desc": "75 cl", "precio": 3.0, "emoji": "💧", "etiqueta": "", "foto": "", "agotado": false, "opciones": []}
-  ]},
-  {"id": "birre", "nombre": "Birre", "corto": "Birre", "icono": "🍺", "items": [
-   {"id": "b10", "nombre": "Cusqueña Negra", "desc": "Birra peruviana scura · 33 cl", "precio": 4.0, "emoji": "🍺", "etiqueta": "", "foto": "", "agotado": false, "alergenos": ["gluten"], "opciones": []},
-   {"id": "b11", "nombre": "Cusqueña Dorada", "desc": "Birra peruviana bionda · 33 cl", "precio": 4.0, "emoji": "🍺", "etiqueta": "", "foto": "", "agotado": false, "alergenos": ["gluten"], "opciones": []},
-   {"id": "b12", "nombre": "Cusqueña Trigo", "desc": "Birra peruviana di frumento · 33 cl", "precio": 4.0, "emoji": "🍺", "etiqueta": "", "foto": "", "agotado": false, "alergenos": ["gluten"], "opciones": []},
-   {"id": "b13", "nombre": "Corona", "desc": "33 cl", "precio": 3.5, "emoji": "🍺", "etiqueta": "", "foto": "", "agotado": false, "alergenos": ["gluten"], "opciones": []},
-   {"id": "b14", "nombre": "Heineken", "desc": "33 cl", "precio": 2.5, "emoji": "🍺", "etiqueta": "", "foto": "", "agotado": false, "alergenos": ["gluten"], "opciones": []}
-  ]},
-  {"id": "dulces", "nombre": "Dulces y tortas", "corto": "Dulces", "icono": "🍰", "items": [
-   {"id": "e47", "alergenos": ["lacteos","huevo","gluten"], "nombre": "Tres leches", "desc": "", "precio": 6.0, "emoji": "🍰", "etiqueta": "", "foto": "fotos/tresleches.jpg", "agotado": false, "nombre_it": "", "desc_it": "", "etiqueta_it": "", "opciones": []},
-   {"id": "e48", "alergenos": ["lacteos","huevo","gluten"], "nombre": "Torta de chocolate", "desc": "", "precio": 6.0, "emoji": "🍫", "etiqueta": "", "foto": "fotos/torta.jpg", "agotado": false, "nombre_it": "", "desc_it": "", "etiqueta_it": "", "opciones": []},
-   {"id": "e49", "alergenos": ["gluten"], "nombre": "Churros", "desc": "", "precio": 6.0, "emoji": "🥖", "etiqueta": "", "foto": "fotos/churros.jpg", "agotado": false, "nombre_it": "", "desc_it": "", "etiqueta_it": "", "opciones": []},
-   {"id": "e50", "alergenos": ["gluten","lacteos","huevo"], "nombre": "Budín de panetón", "desc": "Budino di panettone al caramello accompagnato da cioccolato caldo.", "precio": 5.0, "emoji": "🍮", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Budino di panettone al caramello accompagnato da cioccolato caldo.", "etiqueta_it": "", "opciones": []},
-   {"id": "e51", "nombre": "Mazamorra morada", "desc": "Dolce a base di mais viola e fecola di patate con spolverata di cannella.", "precio": 5.0, "emoji": "🍇", "etiqueta": "", "foto": "", "agotado": false, "nombre_it": "", "desc_it": "Dolce a base di mais viola e fecola di patate con spolverata di cannella.", "etiqueta_it": "", "opciones": []}
-  ]}
- ],
- "sugerencias": ["b5", "b4", "b6", "e47", "e49", "e7", "e48"]
+  "recomendados": [
+    "e10",
+    "e32",
+    "e23",
+    "e15",
+    "e40",
+    "e21"
+  ],
+  "categorias": [
+    {
+      "id": "ofertas",
+      "nombre": "Ofertas",
+      "corto": "Ofertas",
+      "icono": "🏷️",
+      "items": [
+        {
+          "id": "o1",
+          "alergenos": [
+            "pescado",
+            "moluscos",
+            "crustaceos",
+            "gluten"
+          ],
+          "nombre": "Ceviche carretillero",
+          "desc": "Ceviche con frittura di mare · prezzo delivery",
+          "precio": 10.0,
+          "emoji": "🐟",
+          "etiqueta": "Delivery",
+          "foto": "fotos/cevmixto.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Ceviche con frittura di mare · prezzo delivery",
+          "etiqueta_it": "Delivery",
+          "opciones": []
+        },
+        {
+          "id": "o2",
+          "alergenos": [
+            "gluten",
+            "soja",
+            "huevo",
+            "sesamo"
+          ],
+          "nombre": "Mostrito delivery",
+          "desc": "Chaufa di pollo con patate fritte e pollo fritto croccante",
+          "precio": 10.0,
+          "emoji": "🍗",
+          "etiqueta": "Delivery",
+          "foto": "fotos/mostrito.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Chaufa di pollo con patate fritte e pollo fritto croccante",
+          "etiqueta_it": "Delivery",
+          "opciones": []
+        }
+      ]
+    },
+    {
+      "id": "antipasti",
+      "nombre": "Antipasti",
+      "corto": "Antipasti",
+      "icono": "🥟",
+      "items": [
+        {
+          "id": "e7",
+          "nombre": "Chicharrón patacones",
+          "desc": "Cubi di maiale marinati e fritti con platano fritto, accompagnati da sarza criolla.",
+          "precio": 10.0,
+          "emoji": "🥓",
+          "etiqueta": "",
+          "foto": "fotos/chicharron.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Cubi di maiale marinati e fritti con platano fritto, accompagnati da sarza criolla.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e1",
+          "alergenos": [
+            "lacteos",
+            "gluten",
+            "huevo"
+          ],
+          "nombre": "Papa a la huancaína",
+          "desc": "Patate lesse servite con una crema di peperoncino giallo, latte evaporato, cracker, uova e olive nere.",
+          "precio": 6.0,
+          "emoji": "🥔",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Patate lesse servite con una crema di peperoncino giallo, latte evaporato, cracker, uova e olive nere.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e2",
+          "alergenos": [
+            "huevo",
+            "pescado"
+          ],
+          "nombre": "Causa limeña",
+          "desc": "Patate pressate e marinate con peperoncino giallo e lime, carote, piselli e tocchetti di pollo in salsa acevichada.",
+          "precio": 9.0,
+          "emoji": "🥔",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Patate pressate e marinate con peperoncino giallo e lime, carote, piselli e tocchetti di pollo in salsa acevichada.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e3",
+          "alergenos": [
+            "cacahuetes"
+          ],
+          "nombre": "Tamales",
+          "desc": "Farina di mais avvolta nella foglia di banano, ripiena di maiale, olive, arachidi e peperoncino giallo.",
+          "precio": 6.0,
+          "emoji": "🫔",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Farina di mais avvolta nella foglia di banano, ripiena di maiale, olive, arachidi e peperoncino giallo.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e4",
+          "alergenos": [
+            "gluten",
+            "huevo"
+          ],
+          "nombre": "Alitas de maracuyá",
+          "desc": "Alette fritte con impanatura croccante servite con salsa di maracuyá.",
+          "precio": 7.0,
+          "emoji": "🍗",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Alette fritte con impanatura croccante servite con salsa di maracuyá.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e5",
+          "alergenos": [
+            "gluten",
+            "soja",
+            "lacteos",
+            "huevo"
+          ],
+          "nombre": "Tequeños de lomo saltado",
+          "desc": "Pasta sfoglia croccante ripiena di lomo saltado, servita con crema alla huancaína.",
+          "precio": 8.0,
+          "emoji": "🥟",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Pasta sfoglia croccante ripiena di lomo saltado, servita con crema alla huancaína.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e6",
+          "alergenos": [
+            "huevo"
+          ],
+          "nombre": "Salpicón de pollo",
+          "desc": "Patacones croccanti serviti con pollo, carote e piselli avvolti in una salsa rosa leggermente dolce.",
+          "precio": 8.0,
+          "emoji": "🥗",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Patacones croccanti serviti con pollo, carote e piselli avvolti in una salsa rosa leggermente dolce.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e8",
+          "alergenos": [
+            "gluten",
+            "crustaceos",
+            "moluscos",
+            "soja",
+            "huevo"
+          ],
+          "nombre": "Wantán de mar",
+          "desc": "Pasta di wantán croccante ripiena di gamberi e calamari, zenzero, cipollotto e soia, con salsa al tamarindo.",
+          "precio": 7.0,
+          "emoji": "🥟",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Pasta di wantán croccante ripiena di gamberi e calamari, zenzero, cipollotto e soia, con salsa al tamarindo.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e9",
+          "alergenos": [
+            "gluten",
+            "lacteos",
+            "huevo"
+          ],
+          "nombre": "Empanadas de ají de gallina",
+          "desc": "Mini empanadas ripiene di gallina in crema di peperoncino giallo e olive disidratate.",
+          "precio": 8.0,
+          "emoji": "🥟",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Mini empanadas ripiene di gallina in crema di peperoncino giallo e olive disidratate.",
+          "etiqueta_it": "",
+          "opciones": []
+        }
+      ]
+    },
+    {
+      "id": "ceviches",
+      "nombre": "Ceviches y tiraditos",
+      "corto": "Ceviches",
+      "icono": "🐟",
+      "items": [
+        {
+          "id": "e10",
+          "alergenos": [
+            "pescado",
+            "moluscos",
+            "crustaceos"
+          ],
+          "nombre": "Ceviche mixto",
+          "desc": "Cubi di dentice, calamari, gamberi e cozze marinati con lime e leche de tigre, con mais bianco, patata dolce e cipolla rossa.",
+          "precio": 18.0,
+          "emoji": "🐟",
+          "etiqueta": "Más pedido",
+          "foto": "fotos/cevmixto.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Cubi di dentice, calamari, gamberi e cozze marinati con lime e leche de tigre, con mais bianco, patata dolce e cipolla rossa.",
+          "etiqueta_it": "Più ordinato",
+          "opciones": []
+        },
+        {
+          "id": "e14",
+          "alergenos": [
+            "pescado"
+          ],
+          "nombre": "Tiradito de ají amarillo",
+          "desc": "Dentice servito in una salsa di peperoncino giallo aromatica, con avocado, mais bianco e cubetti di patata dolce.",
+          "precio": 18.0,
+          "emoji": "🐟",
+          "etiqueta": "",
+          "foto": "fotos/tiradito.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Dentice servito in una salsa di peperoncino giallo aromatica, con avocado, mais bianco e cubetti di patata dolce.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e11",
+          "alergenos": [
+            "pescado"
+          ],
+          "nombre": "Ceviche",
+          "desc": "Cubi di dentice marinati con lime e leche de tigre, serviti con patata dolce, mais bianco e cipolla rossa.",
+          "precio": 16.0,
+          "emoji": "🐟",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Cubi di dentice marinati con lime e leche de tigre, serviti con patata dolce, mais bianco e cipolla rossa.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e52",
+          "alergenos": [
+            "moluscos",
+            "huevo",
+            "gluten"
+          ],
+          "nombre": "Pulpo al olivo",
+          "desc": "Tentacoli di polpo marinati in salsa di olive nere, con condimento cremoso, salsa alle erbe, mais bianco e chips di crackers.",
+          "precio": 18.0,
+          "emoji": "🐙",
+          "etiqueta": "",
+          "foto": "fotos/pulpo.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Tentacoli di polpo marinati in salsa di olive nere, con condimento cremoso, salsa alle erbe, mais bianco e chips di crackers.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e53",
+          "alergenos": [
+            "pescado",
+            "apio"
+          ],
+          "nombre": "Leche de tigre",
+          "desc": "Concentrato di pesce, zenzero, lime, aglio e cipolla rossa, servito con cubetti di pesce e patata dolce.",
+          "precio": 10.0,
+          "emoji": "🥛",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Concentrato di pesce, zenzero, lime, aglio e cipolla rossa, servito con cubetti di pesce e patata dolce.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e12",
+          "alergenos": [
+            "crustaceos",
+            "huevo"
+          ],
+          "nombre": "Coktail de camarones",
+          "desc": "Gamberoni con cipolla, pomodoro e avocado, ricoperti di salsa golf homemade.",
+          "precio": 15.0,
+          "emoji": "🦐",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Gamberoni con cipolla, pomodoro e avocado, ricoperti di salsa golf homemade.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e13",
+          "alergenos": [
+            "pescado",
+            "moluscos"
+          ],
+          "nombre": "Dentice y pulpo",
+          "desc": "Lamine di dentice e polipo con leche de tigre, avocado, patata dolce, olio di coriandolo e polvere di olive nere.",
+          "precio": 18.0,
+          "emoji": "🐙",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Lamine di dentice e polipo con leche de tigre, avocado, patata dolce, olio di coriandolo e polvere di olive nere.",
+          "etiqueta_it": "",
+          "opciones": []
+        }
+      ]
+    },
+    {
+      "id": "mar",
+      "nombre": "Mar",
+      "corto": "Mar",
+      "icono": "🦐",
+      "items": [
+        {
+          "id": "e15",
+          "alergenos": [
+            "crustaceos",
+            "moluscos",
+            "lacteos"
+          ],
+          "nombre": "Arroz con mariscos",
+          "desc": "Misto mare, gamberi, calamari e cozze con riso, salsa madre Entre Causas e parmigiano.",
+          "precio": 18.0,
+          "emoji": "🥘",
+          "etiqueta": "",
+          "foto": "fotos/arroz.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Misto mare, gamberi, calamari e cozze con riso, salsa madre Entre Causas e parmigiano.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e21",
+          "alergenos": [
+            "pescado",
+            "moluscos",
+            "crustaceos",
+            "gluten"
+          ],
+          "nombre": "Jalea",
+          "desc": "Frittura di mare croccante servita con manioca fritta e sarza criolla.",
+          "precio": 18.0,
+          "emoji": "🦑",
+          "etiqueta": "",
+          "foto": "fotos/jalea.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Frittura di mare croccante servita con manioca fritta e sarza criolla.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e16",
+          "alergenos": [
+            "crustaceos",
+            "lacteos"
+          ],
+          "nombre": "Ají de langostinos",
+          "desc": "Gamberi flambati al wok con crema di peperoncino giallo, serviti con riso bianco.",
+          "precio": 18.0,
+          "emoji": "🦐",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Gamberi flambati al wok con crema di peperoncino giallo, serviti con riso bianco.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e17",
+          "alergenos": [
+            "pescado",
+            "gluten",
+            "soja"
+          ],
+          "nombre": "Pescado oriental",
+          "desc": "Pesce del giorno fritto e croccante con riso bianco e manioca, salsa orientale homemade e verdure.",
+          "precio": 22.0,
+          "emoji": "🐠",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Pesce del giorno fritto e croccante con riso bianco e manioca, salsa orientale homemade e verdure.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e18",
+          "alergenos": [
+            "pescado",
+            "soja",
+            "gluten",
+            "sesamo"
+          ],
+          "nombre": "Salmone teriyaki",
+          "desc": "Salmone 250 g grigliato e laccato al teriyaki con riso bianco e insalata della casa.",
+          "precio": 18.0,
+          "emoji": "🍣",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Salmone 250 g grigliato e laccato al teriyaki con riso bianco e insalata della casa.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e19",
+          "alergenos": [
+            "crustaceos",
+            "moluscos",
+            "soja",
+            "sesamo",
+            "huevo",
+            "gluten"
+          ],
+          "nombre": "Chaufa de mariscos",
+          "desc": "Misto mare saltato al wok con riso, salsa di soia, olio di sesamo, cipollotto e uova.",
+          "precio": 17.0,
+          "emoji": "🍚",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Misto mare saltato al wok con riso, salsa di soia, olio di sesamo, cipollotto e uova.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e20",
+          "alergenos": [
+            "pescado",
+            "moluscos",
+            "crustaceos",
+            "gluten",
+            "huevo"
+          ],
+          "nombre": "Causa Entre Causas",
+          "desc": "Causa ripiena di frittura di mare, coronata con ceviche all'ají amarillo.",
+          "precio": 18.0,
+          "emoji": "🥔",
+          "etiqueta": "De la casa",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Causa ripiena di frittura di mare, coronata con ceviche all'ají amarillo.",
+          "etiqueta_it": "Della casa",
+          "opciones": []
+        }
+      ]
+    },
+    {
+      "id": "chifa",
+      "nombre": "Pollo & Chifa Perú",
+      "corto": "Pollo & Chifa",
+      "icono": "🍚",
+      "items": [
+        {
+          "id": "e23",
+          "alergenos": [
+            "gluten",
+            "soja",
+            "huevo",
+            "sesamo"
+          ],
+          "nombre": "Mostrito",
+          "desc": "Pollo croccante fritto, chaufa di pollo e patate fritte con salsa homemade.",
+          "precio": 12.0,
+          "emoji": "🍗",
+          "etiqueta": "",
+          "foto": "fotos/mostrito.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Pollo croccante fritto, chaufa di pollo e patate fritte con salsa homemade.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e22",
+          "nombre": "Pechuga a la plancha",
+          "desc": "Petto di pollo alla brace marinato con riso bianco, insalata e patate fritte.",
+          "precio": 14.0,
+          "emoji": "🍗",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Petto di pollo alla brace marinato con riso bianco, insalata e patate fritte.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e24",
+          "alergenos": [
+            "gluten",
+            "soja",
+            "sesamo",
+            "huevo"
+          ],
+          "nombre": "Tallarín saltado de pollo",
+          "desc": "Pollo saltato al wok con salsa di soia, olio di sesamo, linguine, funghi e broccoli.",
+          "precio": 14.0,
+          "emoji": "🍜",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Pollo saltato al wok con salsa di soia, olio di sesamo, linguine, funghi e broccoli.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e25",
+          "alergenos": [
+            "soja",
+            "gluten"
+          ],
+          "nombre": "Pollo saltado",
+          "desc": "Pollo saltato al wok con pomodoro e cipolle rosse, salsa di soia e riduzione di osso buco, con riso e patate fritte.",
+          "precio": 16.0,
+          "emoji": "🥘",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Pollo saltato al wok con pomodoro e cipolle rosse, salsa di soia e riduzione di osso buco, con riso e patate fritte.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e26",
+          "alergenos": [
+            "gluten",
+            "soja",
+            "huevo",
+            "sesamo"
+          ],
+          "nombre": "Combinado",
+          "desc": "Arroz chaufa con pollo e noodles saltati di pollo con verdure.",
+          "precio": 18.0,
+          "emoji": "🍱",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Arroz chaufa con pollo e noodles saltati di pollo con verdure.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e27",
+          "alergenos": [
+            "soja",
+            "sesamo",
+            "huevo",
+            "gluten"
+          ],
+          "nombre": "Chaufa",
+          "desc": "Riso saltato nel wok con pollo, olio di sesamo, salsa di soia, uova e cipollotto.",
+          "precio": 13.0,
+          "emoji": "🍚",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Riso saltato nel wok con pollo, olio di sesamo, salsa di soia, uova e cipollotto.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e28",
+          "alergenos": [
+            "soja",
+            "sesamo",
+            "huevo",
+            "gluten"
+          ],
+          "nombre": "Tipakay",
+          "desc": "Chaufa servito con pollo fritto in agrodolce e verdure.",
+          "precio": 16.0,
+          "emoji": "🍚",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Chaufa servito con pollo fritto in agrodolce e verdure.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e29",
+          "alergenos": [
+            "soja",
+            "sesamo",
+            "huevo",
+            "gluten"
+          ],
+          "nombre": "Chijaukay",
+          "desc": "Chaufa servito con pollo fritto bagnato in una salsa aromatizzata allo zenzero.",
+          "precio": 15.0,
+          "emoji": "🍚",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Chaufa servito con pollo fritto bagnato in una salsa aromatizzata allo zenzero.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e30",
+          "alergenos": [
+            "soja",
+            "sesamo",
+            "huevo",
+            "gluten",
+            "crustaceos"
+          ],
+          "nombre": "Kalu wantán",
+          "desc": "Chaufa di pollo con wantán di gamberi, salsa agrodolce e verdure.",
+          "precio": 17.0,
+          "emoji": "🥟",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Chaufa di pollo con wantán di gamberi, salsa agrodolce e verdure.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e31",
+          "alergenos": [
+            "gluten",
+            "soja",
+            "sesamo",
+            "huevo",
+            "crustaceos"
+          ],
+          "nombre": "Tallarín saltado mixto",
+          "desc": "Pollo e gamberi al wok con salsa di soia, olio di sesamo, noodles, funghi e broccoli.",
+          "precio": 17.0,
+          "emoji": "🍜",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Pollo e gamberi al wok con salsa di soia, olio di sesamo, noodles, funghi e broccoli.",
+          "etiqueta_it": "",
+          "opciones": []
+        }
+      ]
+    },
+    {
+      "id": "carnes",
+      "nombre": "Carnes & lomo fino",
+      "corto": "Carnes",
+      "icono": "🥩",
+      "items": [
+        {
+          "id": "e32",
+          "alergenos": [
+            "soja",
+            "gluten"
+          ],
+          "nombre": "Lomo saltado",
+          "desc": "Filetto di manzo saltato al wok con pomodoro e cipolle rosse, salsa di soia e riduzione di osso buco, con riso e patate fritte.",
+          "precio": 18.0,
+          "emoji": "🥩",
+          "etiqueta": "Más pedido",
+          "foto": "fotos/lomo.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Filetto di manzo saltato al wok con pomodoro e cipolle rosse, salsa di soia e riduzione di osso buco, con riso e patate fritte.",
+          "etiqueta_it": "Più ordinato",
+          "opciones": []
+        },
+        {
+          "id": "e34",
+          "alergenos": [
+            "soja",
+            "gluten"
+          ],
+          "nombre": "Tacu tacu c/lomo",
+          "desc": "Riso bianco e fagioli amalgamati e fritti, con filetto di carne al wok e riduzione di osso buco.",
+          "precio": 18.0,
+          "emoji": "🥩",
+          "etiqueta": "",
+          "foto": "fotos/tacutacu.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Riso bianco e fagioli amalgamati e fritti, con filetto di carne al wok e riduzione di osso buco.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e33",
+          "alergenos": [
+            "soja",
+            "gluten",
+            "huevo"
+          ],
+          "nombre": "Lomo saltado a lo pobre",
+          "desc": "Lomo saltado con riso, patate fritte, uovo e banana fritta.",
+          "precio": 19.0,
+          "emoji": "🥩",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Lomo saltado con riso, patate fritte, uovo e banana fritta.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e35",
+          "alergenos": [
+            "huevo"
+          ],
+          "nombre": "Bistec a lo pobre",
+          "desc": "Chianina 225 g alla brace con riso bianco, uovo fritto, patate fritte e banana fritta.",
+          "precio": 20.0,
+          "emoji": "🥩",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Chianina 225 g alla brace con riso bianco, uovo fritto, patate fritte e banana fritta.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e36",
+          "alergenos": [
+            "gluten",
+            "lacteos",
+            "huevo",
+            "soja"
+          ],
+          "nombre": "Linguine a la huancaína c/lomo",
+          "desc": "Linguine alla huancaína con filetto di manzo saltato al wok con pomodoro, cipolle rosse e salsa di soia.",
+          "precio": 18.0,
+          "emoji": "🍝",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Linguine alla huancaína con filetto di manzo saltato al wok con pomodoro, cipolle rosse e salsa di soia.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e37",
+          "alergenos": [
+            "soja",
+            "sesamo",
+            "huevo",
+            "gluten"
+          ],
+          "nombre": "Chaufa de carne",
+          "desc": "Filetto di carne saltato al wok con riso, salsa di soia, olio di sesamo e uova.",
+          "precio": 16.0,
+          "emoji": "🍚",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Filetto di carne saltato al wok con riso, salsa di soia, olio di sesamo e uova.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e38",
+          "alergenos": [
+            "gluten",
+            "soja",
+            "huevo"
+          ],
+          "nombre": "Tallarín saltado de carne",
+          "desc": "Spaghetti saltati con filetto di carne, cipolle rosse e pomodoro in salsa orientale.",
+          "precio": 16.0,
+          "emoji": "🍜",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Spaghetti saltati con filetto di carne, cipolle rosse e pomodoro in salsa orientale.",
+          "etiqueta_it": "",
+          "opciones": []
+        }
+      ]
+    },
+    {
+      "id": "parrillas",
+      "nombre": "Parrillas",
+      "corto": "Parrillas",
+      "icono": "🔥",
+      "items": [
+        {
+          "id": "e39",
+          "nombre": "Parrilla de carne",
+          "desc": "Carne, pollo, salsiccia, trippa e cuore di manzo alla brace con salsa anticuchera e patate fritte.",
+          "precio": 22.0,
+          "emoji": "🥩",
+          "etiqueta": "",
+          "foto": "fotos/parrcarne.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Carne, pollo, salsiccia, trippa e cuore di manzo alla brace con salsa anticuchera e patate fritte.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e40",
+          "alergenos": [
+            "crustaceos",
+            "moluscos",
+            "pescado"
+          ],
+          "nombre": "Parrilla de mar",
+          "desc": "Gamberi, calamari, tonno e polipo alla brace con salsa anticuchera e patate fritte.",
+          "precio": 24.0,
+          "emoji": "🦐",
+          "etiqueta": "",
+          "foto": "fotos/parrmar.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Gamberi, calamari, tonno e polipo alla brace con salsa anticuchera e patate fritte.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e41",
+          "alergenos": [
+            "lacteos",
+            "gluten",
+            "huevo"
+          ],
+          "nombre": "Anticuchos",
+          "desc": "Cuore di manzo e trippa in salsa anticuchera alla brace, con papa a la huancaína e mais bianco.",
+          "precio": 13.0,
+          "emoji": "🍢",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Cuore di manzo e trippa in salsa anticuchera alla brace, con papa a la huancaína e mais bianco.",
+          "etiqueta_it": "",
+          "opciones": []
+        }
+      ]
+    },
+    {
+      "id": "sopas",
+      "nombre": "Caldos & sopas",
+      "corto": "Sopas",
+      "icono": "🍲",
+      "items": [
+        {
+          "id": "e42",
+          "alergenos": [
+            "crustaceos",
+            "huevo",
+            "lacteos"
+          ],
+          "nombre": "Chupe de camarones",
+          "desc": "Zuppa di gamberi, riso, patate e piselli con uova e latte evaporato.",
+          "precio": 18.0,
+          "emoji": "🍲",
+          "etiqueta": "",
+          "foto": "fotos/chupe.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Zuppa di gamberi, riso, patate e piselli con uova e latte evaporato.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e43",
+          "alergenos": [
+            "pescado",
+            "crustaceos",
+            "moluscos"
+          ],
+          "nombre": "Parihuela",
+          "desc": "Filetto di pesce bianco con misto mare in salsa madre Entre Causas, con manioca e coriandolo.",
+          "precio": 19.0,
+          "emoji": "🍲",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Filetto di pesce bianco con misto mare in salsa madre Entre Causas, con manioca e coriandolo.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e44",
+          "alergenos": [
+            "pescado"
+          ],
+          "nombre": "Sudado de pescado",
+          "desc": "Orata intera in salsa madre di pesce con cipolla e pomodoro, servita con riso bianco e manioca.",
+          "precio": 18.0,
+          "emoji": "🐟",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Orata intera in salsa madre di pesce con cipolla e pomodoro, servita con riso bianco e manioca.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e45",
+          "alergenos": [
+            "gluten",
+            "crustaceos",
+            "sesamo",
+            "soja",
+            "huevo"
+          ],
+          "nombre": "Sopa wantán especial",
+          "desc": "Brodo di pollo con verdure e wantán ripieni di gamberi, aromatizzato con zenzero e olio di sesamo.",
+          "precio": 14.0,
+          "emoji": "🍜",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Brodo di pollo con verdure e wantán ripieni di gamberi, aromatizzato con zenzero e olio di sesamo.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e46",
+          "alergenos": [
+            "gluten",
+            "lacteos"
+          ],
+          "nombre": "Sopa minuta",
+          "desc": "Carne tritata a punta di coltello con peperoncino rosso, patate, piselli, latte evaporato e spaghetti.",
+          "precio": 12.0,
+          "emoji": "🍲",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Carne tritata a punta di coltello con peperoncino rosso, patate, piselli, latte evaporato e spaghetti.",
+          "etiqueta_it": "",
+          "opciones": []
+        }
+      ]
+    },
+    {
+      "id": "bebidas",
+      "nombre": "Bebidas",
+      "corto": "Bebidas",
+      "icono": "🥤",
+      "items": [
+        {
+          "id": "b5",
+          "nombre": "Chicha morada",
+          "desc": "Bevanda peruviana di mais viola, ananas e cannella",
+          "precio": 6.0,
+          "emoji": "🍇",
+          "etiqueta": "Della casa",
+          "foto": "",
+          "agotado": false,
+          "opciones": [
+            {
+              "nombre": "Formato",
+              "tipo": "una",
+              "obligatorio": true,
+              "valores": [
+                {
+                  "nombre": "0,5 L",
+                  "precio": 0
+                },
+                {
+                  "nombre": "1 L",
+                  "precio": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b6",
+          "nombre": "Jugo de maracuyá",
+          "desc": "Succo di frutto della passione",
+          "precio": 7.0,
+          "emoji": "🥭",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "opciones": [
+            {
+              "nombre": "Formato",
+              "tipo": "una",
+              "obligatorio": true,
+              "valores": [
+                {
+                  "nombre": "0,5 L",
+                  "precio": 0
+                },
+                {
+                  "nombre": "1 L",
+                  "precio": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b7",
+          "nombre": "Limonada",
+          "desc": "Limonata fresca",
+          "precio": 5.0,
+          "emoji": "🍋",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "opciones": [
+            {
+              "nombre": "Formato",
+              "tipo": "una",
+              "obligatorio": true,
+              "valores": [
+                {
+                  "nombre": "0,5 L",
+                  "precio": 0
+                },
+                {
+                  "nombre": "1 L",
+                  "precio": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b4",
+          "nombre": "Inca Kola",
+          "desc": "La bibita peruviana per eccellenza · 30 cl",
+          "precio": 3.5,
+          "emoji": "🥤",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "opciones": []
+        },
+        {
+          "id": "b1",
+          "nombre": "Coca-Cola",
+          "desc": "33 cl",
+          "precio": 2.5,
+          "emoji": "🥤",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "opciones": []
+        },
+        {
+          "id": "b2",
+          "nombre": "Coca-Cola Zero",
+          "desc": "33 cl",
+          "precio": 2.5,
+          "emoji": "🥤",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "opciones": []
+        },
+        {
+          "id": "b3",
+          "nombre": "Fanta",
+          "desc": "33 cl",
+          "precio": 2.5,
+          "emoji": "🍊",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "opciones": []
+        },
+        {
+          "id": "b8",
+          "nombre": "Acqua naturale",
+          "desc": "75 cl",
+          "precio": 3.0,
+          "emoji": "💧",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "opciones": []
+        },
+        {
+          "id": "b9",
+          "nombre": "Acqua frizzante",
+          "desc": "75 cl",
+          "precio": 3.0,
+          "emoji": "💧",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "opciones": []
+        }
+      ]
+    },
+    {
+      "id": "birre",
+      "nombre": "Birre",
+      "corto": "Birre",
+      "icono": "🍺",
+      "items": [
+        {
+          "id": "b10",
+          "nombre": "Cusqueña Negra",
+          "desc": "Birra peruviana scura · 33 cl",
+          "precio": 4.0,
+          "emoji": "🍺",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "alergenos": [
+            "gluten"
+          ],
+          "opciones": []
+        },
+        {
+          "id": "b11",
+          "nombre": "Cusqueña Dorada",
+          "desc": "Birra peruviana bionda · 33 cl",
+          "precio": 4.0,
+          "emoji": "🍺",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "alergenos": [
+            "gluten"
+          ],
+          "opciones": []
+        },
+        {
+          "id": "b12",
+          "nombre": "Cusqueña Trigo",
+          "desc": "Birra peruviana di frumento · 33 cl",
+          "precio": 4.0,
+          "emoji": "🍺",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "alergenos": [
+            "gluten"
+          ],
+          "opciones": []
+        },
+        {
+          "id": "b13",
+          "nombre": "Corona",
+          "desc": "33 cl",
+          "precio": 3.5,
+          "emoji": "🍺",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "alergenos": [
+            "gluten"
+          ],
+          "opciones": []
+        },
+        {
+          "id": "b14",
+          "nombre": "Heineken",
+          "desc": "33 cl",
+          "precio": 2.5,
+          "emoji": "🍺",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "alergenos": [
+            "gluten"
+          ],
+          "opciones": []
+        }
+      ]
+    },
+    {
+      "id": "dulces",
+      "nombre": "Dulces y tortas",
+      "corto": "Dulces",
+      "icono": "🍰",
+      "items": [
+        {
+          "id": "e47",
+          "alergenos": [
+            "lacteos",
+            "huevo",
+            "gluten"
+          ],
+          "nombre": "Tres leches",
+          "desc": "",
+          "precio": 6.0,
+          "emoji": "🍰",
+          "etiqueta": "",
+          "foto": "fotos/tresleches.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e48",
+          "alergenos": [
+            "lacteos",
+            "huevo",
+            "gluten"
+          ],
+          "nombre": "Torta de chocolate",
+          "desc": "",
+          "precio": 6.0,
+          "emoji": "🍫",
+          "etiqueta": "",
+          "foto": "fotos/torta.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e49",
+          "alergenos": [
+            "gluten"
+          ],
+          "nombre": "Churros",
+          "desc": "",
+          "precio": 6.0,
+          "emoji": "🥖",
+          "etiqueta": "",
+          "foto": "fotos/churros.jpg",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e50",
+          "alergenos": [
+            "gluten",
+            "lacteos",
+            "huevo"
+          ],
+          "nombre": "Budín de panetón",
+          "desc": "Budino di panettone al caramello accompagnato da cioccolato caldo.",
+          "precio": 5.0,
+          "emoji": "🍮",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Budino di panettone al caramello accompagnato da cioccolato caldo.",
+          "etiqueta_it": "",
+          "opciones": []
+        },
+        {
+          "id": "e51",
+          "nombre": "Mazamorra morada",
+          "desc": "Dolce a base di mais viola e fecola di patate con spolverata di cannella.",
+          "precio": 5.0,
+          "emoji": "🍇",
+          "etiqueta": "",
+          "foto": "",
+          "agotado": false,
+          "nombre_it": "",
+          "desc_it": "Dolce a base di mais viola e fecola di patate con spolverata di cannella.",
+          "etiqueta_it": "",
+          "opciones": []
+        }
+      ]
+    }
+  ],
+  "sugerencias": [
+    "b5",
+    "b4",
+    "b6",
+    "e47",
+    "e49",
+    "e7",
+    "e48"
+  ]
 }
