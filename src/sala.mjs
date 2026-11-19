@@ -32,7 +32,7 @@ export default async (req) => {
   if (req.method === "GET") {
     const f = esFecha(url.searchParams.get("f")) ? url.searchParams.get("f") : fechaRoma();
     const d = (await store.get("dia/" + f, { type: "json" })) || vacio;
-    return json({ f, mesas: d.mesas || {}, espera: d.espera || [], llamadas: (d.llamadas || []).filter((x) => x.estado === "activa") });
+    return json({ f, mesas: d.mesas || {}, espera: d.espera || [], historial: d.historial || [], llamadas: (d.llamadas || []).filter((x) => x.estado === "activa") });
   }
 
   let b; try { b = await req.json(); } catch { return json({ error: "JSON inválido" }, 400); }
@@ -49,6 +49,17 @@ export default async (req) => {
     if (req.method === "PATCH" && b.mesa) {
       const m = txt(String(b.mesa), 4);
       if (!EST.includes(b.estado)) return false;
+      // cobro por comensal: { c, metodo, monto }
+      if (b.pago && d.mesas[m]) {
+        const c = Math.max(0, Math.min(30, parseInt(b.pago.c, 10) || 0)), met = b.pago.metodo === "Tarjeta" ? "Tarjeta" : "Efectivo";
+        d.mesas[m].pagos = (d.mesas[m].pagos || []).filter((x) => x.c !== c).concat(b.pago.quitar ? [] : [{ c, metodo: met, monto: Math.round((Number(b.pago.monto) || 0) * 100) / 100, ts: new Date().toISOString() }]);
+        return d;
+      }
+      if (b.estado === "libre" && b.cierre && d.mesas[m]) {
+        const x = b.cierre, n = (v) => Math.round((Number(v) || 0) * 100) / 100;
+        d.historial = (d.historial || []).concat([{ mesa: m, abre: d.mesas[m].desde, cierra: new Date().toISOString(), pax: parseInt(x.pax, 10) || d.mesas[m].personas || 0,
+          total: n(x.total), coperto: n(x.coperto), pagos: (d.mesas[m].pagos || []).map((p) => ({ metodo: p.metodo, monto: p.monto })), por: txt(b.por, 30) }]).slice(-200);
+      }
       if (b.estado === "libre") delete d.mesas[m];
       else d.mesas[m] = { estado: b.estado, desde: d.mesas[m]?.desde || new Date().toISOString(), personas: parseInt(b.personas, 10) || d.mesas[m]?.personas || 0, nombre: txt(b.nombre, 50) || d.mesas[m]?.nombre || "" };
       return d;
@@ -67,5 +78,5 @@ export default async (req) => {
     }
     return false;
   });
-  return out ? json({ ok: true, mesas: out.mesas, espera: out.espera, llamadas: (out.llamadas || []).filter((x) => x.estado === "activa") }) : json({ error: "Faltan datos" }, 400);
+  return out ? json({ ok: true, mesas: out.mesas, espera: out.espera, historial: out.historial || [], llamadas: (out.llamadas || []).filter((x) => x.estado === "activa") }) : json({ error: "Faltan datos" }, 400);
 };

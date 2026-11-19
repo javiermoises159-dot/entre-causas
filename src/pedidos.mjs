@@ -10,7 +10,7 @@ function claveTel(t) {
   else if (d.length >= 11 && d.startsWith("39")) d = d.slice(2);
   return d.length >= 8 ? d : "";
 }
-const ESTADOS = ["nuevo", "preparando", "encamino", "listo", "entregado", "cancelado"];
+const ESTADOS = ["espera", "nuevo", "preparando", "encamino", "listo", "entregado", "cancelado"];
 const LETRAS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const codigo = () => Array.from({ length: 4 }, () => LETRAS[Math.floor(Math.random() * LETRAS.length)]).join("");
 
@@ -170,7 +170,7 @@ export default async (req) => {
       } catch {}
     }
     const p = {
-      id: codigo(), fecha, hora: horaRoma(ahora), ts: ahora.toISOString(), origen: palmare ? "palmare" : porTel ? "tel" : "app", estado: porTel && !palmare ? "preparando" : "nuevo",
+      id: codigo(), fecha, hora: horaRoma(ahora), ts: ahora.toISOString(), origen: palmare ? "palmare" : porTel ? "tel" : "app", estado: palmare && b.espera === true ? "espera" : porTel && !palmare ? "preparando" : "nuevo",
       cliente: txt(b.cliente?.nombre, 60), dir: modo === "Delivery" ? txt(b.cliente?.dir, 160) : "",
       modo, mesa, pago: b.pago === "Tarjeta" ? "Tarjeta" : "Efectivo", nota: txt(b.nota, 300), lang: ["it", "en"].includes(b.lang) ? b.lang : "es",
       lineas, subtotal: sub, envio, total: num(sub - desc + (envio || 0)),
@@ -228,7 +228,7 @@ export default async (req) => {
   if (req.method === "PATCH") {
     let b; try { b = await req.json(); } catch { return json({ error: "JSON inválido" }, 400); }
     if (!esFecha(b.fecha) || !b.id) return json({ error: "Faltan datos" }, 400);
-    let antes = "";
+    let antes = "", quitar = null;
     const out = await modificar(store, "dia/" + b.fecha, { pedidos: [] }, (d) => {
       const p = d.pedidos.find((x) => x.id === b.id);
       if (!p) return false;
@@ -238,11 +238,20 @@ export default async (req) => {
       if (b.pago === "Efectivo" || b.pago === "Tarjeta") p.pago = b.pago;
       if (b.eta !== undefined) { const m = parseInt(b.eta, 10); if (m >= 5 && m <= 120) { p.eta = m; p.etaHora = horaRoma(new Date(Date.now() + m * 60000)); } }
       if (b.resena === true) p.resena = true;
+      // anular un plato ya enviado (palmare): no se cobra y la cocina lo ve tachado
+      if (b.anular && Number.isInteger(b.anular.i) && p.lineas[b.anular.i] && !p.lineas[b.anular.i].anulado) {
+        const l = p.lineas[b.anular.i];
+        l.anulado = true; l.motivo = txt(b.anular.motivo, 40); quitar = [{ id: l.id, q: l.q }];
+        p.subtotal = num(p.lineas.filter((x) => !x.anulado).reduce((a, x) => a + x.total, 0));
+        p.total = num(p.subtotal - (p.desc || 0) + (p.envio || 0));
+        if (p.lineas.every((x) => x.anulado)) p.estado = "cancelado";
+      }
       if (b.motivo !== undefined) p.motivo = ["llena", "zona", "agotado", "cierre"].includes(b.motivo) ? b.motivo : "";
       if (b.envio !== undefined) { p.envio = b.envio === null ? null : num(b.envio); p.total = num(p.subtotal - (p.desc || 0) + (p.envio || 0)); }
       return p;
     });
-    if (out && (antes === "cancelado") !== (out.estado === "cancelado") && out.origen !== "local") {
+    if (out && quitar && out.estado !== "cancelado") { try { await contar(await leerMenu(req), out.fecha, quitar, -1); } catch {} }
+    else if (out && (antes === "cancelado") !== (out.estado === "cancelado") && out.origen !== "local") {
       try { await contar(await leerMenu(req), out.fecha, out.lineas, out.estado === "cancelado" ? -1 : 1); } catch {}
     }
     return out ? json({ ok: true, pedido: out }) : json({ error: "No encontrado" }, 404);
