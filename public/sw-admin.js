@@ -4,9 +4,11 @@ self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
 // El aviso llega vacío: el texto depende de la app instalada (panel, cocina o palmare)
 const SC = () => new URL(self.registration.scope).pathname.replace(/\/$/, '');
 const TXT = { '/cocina': ['🔥 Nueva comanda', 'Hay un pedido nuevo en cocina. Toca para verlo.'], '/palmare': ['🙋 Te llaman', 'Una mesa te llama o pide la cuenta.'] };
-const TIPO = { prueba: ['🔔 Aviso de prueba', '¡Funciona! Así sonará cada pedido nuevo.'], reserva: ['📅 Nueva reserva', 'Toca para confirmarla.'], llamada: ['🙋 Te llaman', 'Una mesa te llama o pide la cuenta.'], sala: ['🔥 Nueva comanda', 'Comanda de sala en cocina.'] };
+const TIPO = { prueba: ['🔔 Aviso de prueba', '¡Funciona! Así sonará cada pedido nuevo.'], reserva: ['📅 Nueva reserva', 'Toca para confirmarla.'], llamada: ['🙋 Te llaman', 'Una mesa te llama o pide la cuenta.'], sala: ['🔥 Nueva comanda', 'Comanda de sala en cocina.'], servir: ['🍽️ Para servir', 'Hay platos listos en cocina. Toca para verlos.'] };
 self.addEventListener('push', (e) => {
   e.waitUntil((async () => {
+    // la pantalla abierta se actualiza al momento, sin esperar a la siguiente consulta
+    try { (await self.clients.matchAll({ type: 'window', includeUncontrolled: true })).forEach((c) => c.postMessage('recargar')); } catch {}
     let [title, body] = TXT[SC()] || ['Entre Causas', '🔔 Nuevo pedido o reserva. Toca para verlo.'];
     try {
       const u = await Promise.race([fetch('/api/push?ultimo', { cache: 'no-store' }).then((r) => r.json()), new Promise((r) => setTimeout(() => r({}), 2500))]);

@@ -32,6 +32,7 @@ const PARA = {
   sala: ["cocina"],              // comanda del palmare, segundos marchados o pedido por teléfono
   reserva: ["dueno"],
   llamada: ["camarero", "dueno"],
+  servir: ["camarero"],           // platos de sala listos en cocina
   prueba: ["dueno", "cocina", "camarero"],
 };
 // Avisa a los dispositivos de esos roles. Nunca lanza error.

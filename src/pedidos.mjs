@@ -259,13 +259,19 @@ export default async (req) => {
   if (req.method === "PATCH") {
     let b; try { b = await req.json(); } catch { return json({ error: "JSON inválido" }, 400); }
     if (!esFecha(b.fecha) || !b.id) return json({ error: "Faltan datos" }, 400);
-    let antes = "", quitar = null;
+    let antes = "", quitar = null, servir = false;
     const out = await modificar(store, "dia/" + b.fecha, { pedidos: [] }, (d) => {
       const p = d.pedidos.find((x) => x.id === b.id);
       if (!p) return false;
       antes = p.estado;
       if (b.rep !== undefined) p.rep = txt(String(b.rep || ""), 10);
-      if (ESTADOS.includes(b.estado)) p.estado = b.estado;
+      if (ESTADOS.includes(b.estado)) { if (p.estado === "espera" && b.estado === "nuevo") p.marchado = new Date().toISOString(); p.estado = b.estado; }
+      // cocina: plato listo uno a uno; si están todos, la comanda queda lista
+      if (Number.isInteger(b.listoL) && p.lineas[b.listoL] && !p.lineas[b.listoL].anulado) {
+        const l = p.lineas[b.listoL]; l.listo = !l.listo; if (l.listo) { l.listoTs = new Date().toISOString(); servir = true; } else delete l.listoTs;
+        const vivas = p.lineas.filter((x) => !x.anulado);
+        if (vivas.length && vivas.every((x) => x.listo) && ["nuevo", "preparando"].includes(p.estado)) p.estado = p.modo === "Delivery" ? p.estado : "listo";
+      }
       if (b.pago === "Efectivo" || b.pago === "Tarjeta") p.pago = b.pago;
       if (b.eta !== undefined) { const m = parseInt(b.eta, 10); if (m >= 5 && m <= 120) { p.eta = m; p.etaHora = horaRoma(new Date(Date.now() + m * 60000)); } }
       if (b.resena === true) p.resena = true;
@@ -288,6 +294,8 @@ export default async (req) => {
       if (activas.length) { try { await contar(await leerMenu(req), diaStock(out), activas, out.estado === "cancelado" ? -1 : 1); } catch {} }
     }
     if (out && antes === "espera" && out.estado === "nuevo") await avisar("sala"); // segundos marchados
+    // platos de sala listos: aviso al camarero para que los sirva
+    if (out && out.mesa && (servir || (antes !== "listo" && out.estado === "listo"))) await avisar("servir");
     return out ? json({ ok: true, pedido: out }) : json({ error: "No encontrado" }, 404);
   }
 
