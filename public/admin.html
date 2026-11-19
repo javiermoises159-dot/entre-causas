@@ -424,7 +424,8 @@ function bajarBlob(data,name,type){const a=document.createElement('a');a.href=UR
 /* ---------- ingreso ---------- */
 async function entrar(){const p=$('pin').value.trim();if(!p){$('lErr').textContent='Escribe tu PIN';return;}
   $('bIn').innerHTML='<span class="spin"></span>';$('lErr').textContent='';PIN=p;
-  try{const r=await api('/api/menu?check=1',{method:'POST'});if(r.status===401){$('lErr').textContent='PIN incorrecto';PIN='';return;}if(!r.ok)throw 0;
+  let guardado='';try{guardado=localStorage.getItem('ed_pin')||''}catch(e){}
+  try{let r;try{r=await api('/api/menu?check=1',{method:'POST'});}catch(err){if(guardado&&guardado===p){OFF=OFF||Date.now();await cargar();return;}throw err;}if(r.status===401){$('lErr').textContent='PIN incorrecto';PIN='';return;}if(!r.ok)throw 0;
     try{localStorage.setItem('ed_pin',PIN)}catch(e){}await cargar();}
   catch(e){$('lErr').textContent='No se pudo conectar. Revisa tu internet.';PIN='';}finally{$('bIn').textContent='Entrar';}}
 function normalizar(m){const a=m.ajustes||{};
@@ -517,6 +518,22 @@ async function resManual(){const f=prompt('Día (AAAA-MM-DD)',$('rFecha').value|
 
 
 
+
+/* ---------- sin internet: la cocina sigue trabajando y los cambios se envían al volver ---------- */
+let OFF=0,COLA=[],RETRY=null;try{COLA=JSON.parse(localStorage.getItem('ec_cola')||'[]')}catch(e){}
+const guardarCola=()=>{try{localStorage.setItem('ec_cola',JSON.stringify(COLA))}catch(e){}};
+function aplicarUno(p,b){if(b.estado)p.estado=b.estado;if(b.eta){p.eta=b.eta;p.etaHora=hRoma(Date.now()+b.eta*60000);}if(b.rep!==undefined)p.rep=b.rep;if(b.motivo!==undefined)p.motivo=b.motivo;if(b.pago)p.pago=b.pago;}
+function aplicarCola(){COLA.forEach(c=>{const p=PED.find(x=>x.id===c.id);if(p)aplicarUno(p,c.body);});}
+function encolar(fecha,id,body){COLA.push({fecha,id,body,t:Date.now()});guardarCola();const p=PED.find(x=>x.id===id);if(p)aplicarUno(p,body);try{localStorage.setItem('ec_ped_'+fecha,JSON.stringify(PED))}catch(e){}renderPedidos();}
+async function enviarCola(){while(COLA.length){const c=COLA[0];let r;try{r=await api('/api/pedidos',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({fecha:c.fecha,id:c.id,...c.body})});}catch(e){conexion(false);return false;}
+    COLA.shift();guardarCola();}toast('✓ Internet de vuelta · cambios enviados');return true;}
+function conexion(ok){const antes=!!OFF;if(ok){if(OFF){OFF=0;clearInterval(RETRY);RETRY=null;}}else{if(!OFF)OFF=Date.now();if(!RETRY)RETRY=setInterval(()=>cargarPedidos(true),5000);}
+  if(antes!==!!OFF){if(!$('kc').classList.contains('hidden'))renderCocina();renderAhora();}}
+const pendiente=id=>COLA.some(c=>c.id===id);
+function chipOffline(){if(!OFF&&!COLA.length)return '';const n=COLA.length;
+  return `<span style="display:flex;align-items:center;gap:6px;background:rgba(200,55,58,.18);border:1px solid var(--red);color:#F5C2C3;border-radius:10px;padding:6px 10px;font-size:12.5px;font-weight:700"><i style="width:8px;height:8px;border-radius:50%;background:#F0686B"></i>${OFF?'Sin internet desde '+hRoma(OFF):'Enviando…'}${n?' · '+n+(n===1?' cambio':' cambios')+' por enviar':''}</span>`;}
+addEventListener('offline',()=>conexion(false));addEventListener('online',()=>cargarPedidos(true));
+
 /* ---------- instalar el panel: Android (app/APK), iPhone (pantalla de inicio), PC ---------- */
 let BIP=null,APK=false;const UA=navigator.userAgent,esAnd=/android/i.test(UA),esSafari=esIOS&&!/crios|fxios|edgios|opios|gsa\//i.test(UA);
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();BIP=e;pintarInst();});
@@ -547,7 +564,7 @@ function instMd(){const link=location.origin+'/admin';let h;
 
 /* ---------- roles: dueño, cocina, camarero ---------- */
 let ROL='dueno',YO='';
-async function quienSoy(){try{const r=await api('/api/equipo?yo=1');if(r.ok){const j=await r.json();ROL=j.rol;YO=j.nombre;}}catch(e){}
+async function quienSoy(){try{const r=await api('/api/equipo?yo=1');if(r.ok){const j=await r.json();ROL=j.rol;YO=j.nombre;try{localStorage.setItem('ec_rol',JSON.stringify(j))}catch(e){}}}catch(e){try{const j=JSON.parse(localStorage.getItem('ec_rol')||'null');if(j){ROL=j.rol;YO=j.nombre;}}catch(x){}}
   document.body.classList.add('rol-'+ROL);
   if(ROL!=='dueno')['carta','cuentas','mas'].forEach(t=>{const b=document.querySelector(`#bn button[data-t="${t}"]`);if(b)b.classList.add('hidden');});
   if(ROL==='cocina')setTimeout(abrirCocina,300);}
@@ -754,7 +771,7 @@ function enPausa(){const z=M&&AJ().pausa?Date.parse(AJ().pausa):0;return z>Date.
 function renderAhora(){if(!M||!$('ahH'))return;if(!$('instA').innerHTML&&!instalada)pintarInst();const hoyP=$('pFecha').value===HOY?PED:[];const vivos=hoyP.filter(p=>p.estado!=='cancelado');
   const rHoy=RALL.filter(r=>r.fecha===HOY&&!['rechazada','noshow'].includes(r.estado)),pers=rHoy.reduce((a,r)=>a+r.personas,0);
   const z=enPausa();
-  $('ahH').innerHTML=`<div class="ahh"><div class="r1">${z?`<div class="stp pz"><i></i>En pausa hasta las ${hRoma(z)}</div><button class="gb" onclick="pausar(0)">${ic('play',14)}Reanudar</button>`:`<div class="stp"><i></i>Recibiendo pedidos</div><button class="gb" onclick="menuPausa()">${ic('flame',15)}Cocina llena</button>`}</div>
+  $('ahH').innerHTML=`<div class="ahh">${OFF||COLA.length?`<div style="margin-bottom:10px">${chipOffline()}</div>`:''}<div class="r1">${z?`<div class="stp pz"><i></i>En pausa hasta las ${hRoma(z)}</div><button class="gb" onclick="pausar(0)">${ic('play',14)}Reanudar</button>`:`<div class="stp"><i></i>Recibiendo pedidos</div><button class="gb" onclick="menuPausa()">${ic('flame',15)}Cocina llena</button>`}</div>
    <div class="ahk"><div><b>${vivos.length}</b><span>pedidos hoy</span></div><div><b>${eur(vivos.reduce((a,p)=>a+p.total,0))}</b><span>caja hoy</span></div><div><b>${pers}/${aforo()}</b><span>sala reservada</span></div></div></div>`;
   const nuevos=hoyP.filter(p=>p.estado==='nuevo').sort((a,b)=>(a.ts||'').localeCompare(b.ts||''));
   const pend=RALL.filter(r=>r.estado==='pendiente'&&r.fecha>=HOY).sort((a,b)=>(a.fecha+a.hora).localeCompare(b.fecha+b.hora));
@@ -799,7 +816,7 @@ function verAlerta(id,sonar){const p=PED.find(x=>x.id===id);if(!p)return;ALID=id
   $('al').classList.remove('hidden');clearInterval(ALT);if(sonar){beep();ALT=setInterval(beep,4000);}}
 function cerrarAlerta(){ALID=null;clearInterval(ALT);$('al').classList.add('hidden');}
 function luego(id){LUEGO[id]=Date.now()+120000;cerrarAlerta();setTimeout(revisarAlerta,120500);}
-async function patchPed(fecha,id,body,msg){try{const r=await api('/api/pedidos',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({fecha,id,...body})});if(!r.ok)throw 0;const {pedido}=await r.json();PED=PED.map(p=>p.id===id?pedido:p);if(msg)toast(msg);renderPedidos();return pedido;}catch(e){toast('No se pudo actualizar',true);}}
+async function patchPed(fecha,id,body,msg){if(OFF){encolar(fecha,id,body);if(msg)toast(msg+' · se envía al volver internet');return;}let r;try{r=await api('/api/pedidos',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({fecha,id,...body})});}catch(e){conexion(false);encolar(fecha,id,body);if(msg)toast(msg+' · se envía al volver internet');return;}try{if(!r.ok)throw 0;const {pedido}=await r.json();PED=PED.map(p=>p.id===id?pedido:p);if(msg)toast(msg);renderPedidos();return pedido;}catch(e){toast('No se pudo actualizar',true);}}
 async function aceptar(id,m){const p=PED.find(x=>x.id===id);if(!p)return;cerrarAlerta();await patchPed(p.fecha,id,{estado:'preparando',eta:m},'#'+id+' aceptado · '+m+' min');}
 async function rechazar(id,k){const p=PED.find(x=>x.id===id);if(!p)return;cerrarAlerta();await patchPed(p.fecha,id,{estado:'cancelado',motivo:k},'#'+id+' rechazado');}
 /* modo cocina */
@@ -808,12 +825,12 @@ function cerrarCocina(){$('kc').classList.add('hidden');try{document.fullscreenE
 function kCard(p,col){const m=minDesde(p),c=col==='lis'?'#7FD3A0':colMin(p,m);const sig=col==='new'?['preparando','Empezar','var(--red)']:col==='coc'?[p.modo==='Delivery'?'encamino':'listo',p.modo==='Delivery'?'Listo · sale':'Listo','var(--grn)']:['entregado','Entregado','#3A3430'];
   return `<div class="k" style="border-top-color:${col==='new'?'var(--red)':col==='coc'?'var(--gold)':'var(--grn)'}"><div class="h"><b>${p.mesa?'Mesa '+esc(p.mesa):'#'+esc(p.id)}</b><span>${p.mesa?'Sala':p.modo==='Delivery'?'Delivery'+(repN(p.rep)?' · 🛵 '+esc(repN(p.rep)):''):'Llevar'}${p.cliente&&!p.mesa?' · '+esc(p.cliente):''}</span><em style="color:${c}">${ic('clock',16)}${col==='lis'?(p.estado==='encamino'?'en camino':'listo'):m+' min'}</em></div>
    <div class="l">${(p.lineas||[]).map(l=>`<div><b>${l.q}×</b> ${esc(l.n)}${l.o&&l.o.length?`<small>${esc(l.o.map(s=>s.v.join(', ')).join(' · '))}</small>`:''}</div>`).join('')}</div>${p.nota?`<div class="nt2">${esc(p.nota)}</div>`:''}${p.etaHora&&col!=='lis'?`<div style="font-size:12px;color:#aaa;margin-top:6px">Prometido para las ${esc(p.etaHora)}</div>`:''}
-   <button style="background:${sig[2]}" onclick="patchPed('${p.fecha}','${p.id}',{estado:'${sig[0]}'})">${sig[1]}</button></div>`;}
+   ${pendiente(p.id)?'<div style="font-size:12px;color:#F5C2C3;margin-top:8px">⏳ Cambio guardado aquí · se envía al volver internet</div>':''}<button style="background:${sig[2]}" onclick="patchPed('${p.fecha}','${p.id}',{estado:'${sig[0]}'})">${sig[1]}</button></div>`;}
 function renderCocina(){const hp=$('pFecha').value===HOY?PED:[],ord=L=>L.sort((a,b)=>(a.ts||'').localeCompare(b.ts||''));
   const C=[['new','NUEVOS','var(--red)',ord(hp.filter(p=>p.estado==='nuevo'))],['coc','EN COCINA','var(--gold)',ord(hp.filter(p=>p.estado==='preparando'))],['lis','LISTOS','var(--grn)',ord(hp.filter(p=>['listo','encamino'].includes(p.estado)))]];
   const z=enPausa();
   $('kc').innerHTML=`<div class="top2"><span style="font-family:'Permanent Marker',cursive;font-size:20px;color:var(--gold)">Entre Causas</span><span style="font-size:13px;color:#aaa">· Modo cocina</span>
-   <span style="margin-left:auto"></span>${z?`<button class="gb" onclick="pausar(0).then(renderCocina)">${ic('play',14)}Reanudar (pausa hasta ${hRoma(z)})</button>`:`<button class="gb" onclick="pausar(30).then(renderCocina)">${ic('flame',15)}Cocina llena 30 min</button>`}
+   <span style="margin-left:auto"></span>${chipOffline()}${z?`<button class="gb" onclick="pausar(0).then(renderCocina)">${ic('play',14)}Reanudar (pausa hasta ${hRoma(z)})</button>`:`<button class="gb" onclick="pausar(30).then(renderCocina)">${ic('flame',15)}Cocina llena 30 min</button>`}
    <b style="font-size:20px">${hRoma(Date.now())}</b><button class="gb" onclick="${ROL==='cocina'?'salir()':'cerrarCocina()'}">${ic('x',15)}${ROL==='cocina'?'Cerrar sesión':'Salir'}</button></div>
    <div class="cols">${C.map(([k,t,c,L])=>`<div><div class="ch"><i style="background:${c}"></i>${t}<span style="color:#888;font-weight:600">${L.length}</span></div>${L.map(p=>kCard(p,k)).join('')||'<div class="vac">Nada por aquí</div>'}</div>`).join('')}</div>`;}
 setInterval(()=>{if(document.hidden)return;if(!$('kc').classList.contains('hidden'))renderCocina();else if(TAB==='ahora')renderAhora();},30000);
@@ -821,8 +838,10 @@ setInterval(()=>{if(document.hidden)return;if(!$('kc').classList.contains('hidde
 /* ---------- pedidos ---------- */
 function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.18].forEach(t=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=880;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.25,a.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+t+.15);o.start(a.currentTime+t);o.stop(a.currentTime+t+.16);});}catch(e){}}
 async function cargarPedidos(silent){const f=$('pFecha').value||HOY;
-  try{const r=await api('/api/pedidos?desde='+f+'&hasta='+f);if(r.status===401){salir();return;}const j=await r.json();HOY=j.hoy||HOY;PED=j.pedidos||[];}
-  catch(e){if(!silent)toast('No se pudieron cargar los pedidos',true);return;}
+  if(COLA.length)await enviarCola();
+  try{const r=await api('/api/pedidos?desde='+f+'&hasta='+f);if(r.status===401){salir();return;}const j=await r.json();HOY=j.hoy||HOY;PED=j.pedidos||[];
+    try{localStorage.setItem('ec_ped_'+f,JSON.stringify(PED))}catch(e){}conexion(true);aplicarCola();}
+  catch(e){conexion(false);if(!PED.length){try{PED=JSON.parse(localStorage.getItem('ec_ped_'+f)||'[]')}catch(x){}aplicarCola();}renderPedidos();return;}
   if(f===HOY){const nuevos=PED.filter(p=>p.origen==='app'&&!VISTOS.has(p.id));if(!PRIMERA&&nuevos.length){beep();toast('🔔 '+nuevos.length+(nuevos.length===1?' pedido nuevo':' pedidos nuevos'));}
     PED.forEach(p=>VISTOS.add(p.id));PRIMERA=false;const n=PED.filter(p=>p.estado==='nuevo').length;$('nbN').textContent=n;$('nbN').classList.toggle('hidden',!n);document.title=(n?'('+n+') ':'')+'Entre Causas · Panel';}
   renderPedidos();}
@@ -849,7 +868,7 @@ function renderPedidos(){renderPausa();renderAhora();if(!$('kc').classList.conta
       ${p.estado!=='cancelado'&&p.estado!=='entregado'?`<button class="no" onclick="if(confirmar(this))estado('${p.fecha}','${p.id}','cancelado')">Cancelar</button>`:''}
       ${p.estado==='cancelado'?`<button onclick="estado('${p.fecha}','${p.id}','nuevo')">Recuperar</button>`:''}</div></div>`}).join(''):`<div class="empty">${PED.length?'No hay pedidos con este filtro.':'Todavía no hay pedidos este día.<br>Los pedidos de la app aparecen aquí solos.'}</div>`;}
 function confirmar(b){if(b.dataset.ok)return true;b.dataset.ok=1;b.textContent='¿Seguro? Toca otra vez';setTimeout(()=>{if(b.isConnected){delete b.dataset.ok;b.textContent='Cancelar';}},3000);return false;}
-async function estado(fecha,id,est,pago,envio){const body={fecha,id};if(est)body.estado=est;if(pago)body.pago=pago;if(envio!==undefined)body.envio=envio;
+async function estado(fecha,id,est,pago,envio){if(OFF&&envio===undefined){const b={};if(est)b.estado=est;if(pago)b.pago=pago;encolar(fecha,id,b);return;}const body={fecha,id};if(est)body.estado=est;if(pago)body.pago=pago;if(envio!==undefined)body.envio=envio;
   try{const r=await api('/api/pedidos',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw 0;const {pedido}=await r.json();
     PED=PED.map(p=>p.id===id?pedido:p);renderPedidos();if(est)toast('#'+id+' · '+EST[est]);}catch(e){toast('No se pudo actualizar',true);}}
 function ponerEnvio(fecha,id){$('md').innerHTML=`<h2>Costo de envío · #${esc(id)}<button class="x" onclick="cerrarMd()">✕</button></h2><label class="f">Monto (€)</label><input class="fi" id="mEnv" inputmode="decimal" placeholder="2,50">
