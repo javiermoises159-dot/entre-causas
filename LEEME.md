@@ -24,3 +24,12 @@ Proyecto independiente: Cloudflare Pages + Functions + base de datos D1 y fotos 
 1. Entra en https://www.pwabuilder.com y pega `https://<tu-dominio>/admin.html`.
 2. Package for stores → Android → Generate → descarga el `.apk` (o `.aab` para Play Store).
 3. Instálalo en el móvil del dueño, entra con el PIN y toca "Activar avisos".
+
+## Fase 3 · panel completo
+
+- **Equipo** (Más → Equipo y accesos): PIN propio para cocina y camareros. La cocina solo ve el modo cocina y el camarero ve Ahora y Reservas. El repartidor no tiene PIN: recibe un link personal (`/reparto.html?k=…`).
+- **Repartidor**: se asigna desde el pedido (botón 🛵). Él toca "Salgo" (el cliente ve "En camino") y luego "Entregado".
+- **Mesa**: con el QR `/?mesa=N`, el cliente puede llamar al camarero o pedir la cuenta. Suena en el panel y la mesa sale en dorado en el plano.
+- **Stock del día**: se pone en cada plato ("Stock diario"). Cuando llega a 0 el plato sale agotado, y cada mañana vuelve a empezar.
+- **Tarjetas regalo**: desde Ahora → 🎁 Regalo se buscan por código, se cobran (cuenta − saldo) y el dueño vende tarjetas nuevas.
+- No hace falta configurar nada más en Cloudflare: todo se guarda en la misma base D1.

@@ -8,22 +8,35 @@ export const json = (data, status = 200) =>
 
 // Comprueba el PIN. Tras 10 intentos fallidos desde la misma IP, bloquea 15 minutos.
 const BLOQUEO = 15 * 60 * 1000, MAX_FALLOS = 10;
-export async function pinOk(req) {
+// Quién entra: el dueño (ADMIN_PIN) o una persona del equipo con su PIN (cocina, camarero)
+export async function quien(req) {
   const real = ENV.ADMIN_PIN;
-  if (!real) return false;
+  if (!real) return null;
   const ip = (req.headers.get("cf-connecting-ip") || "desconocida").replace(/[^\w.:-]/g, "_");
   const st = getStore({ name: "entrecausas-seguridad", consistency: "strong" });
   const key = "fallos/" + ip, ahora = Date.now();
   let f = null;
   try { f = await st.get(key, { type: "json" }); } catch {}
   const vigente = f && ahora - f.t < BLOQUEO;
-  if (vigente && f.n >= MAX_FALLOS) return false;
-  if (req.headers.get("x-admin-pin") === real) {
-    if (f) { try { await st.delete(key); } catch {} }
-    return true;
+  if (vigente && f.n >= MAX_FALLOS) return null;
+  const pin = req.headers.get("x-admin-pin") || "";
+  let q = null;
+  if (pin && pin === real) q = { rol: "dueno", nombre: "Dueño", id: "" };
+  else if (pin.length >= 4) {
+    try {
+      const l = (await getStore({ name: "entrecausas-equipo", consistency: "strong" }).get("lista", { type: "json" }))?.personas || [];
+      const p = l.find((x) => x.pin && x.pin === pin && x.rol !== "repartidor");
+      if (p) q = { rol: p.rol, nombre: p.nombre, id: p.id };
+    } catch {}
   }
+  if (q) { if (f) { try { await st.delete(key); } catch {} } return q; }
   try { await st.setJSON(key, { n: (vigente ? f.n : 0) + 1, t: vigente ? f.t : ahora }); } catch {}
-  return false;
+  return null;
+}
+// roles: si se indica, solo esos roles pueden pasar
+export async function pinOk(req, roles) {
+  const q = await quien(req);
+  return !!q && (!roles || roles.includes(q.rol));
 }
 
 // Fecha y hora siempre en hora de Italia

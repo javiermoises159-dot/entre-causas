@@ -14,7 +14,7 @@ function meses(desde, hasta) {
 }
 
 export default async (req) => {
-  if (!(await pinOk(req))) return json({ error: "PIN incorrecto" }, 401);
+  if (!(await pinOk(req, ["dueno"]))) return json({ error: "PIN incorrecto" }, 401);
   const store = getStore({ name: "entrecausas-cuentas", consistency: "strong" });
   const url = new URL(req.url);
 

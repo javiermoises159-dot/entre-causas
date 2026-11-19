@@ -25,7 +25,7 @@ export default async (req) => {
     });
     return json({ ok: true });
   }
-  if (!(await pinOk(req))) return json({ error: "PIN incorrecto" }, 401);
+  if (!(await pinOk(req, req.method === "GET" ? ["dueno", "camarero"] : ["dueno"]))) return json({ error: "PIN incorrecto" }, 401);
 
   if (req.method === "GET") {
     const d = await store.get("todos", { type: "json" });

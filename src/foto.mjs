@@ -24,7 +24,7 @@ export default async (req) => {
   }
 
   if (req.method === "POST") {
-    if (!(await pinOk(req))) return json({ error: "PIN incorrecto" }, 401);
+    if (!(await pinOk(req, ["dueno"]))) return json({ error: "PIN incorrecto" }, 401);
     const type = req.headers.get("content-type") || "image/jpeg";
     if (!type.startsWith("image/")) return json({ error: "Solo imágenes" }, 400);
     const buf = await req.arrayBuffer();

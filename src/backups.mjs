@@ -3,7 +3,7 @@ import { json, pinOk } from "./comun.mjs";
 
 // Lista y devuelve las copias automáticas de la carta (las últimas 10 guardadas)
 export default async (req) => {
-  if (!(await pinOk(req))) return json({ error: "PIN incorrecto" }, 401);
+  if (!(await pinOk(req, ["dueno"]))) return json({ error: "PIN incorrecto" }, 401);
   const store = getStore({ name: "entrecausas", consistency: "strong" });
   const key = new URL(req.url).searchParams.get("key");
   if (key) {

@@ -1,5 +1,6 @@
 import { getStore, ENV } from "./store.mjs";
 import { avisar } from "./push.mjs";
+import { restante, contar } from "./stock.mjs";
 import { json, pinOk, fechaRoma, horaRoma, esFecha, rangoDias, txt, num, modificar } from "./comun.mjs";
 
 // Misma persona aunque escriba +39, 0039 o espacios
@@ -86,6 +87,12 @@ export default async (req) => {
     if (nd.length) return json({ error: "no-disponible", items: nd }, 409);
     const lineas = armar(menu, b.lineas);
     if (!lineas.length) return json({ error: "Pedido vacío" }, 400);
+    // stock del día
+    const rest = await restante(menu);
+    const pide = {};
+    lineas.forEach((l) => { if (rest[l.id] !== undefined) pide[l.id] = (pide[l.id] || 0) + l.q; });
+    const sinStock = Object.keys(pide).filter((k) => pide[k] > rest[k]);
+    if (sinStock.length) return json({ error: "no-disponible", items: sinStock.map((k) => ({ id: k, n: lineas.find((l) => l.id === k).n, quedan: rest[k] })) }, 409);
     const mesa = txt(String(b.mesa || "").replace(/\D/g, ""), 3);
     const modo = mesa ? "Mesa" : b.modo === "Retiro en local" ? "Retiro en local" : "Delivery";
     const sub = num(lineas.reduce((a, l) => a + l.total, 0));
@@ -178,6 +185,7 @@ export default async (req) => {
       });
       if (!ok) return json({ error: "Límite diario alcanzado" }, 429);
     } catch { return json({ error: "Inténtalo de nuevo" }, 503); }
+    await contar(menu, fecha, lineas, 1);
     if (!porTel) await avisar();
     return json({ ok: true, id: p.id, fecha: p.fecha, total: p.total, envio: p.envio, fid });
   }
@@ -212,9 +220,12 @@ export default async (req) => {
   if (req.method === "PATCH") {
     let b; try { b = await req.json(); } catch { return json({ error: "JSON inválido" }, 400); }
     if (!esFecha(b.fecha) || !b.id) return json({ error: "Faltan datos" }, 400);
+    let antes = "";
     const out = await modificar(store, "dia/" + b.fecha, { pedidos: [] }, (d) => {
       const p = d.pedidos.find((x) => x.id === b.id);
       if (!p) return false;
+      antes = p.estado;
+      if (b.rep !== undefined) p.rep = txt(String(b.rep || ""), 10);
       if (ESTADOS.includes(b.estado)) p.estado = b.estado;
       if (b.pago === "Efectivo" || b.pago === "Tarjeta") p.pago = b.pago;
       if (b.eta !== undefined) { const m = parseInt(b.eta, 10); if (m >= 5 && m <= 120) { p.eta = m; p.etaHora = horaRoma(new Date(Date.now() + m * 60000)); } }
@@ -223,6 +234,9 @@ export default async (req) => {
       if (b.envio !== undefined) { p.envio = b.envio === null ? null : num(b.envio); p.total = num(p.subtotal - (p.desc || 0) + (p.envio || 0)); }
       return p;
     });
+    if (out && (antes === "cancelado") !== (out.estado === "cancelado") && out.origen !== "local") {
+      try { await contar(await leerMenu(req), out.fecha, out.lineas, out.estado === "cancelado" ? -1 : 1); } catch {}
+    }
     return out ? json({ ok: true, pedido: out }) : json({ error: "No encontrado" }, 404);
   }
 

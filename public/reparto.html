@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0E0C0B">
+<title>Entre Causas · Reparto</title>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--b:#0E0C0B;--g:#E9B54A;--c:#F6F3EF;--r:#C8373A;--t:#1F1A17;--m:#8A817A;--v:#2E7D4F;--cr:#F6E7C1}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Poppins,system-ui,sans-serif;background:var(--c);color:var(--t);-webkit-tap-highlight-color:transparent;padding-bottom:30px}
+header{background:var(--b);color:var(--cr);padding:18px 16px 16px}
+header .k{font-family:'Permanent Marker',cursive;font-size:15px;color:var(--g)}
+header h1{font-size:21px;color:#fff;margin-top:6px}
+header p{font-size:12.5px;opacity:.75;margin-top:2px}
+main{padding:14px;max-width:520px;margin:0 auto}
+.ruta{display:block;width:100%;border:none;border-radius:14px;background:var(--t);color:#fff;font:700 14px Poppins;padding:13px;margin-bottom:12px;text-align:center;text-decoration:none}
+.c{background:#fff;border-radius:16px;padding:13px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:12px;border-left:4px solid var(--r)}
+.c.sale{border-color:var(--g)}.c.ok{border-color:var(--v);opacity:.6}
+.h{display:flex;align-items:center;gap:6px}
+.tg{font-size:10px;font-weight:700;letter-spacing:.4px;background:#FBE3E3;color:var(--r);border-radius:6px;padding:3px 6px}
+.sale .tg{background:#FBF1DC;color:#9A6B12}.ok .tg{background:#E2F2E8;color:var(--v)}
+.h b{margin-left:auto;font-size:15px}
+.n{font-size:15px;font-weight:700;margin-top:6px}
+.d{font-size:13px;color:var(--m);margin-top:2px}
+.it{font-size:13px;margin-top:6px}
+.nt{background:#FBF1DC;color:#7A5410;border-radius:8px;padding:6px 9px;font-size:12.5px;margin-top:6px}
+.bb{display:flex;gap:8px;margin-top:10px}
+.bb a,.bb button{border:none;border-radius:11px;padding:11px 12px;font:700 13px Poppins;text-decoration:none;background:#F1ECE6;color:var(--t);display:flex;align-items:center;justify-content:center;gap:5px}
+.bb .go{flex:1;background:var(--v);color:#fff}.bb .sal{flex:1;background:var(--t);color:#fff}
+.vacio{background:#fff;border-radius:16px;padding:22px;text-align:center;color:var(--m);font-size:13.5px}
+.err{padding:40px 20px;text-align:center;color:var(--m)}
+</style>
+</head>
+<body>
+<header><div class="k">Entre Causas · Reparto</div><h1 id="hola">Cargando…</h1><p id="res"></p></header>
+<main id="m"></main>
+<script>
+const $=id=>document.getElementById(id),K=new URLSearchParams(location.search).get('k')||'';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const eur=v=>Number(v||0).toFixed(2).replace('.',',')+' €';
+const tel=t=>{let d=String(t||'').replace(/\D/g,'');if(d.length===10&&d[0]==='3')d='39'+d;return d;};
+let P=[];
+async function cargar(){try{const r=await fetch('/api/reparto?k='+encodeURIComponent(K),{cache:'no-store'});if(r.status===401){$('hola').textContent='Link no válido';$('m').innerHTML='<div class="err">Pide al local un link nuevo.</div>';return;}
+  const j=await r.json();P=j.pedidos||[];$('hola').textContent='Hola, '+j.nombre.split(' ')[0];pintar();}catch(e){}}
+function pintar(){const pend=P.filter(p=>p.estado!=='entregado'),cob=pend.reduce((a,p)=>a+p.total,0);
+  $('res').textContent=pend.length?`${pend.length} ${pend.length===1?'entrega':'entregas'} · cobrar ${eur(cob)}`:'Sin entregas pendientes';
+  const dirs=pend.map(p=>[p.dir,p.comune,'Napoli'].filter(Boolean).join(', '));
+  let h=pend.length?`<a class="ruta" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent('Via Giordano Bruno 86, Napoli')}&destination=${encodeURIComponent(dirs[dirs.length-1])}${dirs.length>1?'&waypoints='+encodeURIComponent(dirs.slice(0,-1).join('|')):''}&travelmode=driving">🗺️ Ver la ruta completa</a>`:'';
+  h+=P.length?P.slice().sort((a,b)=>(a.estado==='entregado')-(b.estado==='entregado')).map((p,i)=>{const ok=p.estado==='entregado',sale=p.estado==='encamino',d=[p.dir,p.comune].filter(Boolean).join(' · ');
+    return `<div class="c ${ok?'ok':sale?'sale':''}"><div class="h"><span class="tg">${ok?'ENTREGADO':sale?'EN CAMINO':'PARA SALIR'}</span><span style="font-size:12px;color:var(--m)">#${esc(p.id)}${p.etaHora?' · '+esc(p.etaHora):''}</span><b>${p.pago==='Tarjeta'?'Pagado':'Cobrar '+eur(p.total)}</b></div>
+     <div class="n">${esc(p.cliente||'Cliente')}</div><div class="d">📍 ${esc(d)}</div><div class="it">${esc(p.lineas.map(l=>l.q+'× '+l.n).join(' · '))}</div>
+     ${p.nota?`<div class="nt">${esc(p.nota)}</div>`:''}${p.notaCli?`<div class="nt">📌 ${esc(p.notaCli)}</div>`:''}
+     ${ok?'':`<div class="bb"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d+', Napoli')}" target="_blank" rel="noopener">🗺️ Ir</a>${p.tel?`<a href="tel:${esc(p.tel)}">📞</a><a href="https://wa.me/${tel(p.tel)}" target="_blank" rel="noopener">💬</a>`:''}${sale?`<button class="go" onclick="marcar('${p.fecha}','${p.id}','entregado')">✓ Entregado</button>`:`<button class="sal" onclick="marcar('${p.fecha}','${p.id}','encamino')">🛵 Salgo</button>`}</div>`}</div>`}).join(''):'<div class="vacio">Todavía no tienes entregas.<br>Aparecen aquí cuando el local te las asigna.</div>';
+  $('m').innerHTML=h;}
+async function marcar(f,id,e){try{const r=await fetch('/api/reparto?k='+encodeURIComponent(K),{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({fecha:f,id,estado:e})});if(!r.ok)throw 0;const p=P.find(x=>x.id===id);if(p)p.estado=e;pintar();}catch(e){alert('No se pudo guardar. Revisa tu internet.');}}
+cargar();setInterval(()=>{if(!document.hidden)cargar();},20000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)cargar();});
+</script>
+</body>
+</html>
