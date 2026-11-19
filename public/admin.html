@@ -375,6 +375,7 @@ body.app-palmare #vApp,body.app-palmare #bn,body.app-palmare #saveBar,body.app-p
 
   <!-- MAS -->
   <div id="p-mas" class="hidden">
+    <div class="box" id="accBox"></div>
     <div id="setup"></div>
     <div class="box" id="instBox"></div>
     <div class="box" id="equipoBox"></div>
@@ -609,6 +610,15 @@ function repMd(fecha,id){const p=PED.find(x=>x.id===id);if(!p)return;
    ${REPS.map(r=>`<button class="btn ${p.rep===r.id?'b-dk':'b-lt'}" style="width:100%;margin-bottom:8px;text-align:left" onclick="cerrarMd();patchPed('${fecha}','${id}',{rep:'${r.id}'},'Asignado a ${esc(r.nombre)}')">🛵 ${esc(r.nombre)}${p.rep===r.id?' ✓':''}</button>`).join('')}
    ${p.rep?`<button class="btn b-red" style="width:100%" onclick="cerrarMd();patchPed('${fecha}','${id}',{rep:''},'Sin repartidor')">Quitar repartidor</button>`:''}
    <p style="font-size:11.5px;color:var(--mut);margin-top:10px">El pedido le aparece en su link. Cuando toca "Salgo", el cliente ve "En camino".</p>`;$('ov').classList.remove('hidden');}
+
+/* ---------- accesos del equipo (solo dueño): links de cada app ---------- */
+const ACC=[['🛍️','App de los clientes','/','Pedidos, reservas y carta'],['📝','Palmare del camarero','/palmare','El camarero entra con su PIN'],['👨‍🍳','Pantalla de cocina','/cocina','La cocina entra con su PIN'],['🛵','Repartidores','','Cada uno tiene su link personal (en Equipo)']];
+function renderAccesos(){const el=$('accBox');if(!el)return;if(ROL!=='dueno'){el.classList.add('hidden');return;}
+  el.innerHTML=`<h3>🔗 Accesos del equipo</h3><p>Cada uno usa su propia app. Ábrela aquí, cópiala o mándala por WhatsApp. Con "QR" la escaneas desde la tablet o el móvil y ya está.</p>${ACC.map(([i,t,u,d])=>{const L=location.origin+u;return `<div style="padding:11px 0;border-bottom:1px solid var(--line)"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">${i}</span><div style="flex:1;min-width:0"><b style="font-size:13.5px">${t}</b><div style="font-size:11.5px;color:var(--mut)">${u?esc(L.replace(/^https?:\/\//,'')):''}${u?' · ':''}${d}</div></div></div>
+   ${u?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;padding-left:32px"><a class="pill2" style="text-decoration:none" href="${u}" target="_blank" rel="noopener">Abrir</a><button class="pill2" onclick="navigator.clipboard?.writeText('${L}');toast('Link copiado')">Copiar</button><a class="pill2" style="text-decoration:none" href="https://wa.me/?text=${encodeURIComponent(t+' · Entre Causas: '+L)}" target="_blank" rel="noopener">💬 WhatsApp</a><button class="pill2" onclick="accQR('${L}','${t}')">QR</button></div>`:`<div style="padding-left:32px;margin-top:6px"><button class="pill2" onclick="document.getElementById('equipoBox').scrollIntoView({behavior:'smooth'})">Ver repartidores ↓</button></div>`}</div>`}).join('')}
+   <p style="font-size:12px;color:var(--mut);margin-top:10px">Los PIN de cada persona se crean y se borran en <b>Equipo y accesos</b>, aquí abajo.</p>`;}
+function accQR(L,t){const c=qrCanvas(L,600);$('md').innerHTML=`<h2>${esc(t)}<button class="x" onclick="cerrarMd()">✕</button></h2><p style="font-size:12.5px;color:var(--mut);margin:4px 0 10px">Escanéalo con la cámara de la tablet o del móvil.</p><img src="${c.toDataURL('image/png')}" alt="QR" style="width:100%;max-width:300px;display:block;margin:0 auto;border-radius:12px;border:1px solid var(--line)"><p style="text-align:center;font-size:12.5px;margin-top:8px">${esc(L.replace(/^https?:\/\//,''))}</p>`;$('ov').classList.remove('hidden');}
+
 /* ---------- equipo y accesos (solo dueño) ---------- */
 let EQ=null,EROL='camarero';
 async function renderEquipo(){const el=$('equipoBox');if(!el)return;if(ROL!=='dueno'){el.classList.add('hidden');return;}
@@ -905,7 +915,7 @@ function renderAhora(){if(!M||!$('ahH'))return;if(!$('instA').innerHTML&&!instal
     <div class="bb">${p.tel?`<a class="p" href="https://wa.me/${waNum(p.tel)}?text=${encodeURIComponent(msgPed(p))}" target="_blank" rel="noopener">${ic('chat',15)}Avisar que está listo</a>`:''}<button class="${p.tel?'':'p'}" onclick="estado('${p.fecha}','${p.id}','entregado')">Entregado</button></div></div>`).join('');
   h+=autoCards(hoyP);
   if(curso.length)h+=`<div class="ah2">En curso</div><div class="ecl">${curso.map(p=>{const m=minDesde(p);return `<div onclick="${p.modo==='Delivery'&&REPS.length?`repMd('${p.fecha}','${p.id}')`:`tab('pedidos')`}">${ic(icModo(p),16,'var(--mut)')}<b>${quien(p)}</b><span>· ${p.estado==='encamino'?'en camino':p.etaHora?'prometido '+esc(p.etaHora):'en cocina'}${p.modo==='Delivery'&&REPS.length?' · 🛵 '+(repN(p.rep)||'<u>asignar</u>'):''}</span><em style="color:${colMin(p,m)}">${m} min</em></div>`}).join('')}</div>`;
-  h+=`<div class="lk"><button onclick="abrirCocina()">👨‍🍳 Modo cocina</button><button onclick="pmAbrir()">📝 Palmare</button><button onclick="telMd()">📞 Teléfono</button><button onclick="regMd()">🎁 Regalo</button><button onclick="tab('pedidos')">📋 Todos</button></div>`;
+  h+=`<div class="lk"><button onclick="abrirCocina()">👨‍🍳 Modo cocina</button><button onclick="pmAbrir()">📝 Palmare</button><button onclick="tab('mas')">🔗 Accesos</button><button onclick="telMd()">📞 Teléfono</button><button onclick="regMd()">🎁 Regalo</button><button onclick="tab('pedidos')">📋 Todos</button></div>`;
   $('ahL').innerHTML=h;}
 function menuPausa(){$('md').innerHTML=`<h2>Cocina llena<button class="x" onclick="cerrarMd()">✕</button></h2><p style="font-size:13px;color:var(--mut);margin:4px 0 12px">La app deja de aceptar pedidos un rato y vuelve sola. Los programados sí entran.</p>
   <div class="grid2">${[15,30,45,60].map(m=>`<button class="btn b-dk" onclick="cerrarMd();pausar(${m}).then(renderAhora)">${m} min</button>`).join('')}</div>`;$('ov').classList.remove('hidden');}
@@ -1175,7 +1185,7 @@ function renderEnvio(){const e=AJ().envio,f=v=>v==null||v===''||v===0?'':String(
 function numE(k,v){v=v.trim().replace(',','.');const n=parseFloat(v);const e=AJ().envio;
   if(k==='costo')e.costo=v===''||isNaN(n)?null:n;else if(k==='minimo')e.minimo=isNaN(n)?0:n;else e.gratisDesde=v===''||isNaN(n)?null:n;dirty();}
 const LG=()=>AJ().legal;
-function renderMas(){renderAuto();pintarInst();renderEquipo();const all=allItems();const g=LG();if($('gRa')){$('gRa').value=g.razon||'';$('gIva').value=g.piva||'';$('gEm').value=g.email||'';$('gSe').value=g.sede||'';}
+function renderMas(){renderAccesos();renderAuto();pintarInst();renderEquipo();const all=allItems();const g=LG();if($('gRa')){$('gRa').value=g.razon||'';$('gIva').value=g.piva||'';$('gEm').value=g.email||'';$('gSe').value=g.sede||'';}
   if($('qrUrl')&&!$('qrUrl').value){$('qrUrl').value=location.origin+'/';pintarQR();}
   $('recoList').innerHTML=M.recomendados.filter(id=>all[id]).map(id=>`<span class="pill">⭐ ${esc(all[id].nombre)}</span>`).join('')||'<span style="color:var(--mut);font-size:13px">Ninguno</span>';
   const a=AJ(),cu=a.cupones;$('cupList').innerHTML=cu.length?'<div class="lrow cu"><small>Código</small><small>Tipo</small><small>Valor</small><small>Mín. €</small><small></small></div>'+cu.map((c,i)=>`<div class="lrow cu"><input class="fi" style="text-transform:uppercase" value="${esc(c.codigo)}" placeholder="BENVENUTO" oninput="AJ().cupones[${i}].codigo=this.value.trim().toUpperCase();dirty()"><select class="fi" onchange="AJ().cupones[${i}].tipo=this.value;dirty()"><option${c.tipo==='%'?' selected':''}>%</option><option${c.tipo==='€'?' selected':''}>€</option></select><input class="fi" inputmode="decimal" value="${String(c.valor??'').replace('.',',')}" oninput="AJ().cupones[${i}].valor=parseFloat(this.value.replace(',','.'))||0;dirty()"><input class="fi" inputmode="decimal" value="${c.minimo?String(c.minimo).replace('.',','):''}" placeholder="—" oninput="AJ().cupones[${i}].minimo=parseFloat(this.value.replace(',','.'))||0;dirty()"><div style="display:flex;flex-direction:column;gap:4px;align-items:center"><label class="sw" style="transform:scale(.8)"><input type="checkbox" ${c.activo!==false?'checked':''} onchange="AJ().cupones[${i}].activo=this.checked;dirty()"><i></i></label><button class="mini-x" onclick="AJ().cupones.splice(${i},1);dirty();renderMas()">✕</button></div></div>`).join(''):'<div style="font-size:13px;color:var(--mut)">Todavía no hay cupones.</div>';
