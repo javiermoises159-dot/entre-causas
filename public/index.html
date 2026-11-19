@@ -228,6 +228,9 @@ body.mesa .bar5{display:none!important}
 .vbar{bottom:calc(58px + env(safe-area-inset-bottom))}body.mesa .vbar{bottom:0}body.mesa .nav5{display:none!important}.wrap{padding-bottom:160px}
 .bar5{display:none!important}
 .gfb{display:none!important}
+.trk{display:flex;gap:6px;width:100%;margin-top:18px}.ts{flex:1;text-align:center;font-size:11px;color:var(--mut)}.ts i{display:block;height:5px;border-radius:9px;background:var(--line);margin-bottom:6px}.ts.on{color:var(--ink);font-weight:600}.ts.on i{background:var(--ok)}.trk-x{margin-top:18px;font-weight:600;color:var(--ac-d)}
+#bSend{background:var(--ac)}#bSend svg{display:none}
+.mr .e.confirmada,.mr .e.llego{background:#DDF4EA;color:#16936F}.mr .e.rechazada,.mr .e.noshow{background:#FDECEA;color:var(--ac-d)}
 .rpp{background:#0E0C0B;color:#E9B54A;font-size:12px;font-weight:700;border-radius:99px;padding:4px 10px;letter-spacing:0}.rp1{font-size:12.5px;color:var(--mut);margin-top:4px;line-height:1.45}.rpw{display:block;color:var(--ac-d);font-weight:600;margin-top:4px}.rpok{flex-basis:100%;text-align:center;font-size:11.5px;font-weight:500;color:#E9B54A;margin-top:2px}
 #resPage .wa,#resSheet .wa{background:var(--ink);flex-wrap:wrap}
 body.t-res .vbar,body.t-perfil .vbar{display:none!important}
@@ -358,7 +361,7 @@ body.mesa .qa{display:none!important}
   <img src="mascota.png" alt="">
   <h2 data-t="okTitulo"></h2>
   <p data-t="okTexto"></p>
-  <div class="okfid hidden" id="okFid"></div><div class="rs" id="okRes"></div>
+  <div class="okfid hidden" id="okFid"></div><div id="okTrk" style="width:100%;max-width:340px"></div><div class="rs" id="okRes"></div>
   <button class="b1" onclick="cerrarOk()" data-t="volver"></button>
   <a id="okLink" href="#" target="_blank" rel="noopener" data-t="okLink"></a><div class="oklinks" id="okLinks"></div>
 </div>
@@ -436,6 +439,20 @@ Object.assign(T.es,{rpL:'En toda la cuenta reservando aquí · lun–jue · prim
 const rpPill=()=>{const P=AJ.resPromo;return P&&P.activo?`<span class="rpp">-${P.pct}%</span>`:'';};
 function resPromo(){const P=AJ.resPromo;if(!P||!P.activo)return '';const w=resDescWhy();return `<div class="rp1">${t('rpL')}${w==='dia'?`<b class="rpw">${t('rpNoDia')}</b>`:w==='used'?`<b class="rpw">${t('rpNoUsed')}</b>`:''}</div>`;}
 function resPromoOld(){const P=AJ.resPromo;if(!P||!P.activo)return '';const w=resDescWhy();return `<div class="rpro"><b>🏷️ ${t('rpT')(P.pct)}</b><small>${t('rpS')}</small>${w==='off'?'':`<span class="${w==='ok'?'rok':'rno'}">${w==='ok'?t('rpOk'):w==='dia'?t('rpNoDia'):t('rpNoUsed')}</span>`}</div>`;}
+Object.assign(T.es,{enviar:'Enviar pedido',resEnviar:'Reservar',okRecT:'¡Pedido recibido! ✓',okRecTx:'El local ya tiene tu pedido. Aquí ves cómo va.',resRecT:'¡Reserva recibida! ✓',resRecTx:'El local la revisa y te confirma por WhatsApp en breve.',okWa:'¿Dudas? Escribe al local por WhatsApp',tk_nuevo:'Recibido',tk_preparando:'En cocina',tk_encamino:'En camino',tk_listo:'Listo para retirar',tk_entregado:'Entregado',tk_cancelado:'Pedido cancelado · escríbenos por WhatsApp',rs_pendiente:'Por confirmar',rs_confirmada:'✓ Confirmada',rs_rechazada:'No disponible',rs_llego:'¡Gracias! 🐟',rs_noshow:'No asistida'});
+Object.assign(T.it,{enviar:'Invia ordine',resEnviar:'Prenota',okRecT:'Ordine ricevuto! ✓',okRecTx:'Il locale ha già il tuo ordine. Qui vedi come procede.',resRecT:'Prenotazione ricevuta! ✓',resRecTx:'Il locale la controlla e ti conferma su WhatsApp a breve.',okWa:'Dubbi? Scrivi al locale su WhatsApp',tk_nuevo:'Ricevuto',tk_preparando:'In cucina',tk_encamino:'In consegna',tk_listo:'Pronto da ritirare',tk_entregado:'Consegnato',tk_cancelado:'Ordine annullato · scrivici su WhatsApp',rs_pendiente:'Da confermare',rs_confirmada:'✓ Confermata',rs_rechazada:'Non disponibile',rs_llego:'Grazie! 🐟',rs_noshow:'Non presentato'});
+Object.assign(T.en,{enviar:'Send order',resEnviar:'Book',okRecT:'Order received! ✓',okRecTx:'The restaurant already has your order. Follow it here.',resRecT:'Booking received! ✓',resRecTx:'The restaurant will check it and confirm on WhatsApp shortly.',okWa:'Questions? Message the restaurant on WhatsApp',tk_nuevo:'Received',tk_preparando:'In the kitchen',tk_encamino:'On the way',tk_listo:'Ready for pickup',tk_entregado:'Delivered',tk_cancelado:'Order cancelled · message us on WhatsApp',rs_pendiente:'To be confirmed',rs_confirmada:'✓ Confirmed',rs_rechazada:'Not available',rs_llego:'Thank you! 🐟',rs_noshow:'No-show'});
+let TRK=null,TRKT=null;
+function trkHTML(k,est){if(est==='cancelado'||est==='rechazada')return `<div class="trk-x">${t((k.kind==='res'?'rs_':'tk_')+est)}</div>`;
+  const S=k.kind==='res'?['pendiente','confirmada']:k.modo==='Mesa'?['nuevo','preparando','entregado']:k.modo==='Retiro en local'?['nuevo','preparando','listo','entregado']:['nuevo','preparando','encamino','entregado'];
+  const i=Math.max(0,S.indexOf(est==='llego'?'confirmada':est));return `<div class="trk">${S.map((x,j)=>`<div class="ts${j<=i?' on':''}"><i></i><span>${t((k.kind==='res'?'rs_':'tk_')+x)}</span></div>`).join('')}</div>`;}
+async function pollTrk(){clearTimeout(TRKT);if(!TRK||$('ok').classList.contains('hidden'))return;let est=TRK.kind==='res'?'pendiente':'nuevo';
+  try{const r=await fetch(`/api/${TRK.kind==='res'?'reservas':'pedidos'}?ver=${encodeURIComponent(TRK.id)}&f=${TRK.fecha}`,{cache:'no-store'});if(r.ok){const j=await r.json();est=j.estado||est;}}catch(e){}
+  $('okTrk').innerHTML=trkHTML(TRK,est);if(!['entregado','cancelado','rechazada','llego'].includes(est))TRKT=setTimeout(pollTrk,15000);}
+function okServer(kind,id,fecha,modo){const ok=$('ok');ok.querySelector('h2').textContent=t(kind==='res'?'resRecT':'okRecT');ok.querySelector('p').textContent=t(kind==='res'?'resRecTx':'okRecTx');
+  const L=$('okLink');L.textContent=t('okWa');L.href='https://wa.me/'+String(AJ.whatsapp||'').replace(/\D/g,'');TRK={kind,id,fecha,modo};$('okTrk').innerHTML=trkHTML(TRK,kind==='res'?'pendiente':'nuevo');setTimeout(pollTrk,4000);}
+async function refreshRes(){const L=LS.get('ed_reservas',[]);let ch=false;await Promise.all(L.filter(r=>r.srv&&r.fecha>=fechaRome(0)&&!['rechazada','llego'].includes(r.estado)).map(async r=>{try{const x=await fetch(`/api/reservas?ver=${encodeURIComponent(r.id)}&f=${r.fecha}`,{cache:'no-store'});if(x.ok){const j=await x.json();if(j.estado&&j.estado!==r.estado){r.estado=j.estado;ch=true;}}}catch(e){}}));
+  if(ch){LS.set('ed_reservas',L);if(TAB==='res')renderRes();if(TAB==='perfil')renderPerfil();}}
 Object.assign(T.es,{nHome:'Inicio',nMenu:'Carta',nRes:'Reservar',nPerfil:'Perfil',gfbT:'<b>Regala Entre Causas</b> · tarjetas de 25 a 100 €',misRes:'Mis reservas',resPend:'Por confirmar',pfHola:n=>`Hola, ${n}`,pfInv:'Hola 👋',pfInvS:'Regístrate para sumar puntos',pfPed:'Mis pedidos',pfNoPed:'Aún no has pedido',pfRep:'Repetir',pfRes:'Mis reservas',pfResN:n=>n?`${n} próxima${n>1?'s':''}`:'Ninguna próxima',pfCup:'Mis cupones',pfDat:'Mis datos',pfDatS:'Nombre, teléfono, cumpleaños',pfLang:'Idioma',pfLoc:'El local',pfCupT:'Tus cupones',pfCupNo:'No tienes cupones activos ahora mismo.',pfCupUse:'Escríbelo en el carrito al pedir.'});
 Object.assign(T.it,{nHome:'Home',nMenu:'Menù',nRes:'Prenota',nPerfil:'Profilo',gfbT:'<b>Regala Entre Causas</b> · carte da 25 a 100 €',misRes:'Le mie prenotazioni',resPend:'Da confermare',pfHola:n=>`Ciao, ${n}`,pfInv:'Ciao 👋',pfInvS:'Registrati per raccogliere punti',pfPed:'I miei ordini',pfNoPed:'Non hai ancora ordinato',pfRep:'Ripeti',pfRes:'Le mie prenotazioni',pfResN:n=>n?`${n} in arrivo`:'Nessuna in arrivo',pfCup:'I miei coupon',pfDat:'I miei dati',pfDatS:'Nome, telefono, compleanno',pfLang:'Lingua',pfLoc:'Il locale',pfCupT:'I tuoi coupon',pfCupNo:'Non hai coupon attivi in questo momento.',pfCupUse:'Scrivilo nel carrello quando ordini.'});
 Object.assign(T.en,{nHome:'Home',nMenu:'Menu',nRes:'Book',nPerfil:'Profile',gfbT:'<b>Give Entre Causas</b> · gift cards from €25 to €100',misRes:'My bookings',resPend:'To be confirmed',pfHola:n=>`Hi, ${n}`,pfInv:'Hi 👋',pfInvS:'Sign up to collect points',pfPed:'My orders',pfNoPed:'No orders yet',pfRep:'Repeat',pfRes:'My bookings',pfResN:n=>n?`${n} upcoming`:'None upcoming',pfCup:'My coupons',pfDat:'My details',pfDatS:'Name, phone, birthday',pfLang:'Language',pfLoc:'The restaurant',pfCupT:'Your coupons',pfCupNo:'You have no active coupons right now.',pfCupUse:'Enter it in the cart when you order.'});
@@ -630,11 +647,11 @@ async function enviar(){const err=$('err');const fail=s=>{err.textContent=s;err.
   if(fuera.length){CART=CART.filter(l=>!ITEMS[l.id].agotado);saveCart();renderAll();updCart();return fail(t('yaNo')([...new Set(fuera.map(l=>N(ITEMS[l.id])))].join(', ')));}
   err.style.display='none';const nota=$('nota').value.trim(),btn=$('bSend');btn.disabled=true;
   // se registra el pedido en el panel del local (si falla, igual se envía por WhatsApp)
-  let pid='',fid=null;try{const ac=new AbortController();const tm=setTimeout(()=>ac.abort(),5000);
+  let pid='',fid=null,pfecha='';try{const ac=new AbortController();const tm=setTimeout(()=>ac.abort(),5000);
     const r=await fetch('/api/pedidos',{method:'POST',headers:{'content-type':'application/json'},signal:ac.signal,
-      body:JSON.stringify({lineas:CART.map(({id,q,o})=>({id,q,o})),cliente:{nombre:CLI.nom,dir:CLI.dir},modo:CLI.modo,pago:CLI.pago,nota,lang:LANG,
+      body:JSON.stringify({lineas:CART.map(({id,q,o})=>({id,q,o})),cliente:{nombre:CLI.nom,dir:CLI.dir},modo:CLI.modo,mesa:MESA||'',pago:CLI.pago,nota,lang:LANG,
         tel:CLI.tel,promos:CLI.promos,comune:CLI.modo==='Delivery'?CLI.comune:'',cupon:CLI.cupon,prog:CLI.cuando==='prog'?{dia:Number(CLI.pdia||0),hora:CLI.phora}:null})});
-    clearTimeout(tm);if(r.ok){const j=await r.json();pid=j.id||'';fid=j.fid||null;}
+    clearTimeout(tm);if(r.ok){const j=await r.json();pid=j.id||'';fid=j.fid||null;pfecha=j.fecha||'';}
     else if(r.status===423){btn.disabled=false;const j=await r.json();return fail(t('errPausa')(j.hasta||''));}
     else if(r.status===409){const j=await r.json();btn.disabled=false;const ids=(j.items||[]).map(x=>x.id);
       ids.forEach(id=>{if(ITEMS[id])ITEMS[id]._ag=true;});CART=CART.filter(l=>!ids.includes(l.id));saveCart();renderAll();updCart();
@@ -654,7 +671,7 @@ async function enviar(){const err=$('err');const fail=s=>{err.textContent=s;err.
   if(T2.cu&&T2.cu.c&&T2.cu.c.primera&&!T2.cu.err)LS.set('ed_c_'+String(T2.cu.c.codigo).toUpperCase(),true);
   CLI.cupon='';$('cup').value='';CLI.cuando='ya';LS.set('ed_cli',CLI);
   CART=[];saveCart();$('nota').value='';closeAll();$('ok').classList.remove('hidden');renderAll();
-  setTimeout(()=>{try{location.href=url}catch(e){}},350);}
+  if(pid)okServer('ped',pid,pfecha,MESA?'Mesa':CLI.modo);else setTimeout(()=>{try{location.href=url}catch(e){}},350);}
 let REGNEXT='Delivery';
 function elegir(v){$('wel').classList.add('out');setTimeout(()=>$('wel').classList.add('hidden'),300);if(!LS.get('ed_reg',null)&&!LS.get('ed_regno',false)&&v!=='res'){REGNEXT=v;openReg();return;}irModo(v);}
 function irModo(v){if(v==='perfil'){tab('perfil');renderHome();return;}if(v==='none'){if(telD())openFid();renderHome();return;}if(v==='res'){openRes();return;}CLI.modo=v;LS.set('ed_cli',CLI);updCart();tab('home');}
@@ -671,7 +688,7 @@ function registrar(){const nom=$('gNom').value.trim(),tel=$('gTel').value.trim()
   if(!nom||tel.replace(/\D/g,'').length<9||!ok){e.textContent=t('regErr');e.style.display='block';return;}
   CLI.nom=nom;CLI.tel=tel;CLI.promos=true;CLI.cupon='BIENVENIDA10';LS.set('ed_cli',CLI);
   const reg={nombre:nom,tel,promos:true,lang:LANG,fecha:new Date().toISOString(),cumple:($('gCum').value||'').slice(5)};LS.set('ed_reg',reg);LS.set('ed_clientes',[...LS.get('ed_clientes',[]).filter(c=>c.tel!==tel),reg]);
-  try{fetch('/api/clientes',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(reg)}).catch(()=>{});}catch(x){}
+  try{fetch('/api/clientes?registro',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(reg)}).catch(()=>{});}catch(x){}
   $('nom').value=nom;$('tel').value=tel;$('promos').checked=true;$('cup').value='BIENVENIDA10';closeAll();toast(t('regOk'));irModo(REGNEXT);}
 const GC={v:50,s:'natale'};
 const GST={clasica:{bg:'#0E0C0B',st:0},natale:{bg:'#5E1013',st:0},fiesta:{bg:'#0E0C0B',st:1}};
@@ -716,9 +733,9 @@ function slots(f){const s=span(dowOf(f));if(!s)return[];const hoy=f===fechaRome(
 function diasRes(){const o=[];for(let i=0;i<21&&o.length<14;i++){const f=fechaRome(i);if(cerradoF(f)||!slots(f).length)continue;const[y,m,d]=f.split('-');o.push({f,a:i===0?t('hoy'):i===1?t('manana'):t('dias')[dowOf(f)].slice(0,3),n:d+'/'+m});}return o;}
 let RES_T='resSheet',TAB='home';
 function tab(t){TAB=t;['home','menu','res','perfil'].forEach(x=>document.body.classList.toggle('t-'+x,x===t));document.querySelectorAll('#nav5 a').forEach(a=>a.classList.toggle('act',a.dataset.tab===t));
-  if(t==='res'){RES_T='resPage';const ds=diasRes();if(!ds.some(x=>x.f===RES.f))RES.f=ds[0]?ds[0].f:'';renderRes();}if(t==='perfil')renderPerfil();scrollTo(0,0);}
+  if(t==='res'){RES_T='resPage';const ds=diasRes();if(!ds.some(x=>x.f===RES.f))RES.f=ds[0]?ds[0].f:'';renderRes();}if(t==='perfil')renderPerfil();if(t==='res'||t==='perfil')refreshRes();scrollTo(0,0);}
 function misRes(){const L=LS.get('ed_reservas',[]).filter(r=>r.fecha>=fechaRome(0)).sort((a,b)=>(a.fecha+a.hora).localeCompare(b.fecha+b.hora));if(!L.length)return '';
-  return `<div class="h2" style="margin:26px 0 10px"><span>${t('misRes')}</span></div>`+L.map(r=>`<div class="mr"><span class="d"><b>${r.fecha.slice(8,10)}</b>${t('dias')[dowOf(r.fecha)].slice(0,3)}</span><span class="tx"><b>${esc(r.hora)}</b> · ${r.personas} 👥<br><span>${esc(r.nombre)}</span></span><span class="e">${t('resPend')}</span></div>`).join('');}
+  return `<div class="h2" style="margin:26px 0 10px"><span>${t('misRes')}</span></div>`+L.map(r=>`<div class="mr"><span class="d"><b>${r.fecha.slice(8,10)}</b>${t('dias')[dowOf(r.fecha)].slice(0,3)}</span><span class="tx"><b>${esc(r.hora)}</b> · ${r.personas} 👥<br><span>${esc(r.nombre)}</span></span><span class="e ${r.estado||'pendiente'}">${t('rs_'+(r.estado||'pendiente'))}</span></div>`).join('');}
 const PIC={repeat:'<path d="M4 9a8 8 0 0 1 14-3l2 2"/><path d="M20 4v4h-4"/><path d="M20 15a8 8 0 0 1-14 3l-2-2"/><path d="M4 20v-4h4"/>',cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/>',gift:'<path d="M20 12v9H4v-9"/><path d="M2 7h20v5H2z"/><path d="M12 21V7"/><path d="M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7z"/>',tag:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>'};
 const pic2=n=>`<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PIC[n]}</svg>`;
 function cupActivos(){return [...(AJ.cupones||[]),...LS.get('ed_cup_extra',[])].filter(c=>c&&c.activo!==false&&!(c.primera&&LS.get('ed_c_'+String(c.codigo).toUpperCase(),false))&&(String(c.codigo).toUpperCase()!=='BIENVENIDA10'||LS.get('ed_reg',null)));}
@@ -741,15 +758,16 @@ function renderRes(){const sh=$(RES_T),y=sh.scrollTop,ds=diasRes(),sl=RES.f?slot
   <div class="lbl">${t('tel')}</div><input class="fi" id="rTel" type="tel" inputmode="tel" autocomplete="tel" placeholder="3xx xxx xxxx" value="${esc(CLI.tel)}" oninput="CLI.tel=this.value">
   <div class="lbl">${t('resNota')}</div><textarea class="fi" id="rNota" placeholder="${esc(t('resNotaPh'))}" oninput="RES.nota=this.value">${esc(RES.nota)}</textarea>
   <div class="err" id="rErr"></div><button class="wa" onclick="enviarRes()">💬 <span>${t('resEnviar')}</span>${resDescOk()?`<small class="rpok">${t('rpOk1')(AJ.resPromo.pct)}</small>`:''}</button>`;sh.scrollTop=y;if(RES_T==='resPage')sh.insertAdjacentHTML('beforeend',misRes());}
-function enviarRes(){const nom=String(CLI.nom||'').trim(),tel=String(CLI.tel||'').trim(),e=$('rErr');
+async function enviarRes(){const nom=String(CLI.nom||'').trim(),tel=String(CLI.tel||'').trim(),e=$('rErr');
   if(!RES.f||!RES.h||!nom||!tel){e.textContent=t('errRes');e.style.display='block';e.scrollIntoView({behavior:'smooth',block:'center'});return;}
   LS.set('ed_cli',CLI);const[y,m,d]=RES.f.split('-');const dia=T.es.Dias[dowOf(RES.f)]+' '+d+'/'+m;
   let msg=`🍽️ *NUEVA RESERVA · Entre Causas*\n\n📅 ${dia}\n⏰ ${RES.h}\n👥 ${RES.p} ${RES.p===1?'persona':'personas'}\n\n👤 ${nom}\n📞 ${tel}`;if(RES.nota.trim())msg+=`\n📝 ${RES.nota.trim()}`;if(resDescOk())msg+=`\n\n🏷️ *-${AJ.resPromo.pct}% APP* en toda la cuenta (lun–jue · primera reserva · no acumulable)`;if(LANG!=='es')msg+=`\n🌐 Cliente en ${LANG==='it'?'italiano':'inglés'}`;
   const url='https://wa.me/'+String(AJ.whatsapp||'').replace(/\D/g,'')+'?text='+encodeURIComponent(msg);
   const rv={id:Date.now().toString(36),fecha:RES.f,hora:RES.h,personas:RES.p,nombre:nom,tel,nota:RES.nota.trim(),estado:'pendiente',creada:new Date().toISOString(),desc:resDescOk()?AJ.resPromo.pct:0};if(rv.desc)LS.set('ed_res20_'+String(tel).replace(/\D/g,''),true);
-  LS.set('ed_reservas',[...LS.get('ed_reservas',[]),rv]);try{fetch('/api/reservas',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(rv)}).catch(()=>{});}catch(x){}
+  let sid='';try{const rq=await fetch('/api/reservas',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...rv,lang:LANG})});if(rq.ok){const j=await rq.json();sid=j.id||'';if(sid){rv.id=sid;rv.srv=true;rv.desc=j.desc||0;}}}catch(x){}
+  LS.set('ed_reservas',[...LS.get('ed_reservas',[]),rv]);
   const ok=$('ok');ok.querySelector('h2').textContent=t('resOkT');ok.querySelector('p').textContent=t('resOkTx');$('okRes').textContent=msg.replace(/\*/g,'').replace(/^.*\n\n/,'');$('okLink').href=url;$('okFid').classList.add('hidden');$('okLinks').innerHTML='';
-  RES.nota='';closeAll();ok.classList.remove('hidden');setTimeout(()=>{try{location.href=url}catch(x){}},350);}
+  RES.nota='';closeAll();ok.classList.remove('hidden');if(sid)okServer('res',sid,rv.fecha);else setTimeout(()=>{try{location.href=url}catch(x){}},350);}
 
 function pintarRepetir(){const L=LS.get('ed_last',[]).filter(l=>ITEMS[l.id]&&!ITEMS[l.id].agotado);$('repeat').classList.toggle('hidden',!L.length);
   if(L.length){$('repT').textContent='· '+L.slice(0,2).map(l=>N(ITEMS[l.id])).join(', ')+(L.length>2?'…':'');}}

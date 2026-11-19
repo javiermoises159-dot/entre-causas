@@ -1,4 +1,5 @@
 import { getStore, ENV } from "./store.mjs";
+import { avisar } from "./push.mjs";
 import { json, pinOk, fechaRoma, horaRoma, esFecha, rangoDias, txt, num, modificar } from "./comun.mjs";
 
 // Misma persona aunque escriba +39, 0039 o espacios
@@ -62,6 +63,15 @@ export default async (req) => {
   const store = getStore({ name: "entrecausas-pedidos", consistency: "strong" });
   const url = new URL(req.url);
 
+  // ---- Cliente: ver el estado de su pedido ----
+  if (req.method === "GET" && url.searchParams.has("ver")) {
+    const f = url.searchParams.get("f"), id = url.searchParams.get("ver");
+    if (!esFecha(f)) return json({ error: "Faltan datos" }, 400);
+    const d = await store.get("dia/" + f, { type: "json" });
+    const p = (d?.pedidos || []).find((x) => x.id === id);
+    return p ? json({ estado: p.estado, modo: p.modo }) : json({ error: "No encontrado" }, 404);
+  }
+
   // ---- Cliente envía un pedido (público) ----
   if (req.method === "POST" && !url.searchParams.has("manual")) {
     let b; try { b = await req.json(); } catch { return json({ error: "JSON inválido" }, 400); }
@@ -74,7 +84,8 @@ export default async (req) => {
     if (nd.length) return json({ error: "no-disponible", items: nd }, 409);
     const lineas = armar(menu, b.lineas);
     if (!lineas.length) return json({ error: "Pedido vacío" }, 400);
-    const modo = b.modo === "Retiro en local" ? "Retiro en local" : "Delivery";
+    const mesa = txt(String(b.mesa || "").replace(/\D/g, ""), 3);
+    const modo = mesa ? "Mesa" : b.modo === "Retiro en local" ? "Retiro en local" : "Delivery";
     const sub = num(lineas.reduce((a, l) => a + l.total, 0));
     const AJ = menu.ajustes || {}, E = AJ.envio || {};
     const coms = (E.comunes || []).filter((c) => c && c.n);
@@ -115,7 +126,7 @@ export default async (req) => {
         const r = await modificar(cs, "todos", { lista: {} }, (d) => {
           const c = d.lista[telKey] || (d.lista[telKey] = { tel, nombre: "", n: 0, total: 0, primero: fecha });
           c.tel = tel; c.nombre = txt(b.cliente?.nombre, 60) || c.nombre; c.n++; c.total = num(c.total + total);
-          c.ultimo = fecha; c.promos = b.promos === true; c.lang = b.lang === "it" ? "it" : "es";
+          c.ultimo = fecha; c.promos = b.promos === true; c.lang = ["it", "en"].includes(b.lang) ? b.lang : "es";
           // lo que más pide y sus últimos pedidos (para la ficha del cliente)
           c.fav = c.fav || {};
           lineas.forEach((l) => (c.fav[l.n] = (c.fav[l.n] || 0) + l.q));
@@ -133,7 +144,7 @@ export default async (req) => {
     const p = {
       id: codigo(), fecha, hora: horaRoma(ahora), ts: ahora.toISOString(), origen: "app", estado: "nuevo",
       cliente: txt(b.cliente?.nombre, 60), dir: modo === "Delivery" ? txt(b.cliente?.dir, 160) : "",
-      modo, pago: b.pago === "Tarjeta" ? "Tarjeta" : "Efectivo", nota: txt(b.nota, 300), lang: b.lang === "it" ? "it" : "es",
+      modo, mesa, pago: b.pago === "Tarjeta" ? "Tarjeta" : "Efectivo", nota: txt(b.nota, 300), lang: ["it", "en"].includes(b.lang) ? b.lang : "es",
       lineas, subtotal: sub, envio, total: num(sub - desc + (envio || 0)),
       tel, comune: com ? com.n : "", cupon, desc, prog, fid, notaCli,
     };
@@ -146,7 +157,8 @@ export default async (req) => {
       });
       if (!ok) return json({ error: "Límite diario alcanzado" }, 429);
     } catch { return json({ error: "Inténtalo de nuevo" }, 503); }
-    return json({ ok: true, id: p.id, total: p.total, envio: p.envio, fid });
+    await avisar();
+    return json({ ok: true, id: p.id, fecha: p.fecha, total: p.total, envio: p.envio, fid });
   }
 
   if (!(await pinOk(req))) return json({ error: "PIN incorrecto" }, 401);

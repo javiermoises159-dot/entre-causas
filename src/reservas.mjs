@@ -1,0 +1,106 @@
+import { getStore, ENV } from "./store.mjs";
+import { json, pinOk, fechaRoma, esFecha, rangoDias, txt, modificar } from "./comun.mjs";
+import { avisar } from "./push.mjs";
+
+// Reservas de mesa: las hace el cliente en la app y el local las confirma desde el panel
+const ESTADOS = ["pendiente", "confirmada", "rechazada", "llego", "noshow"];
+const LETRAS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const codigo = () => "R" + Array.from({ length: 3 }, () => LETRAS[Math.floor(Math.random() * LETRAS.length)]).join("");
+function claveTel(t) {
+  let d = String(t || "").replace(/\D/g, "");
+  if (d.startsWith("0039")) d = d.slice(4);
+  else if (d.length >= 11 && d.startsWith("39")) d = d.slice(2);
+  return d.length >= 8 ? d : "";
+}
+const dow = (f) => (new Date(f + "T12:00:00Z").getUTCDay() + 6) % 7;
+async function ajustes(req) {
+  const m = await getStore({ name: "entrecausas", consistency: "strong" }).get("menu", { type: "json" });
+  if (m) return m.ajustes || {};
+  try { const u = new URL("/menu.json", req.url), r = ENV.ASSETS ? await ENV.ASSETS.fetch(u) : await fetch(u); if (r.ok) return (await r.json()).ajustes || {}; } catch {}
+  return {};
+}
+
+export default async (req) => {
+  const store = getStore({ name: "entrecausas-reservas", consistency: "strong" });
+  const url = new URL(req.url);
+
+  // ---- Cliente: ver el estado de su reserva ----
+  if (req.method === "GET" && url.searchParams.has("ver")) {
+    const f = url.searchParams.get("f"), id = url.searchParams.get("ver");
+    if (!esFecha(f)) return json({ error: "Faltan datos" }, 400);
+    const d = await store.get("dia/" + f, { type: "json" });
+    const r = (d?.reservas || []).find((x) => x.id === id);
+    return r ? json({ estado: r.estado }) : json({ error: "No encontrada" }, 404);
+  }
+
+  // ---- Cliente: nueva reserva ----
+  if (req.method === "POST" && !url.searchParams.has("manual")) {
+    let b; try { b = await req.json(); } catch { return json({ error: "JSON inválido" }, 400); }
+    const hoy = fechaRoma(), max = fechaRoma(new Date(Date.now() + 31 * 86400000));
+    if (!esFecha(b.fecha) || b.fecha < hoy || b.fecha > max) return json({ error: "Fecha no válida" }, 400);
+    if (!/^\d\d:\d\d$/.test(String(b.hora || ""))) return json({ error: "Hora no válida" }, 400);
+    const personas = Math.min(18, Math.max(1, parseInt(b.personas, 10) || 0));
+    const nombre = txt(b.nombre, 60).trim(), tel = txt(String(b.tel || "").replace(/[^\d+]/g, ""), 20), tk = claveTel(tel);
+    if (!nombre || !tk) return json({ error: "Faltan nombre o teléfono" }, 400);
+    const AJ = await ajustes(req), P = AJ.resPromo || {};
+    let desc = 0;
+    if (P.activo && (P.dias || []).includes(dow(b.fecha))) {
+      if (!P.primera) desc = Number(P.pct) || 0;
+      else {
+        const ok = await modificar(store, "usadas", { tels: {} }, (d) => { if (d.tels[tk]) return false; d.tels[tk] = b.fecha; return true; });
+        if (ok) desc = Number(P.pct) || 0;
+      }
+    }
+    const r = { id: codigo(), fecha: b.fecha, hora: b.hora, personas, nombre, tel, nota: txt(b.nota, 300),
+      lang: ["it", "en"].includes(b.lang) ? b.lang : "es", desc, estado: "pendiente", origen: "app", ts: new Date().toISOString() };
+    try {
+      const ok = await modificar(store, "dia/" + b.fecha, { reservas: [] }, (d) => {
+        if (d.reservas.length >= 300) return false;
+        while (d.reservas.some((x) => x.id === r.id)) r.id = codigo();
+        d.reservas.push(r);
+        return true;
+      });
+      if (!ok) return json({ error: "Día completo" }, 429);
+    } catch { return json({ error: "Inténtalo de nuevo" }, 503); }
+    await avisar();
+    return json({ ok: true, id: r.id, fecha: r.fecha, desc });
+  }
+
+  if (!(await pinOk(req))) return json({ error: "PIN incorrecto" }, 401);
+
+  // ---- Panel: reserva hecha por teléfono o en el local ----
+  if (req.method === "POST") {
+    let b; try { b = await req.json(); } catch { return json({ error: "JSON inválido" }, 400); }
+    if (!esFecha(b.fecha) || !/^\d\d:\d\d$/.test(String(b.hora || ""))) return json({ error: "Faltan día u hora" }, 400);
+    const r = { id: codigo(), fecha: b.fecha, hora: b.hora, personas: Math.min(40, Math.max(1, parseInt(b.personas, 10) || 1)),
+      nombre: txt(b.nombre, 60), tel: txt(String(b.tel || "").replace(/[^\d+]/g, ""), 20), nota: txt(b.nota, 300), lang: "es",
+      desc: 0, estado: "confirmada", origen: "local", ts: new Date().toISOString() };
+    await modificar(store, "dia/" + b.fecha, { reservas: [] }, (d) => { d.reservas.push(r); return true; });
+    return json({ ok: true, reserva: r });
+  }
+
+  // ---- Panel: lista ----
+  if (req.method === "GET") {
+    const desde = esFecha(url.searchParams.get("desde")) ? url.searchParams.get("desde") : fechaRoma();
+    const hasta = esFecha(url.searchParams.get("hasta")) ? url.searchParams.get("hasta") : desde;
+    const res = await Promise.all(rangoDias(desde, hasta, 62).map((f) => store.get("dia/" + f, { type: "json" })));
+    const reservas = [];
+    res.forEach((d) => d && reservas.push(...d.reservas));
+    return json({ desde, hasta, hoy: fechaRoma(), reservas });
+  }
+
+  // ---- Panel: cambiar estado ----
+  if (req.method === "PATCH") {
+    let b; try { b = await req.json(); } catch { return json({ error: "JSON inválido" }, 400); }
+    if (!esFecha(b.fecha) || !b.id || !ESTADOS.includes(b.estado)) return json({ error: "Faltan datos" }, 400);
+    const out = await modificar(store, "dia/" + b.fecha, { reservas: [] }, (d) => {
+      const r = d.reservas.find((x) => x.id === b.id);
+      if (!r) return false;
+      r.estado = b.estado;
+      return r;
+    });
+    return out ? json({ ok: true, reserva: out }) : json({ error: "No encontrada" }, 404);
+  }
+
+  return json({ error: "Método no permitido" }, 405);
+};

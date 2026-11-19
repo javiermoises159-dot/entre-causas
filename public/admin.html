@@ -8,6 +8,9 @@
 <title>Entre Causas · Panel</title>
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="admin.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="EC Panel">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 
@@ -126,6 +129,8 @@ textarea.fi{resize:vertical;min-height:70px}
 .ped .ph small{color:var(--mut);font-size:12px;font-weight:500}
 .est{font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:#FFF4D6;color:#8A5A00;white-space:nowrap}
 .est.preparando{background:#FFE7DC;color:var(--or)}.est.encamino,.est.listo{background:#E3EEFF;color:#1D4ED8}.est.entregado{background:#DDF3EA;color:var(--grn)}.est.cancelado{background:#eee;color:#777}
+.wa1{display:inline-flex;align-items:center;gap:4px;background:#1FAF5A;color:#fff!important;border-radius:12px;padding:9px 12px;font-size:12.5px;font-weight:600;text-decoration:none}
+.ped.pendiente{border-left-color:var(--gold)}.ped.confirmada,.ped.llego{border-left-color:var(--grn)}.ped.rechazada,.ped.noshow{border-left-color:#bbb;opacity:.65}.est.pendiente{background:#FFF1D1;color:#9A6400}.est.confirmada,.est.llego{background:#DDF3EA;color:var(--grn)}.est.rechazada,.est.noshow{background:#eee;color:#777}
 .ped .cl{font-size:13.5px;margin-top:6px}.ped .cl span{color:var(--mut)}
 .ped ul{list-style:none;margin:8px 0;padding:8px 0;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);font-size:13px}
 .ped li{padding:2px 0;display:flex;justify-content:space-between;gap:8px}
@@ -192,11 +197,12 @@ textarea.fi{resize:vertical;min-height:70px}
   <div class="top" style="position:sticky;top:0;z-index:10;background:var(--bg);padding:12px 0 6px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)"><img src="logo-claro.png" alt="" style="height:42px"><div class="t" style="flex:1;min-width:0"><b style="display:block;font-size:15px">Panel Entre Causas</b><span id="upd" style="font-size:12px;color:var(--mut)">Carta del local</span></div>
     <a class="btn b-lt" href="/" target="_blank" rel="noopener" style="text-decoration:none;font-size:12.5px;padding:10px 12px">Ver app ↗</a></div>
   <div class="tabs" id="tabs">
-    <button data-t="pedidos" class="act">📋 Pedidos<span class="nb hidden" id="nbN">0</span></button><button data-t="cuentas">💰 Cuentas</button><button data-t="carta">🐟 Carta</button><button data-t="local">🕒 Local</button><button data-t="delivery">🛵 Envío</button><button data-t="mas">⚙️ Más</button>
+    <button data-t="pedidos" class="act">📋 Pedidos<span class="nb hidden" id="nbN">0</span></button><button data-t="reservas">📅 Reservas<span class="nb hidden" id="nbR">0</span></button><button data-t="cuentas">💰 Cuentas</button><button data-t="carta">🐟 Carta</button><button data-t="local">🕒 Local</button><button data-t="delivery">🛵 Envío</button><button data-t="mas">⚙️ Más</button>
   </div>
 
   <!-- PEDIDOS -->
   <div id="p-pedidos">
+    <div id="avisos"></div>
     <div id="setup"></div>
     <div class="box" id="pzBox" style="padding:12px 14px"></div>
     <div class="bar2"><input type="date" id="pFecha" onchange="cargarPedidos()"><button class="pill2" onclick="$('pFecha').value=HOY;cargarPedidos()">Hoy</button><button class="pill2" onclick="cargarPedidos()">↻ Actualizar</button></div>
@@ -204,6 +210,16 @@ textarea.fi{resize:vertical;min-height:70px}
     <div class="bar2" id="pFil"><button class="pill2 act" data-f="todos">Todos</button><button class="pill2" data-f="curso">En curso</button><button class="pill2" data-f="entregado">Entregados</button><button class="pill2" data-f="cancelado">Cancelados</button></div>
     <button class="addit" style="background:#fff;margin:0 0 12px" onclick="ventaLocal()">+ Registrar venta en el local o por teléfono</button>
     <div id="pList"></div>
+  </div>
+
+  <!-- RESERVAS -->
+  <div id="p-reservas" class="hidden">
+    <div class="bar2"><input type="date" id="rFecha" onchange="cargarReservas()"><button class="pill2" onclick="$('rFecha').value=HOY;cargarReservas()">Hoy</button><button class="pill2" onclick="cargarReservas()">↻ Actualizar</button></div>
+    <div class="kpis"><div class="kp"><span>Reservas</span><b id="rkN">0</b></div><div class="kp"><span>Personas</span><b id="rkP">0</b></div><div class="kp"><span>Por confirmar</span><b id="rkC">0</b></div></div>
+    <div class="box" id="rOcc" style="padding:12px 14px"></div>
+    <button class="addit" style="background:#fff;margin:0 0 12px" onclick="resManual()">+ Apuntar reserva por teléfono o en el local</button>
+    <div id="rList"></div>
+    <div style="font-size:12.5px;font-weight:700;margin:18px 0 8px">Próximos días</div><div id="rProx"></div>
   </div>
 
   <!-- CUENTAS -->
@@ -325,7 +341,7 @@ function bajarBlob(data,name,type){const a=document.createElement('a');a.href=UR
 async function entrar(){const p=$('pin').value.trim();if(!p){$('lErr').textContent='Escribe tu PIN';return;}
   $('bIn').innerHTML='<span class="spin"></span>';$('lErr').textContent='';PIN=p;
   try{const r=await api('/api/menu?check=1',{method:'POST'});if(r.status===401){$('lErr').textContent='PIN incorrecto';PIN='';return;}if(!r.ok)throw 0;
-    try{sessionStorage.setItem('ed_pin',PIN)}catch(e){}await cargar();}
+    try{localStorage.setItem('ed_pin',PIN)}catch(e){}await cargar();}
   catch(e){$('lErr').textContent='No se pudo conectar. Revisa tu internet.';PIN='';}finally{$('bIn').textContent='Entrar';}}
 function normalizar(m){const a=m.ajustes||{};
   a.modo=a.modo||(a.abierto===false?'cerrado':'abierto');delete a.abierto;
@@ -339,14 +355,76 @@ async function cargar(){let m=null;
   if(!m){const r=await fetch('menu.json',{cache:'no-store'});m=await r.json();}
   M=normalizar(m);$('vLogin').classList.add('hidden');$('vApp').classList.remove('hidden');
   $('upd').textContent=M.actualizado?'Carta actualizada: '+new Date(M.actualizado).toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'}):'Carta del local';
-  HOY=fechaRoma();$('pFecha').value=HOY;renderAll();cargarPedidos();setInterval(()=>{if(document.hidden)return;if($('pFecha').value===HOY||TAB!=='pedidos')cargarPedidos(true);},30000);}
-function salir(){try{sessionStorage.removeItem('ed_pin')}catch(e){};location.reload();}
+  HOY=fechaRoma();$('pFecha').value=HOY;renderAll();cargarPedidos();setInterval(()=>{if(document.hidden)return;if($('pFecha').value===HOY||TAB!=='pedidos')cargarPedidos(true);},30000);
+  $('rFecha').value=HOY;cargarReservas(true);setInterval(()=>{if(!document.hidden)cargarReservas(true)},30000);avisosInit();
+  navigator.serviceWorker?.addEventListener('message',e=>{if(e.data==='recargar'){cargarPedidos(true);cargarReservas(true);}});document.addEventListener('visibilitychange',()=>{if(!document.hidden){cargarPedidos(true);cargarReservas(true);}});}
+function salir(){try{localStorage.removeItem('ed_pin')}catch(e){};location.reload();}
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
 function tab(t){TAB=t;document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('act',b.dataset.t===t));
-  ['pedidos','cuentas','carta','local','delivery','mas'].forEach(x=>$('p-'+x).classList.toggle('hidden',x!==t));
+  ['pedidos','reservas','cuentas','carta','local','delivery','mas'].forEach(x=>$('p-'+x).classList.toggle('hidden',x!==t));if(t==='reservas')cargarReservas();
   if(t==='pedidos')cargarPedidos();if(t==='cuentas')cargarCuentas();if(t==='mas')cargarBackups();renderAll();scrollTo(0,0);}
 function dirty(){clearTimeout(window._st);window._st=setTimeout(renderSetup,400);DIRTY=true;$('saveBar').classList.remove('hidden');$('saveTxt').textContent='Tienes cambios sin guardar';$('bSave').disabled=false;$('bSave').textContent='Guardar cambios';}
 const allItems=()=>{const o={};M.categorias.forEach(c=>c.items.forEach(i=>o[i.id]=i));return o;};
+
+/* ---------- avisos push ---------- */
+const AFORO=32;
+function b64ToU8(b){const p='='.repeat((4-b.length%4)%4),s=atob((b+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(s,c=>c.charCodeAt(0));}
+const esIOS=/iphone|ipad|ipod/i.test(navigator.userAgent),instalada=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+async function avisosInit(){if(!('serviceWorker' in navigator)){$('avisos').innerHTML='';return;}
+  try{await navigator.serviceWorker.register('/sw-admin.js',{scope:'/admin'});}catch(e){}
+  pintarAvisos();}
+async function pintarAvisos(){const box=$('avisos');if(!box)return;
+  if(!('PushManager' in window)||!('Notification' in window)){box.innerHTML=esIOS&&!instalada?`<div class="box" style="padding:12px 14px;background:#FFF6DB"><b>🔔 Para recibir avisos en iPhone</b><p style="margin:4px 0 0;font-size:12.5px;color:var(--mut)">Toca Compartir ⬆️ → "Añadir a pantalla de inicio", abre el panel desde ese icono y activa los avisos.</p></div>`:'';return;}
+  let sub=null;try{const r=await navigator.serviceWorker.getRegistration('/admin');sub=r&&await r.pushManager.getSubscription();}catch(e){}
+  if(sub&&Notification.permission==='granted'){box.innerHTML=`<div class="box" style="padding:10px 14px;display:flex;align-items:center;gap:10px"><span style="flex:1;font-size:13px">🔔 <b>Avisos activados</b> en este dispositivo</span><button class="pill2" onclick="probarAviso()">Probar</button></div>`;return;}
+  box.innerHTML=`<div class="box" style="padding:12px 14px;background:#FFF1E6;display:flex;align-items:center;gap:10px"><span style="flex:1;font-size:13px"><b>🔔 Activa los avisos</b><br><span style="color:var(--mut);font-size:12px">Te suena y vibra cada pedido o reserva nueva, aunque tengas el móvil bloqueado.</span></span><button class="btn b-or" style="padding:10px 14px;font-size:13px" onclick="activarAvisos()">Activar</button></div>`;}
+async function activarAvisos(){try{const perm=await Notification.requestPermission();if(perm!=='granted'){toast('Permiso de avisos denegado. Actívalo en los ajustes del navegador.',true);return;}
+  const reg=await navigator.serviceWorker.register('/sw-admin.js',{scope:'/admin'});await navigator.serviceWorker.ready;
+  const k=(await (await fetch('/api/push',{cache:'no-store'})).json()).key;
+  const sub=(await reg.pushManager.getSubscription())||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToU8(k)});
+  const r=await api('/api/push',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...sub.toJSON(),nombre:navigator.platform||''})});if(!r.ok)throw 0;
+  toast('🔔 Avisos activados');pintarAvisos();}catch(e){toast('No se pudieron activar los avisos',true);}}
+async function probarAviso(){const r=await api('/api/push?prueba=1',{method:'POST'});toast(r.ok?'Aviso de prueba enviado':'No se pudo enviar',!r.ok);}
+
+/* ---------- reservas ---------- */
+let RES=[],RPROX=[],RVISTAS=new Set(),RPRIMERA=true;
+const REST={pendiente:'Por confirmar',confirmada:'Confirmada',rechazada:'Rechazada',llego:'Llegó',noshow:'No vino'};
+const DSEM=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const fLarga=f=>DSEM[new Date(f+'T12:00:00Z').getUTCDay()]+' '+f.slice(8,10)+'/'+f.slice(5,7);
+const nomR=x=>String(x.nombre||x.cliente||'').trim().split(' ')[0]||'';
+function msgRes(r,tipo){const n=nomR(r),c=fLarga(r.fecha)+' a las '+r.hora+', '+r.personas+(r.personas==1?' persona':' personas');
+  if(r.lang==='it'){if(tipo==='ok')return `Ciao ${n}! ✅ La tua prenotazione da Entre Causas è confermata: ${c.replace(' a las ',' alle ').replace('persona','persona').replace('personas','persone')}.${r.desc?` Hai il ${r.desc}% di sconto su tutto il conto 🏷️`:''} Ti aspettiamo! 🐟`;if(tipo==='no')return `Ciao ${n}! Ci dispiace, per ${c.replace(' a las ',' alle ')} siamo al completo. Ti va bene un altro orario? 🙏`;return `Ciao ${n}! 🔔 Ti ricordiamo la prenotazione da Entre Causas: ${c.replace(' a las ',' alle ')}. Se non puoi venire, avvisaci qui 🙏`;}
+  if(tipo==='ok')return `¡Hola ${n}! ✅ Tu reserva en Entre Causas está confirmada: ${c}.${r.desc?` Tienes ${r.desc}% de descuento en toda la cuenta 🏷️`:''} ¡Te esperamos! 🐟`;
+  if(tipo==='no')return `¡Hola ${n}! Lo sentimos, para el ${c} estamos completos. ¿Te viene bien otra hora? 🙏`;
+  return `¡Hola ${n}! 🔔 Te recordamos tu reserva en Entre Causas: ${c}. Si no puedes venir, avísanos por aquí 🙏`;}
+function msgPed(p){const n=nomR(p),it=p.lang==='it';
+  const M={nuevo:it?`Ciao ${n}! ✅ Abbiamo ricevuto il tuo ordine #${p.id} da Entre Causas (${eur(p.total)}). Ti avvisiamo quando parte 🐟`:`¡Hola ${n}! ✅ Recibimos tu pedido #${p.id} en Entre Causas (${eur(p.total)}). Te avisamos cuando salga 🐟`,
+   preparando:it?`Ciao ${n}! 👨‍🍳 Il tuo ordine #${p.id} è in cucina.`:`¡Hola ${n}! 👨‍🍳 Tu pedido #${p.id} ya está en cocina.`,
+   encamino:it?`Ciao ${n}! 🛵 Il tuo ordine #${p.id} è in consegna. Arriva tra poco!`:`¡Hola ${n}! 🛵 Tu pedido #${p.id} va en camino. ¡Llega en un ratito!`,
+   listo:it?`Ciao ${n}! 🏪 Il tuo ordine #${p.id} è pronto da ritirare.`:`¡Hola ${n}! 🏪 Tu pedido #${p.id} está listo para retirar.`};return M[p.estado]||M.nuevo;}
+async function cargarReservas(silent){const f=$('rFecha').value||HOY;if(!f)return;
+  const hasta=new Date(new Date(f+'T12:00:00Z').getTime()+13*86400000).toISOString().slice(0,10);
+  try{const r=await api('/api/reservas?desde='+(HOY&&HOY<f?HOY:f)+'&hasta='+hasta);if(r.status===401){salir();return;}const j=await r.json();HOY=j.hoy||HOY;const all=j.reservas||[];
+    RES=all.filter(x=>x.fecha===f);RPROX=all.filter(x=>x.fecha>f);
+    const nuevas=all.filter(x=>x.origen==='app'&&!RVISTAS.has(x.id));if(!RPRIMERA&&nuevas.length){beep();toast('📅 '+nuevas.length+(nuevas.length===1?' reserva nueva':' reservas nuevas'));}
+    all.forEach(x=>RVISTAS.add(x.id));RPRIMERA=false;const pend=all.filter(x=>x.estado==='pendiente'&&x.fecha>=HOY).length;$('nbR').textContent=pend;$('nbR').classList.toggle('hidden',!pend);}
+  catch(e){if(!silent)toast('No se pudieron cargar las reservas',true);return;}
+  renderReservas();}
+function cardRes(r){return `<div class="ped ${r.estado}"><div class="ph"><div><b>${esc(r.hora)}</b> <small>· 👥 ${r.personas} · ${r.origen==='app'?'📱 App':'📞 Local'}${r.fecha!==$('rFecha').value?' · '+fLarga(r.fecha):''}</small></div><span class="est ${r.estado}">${REST[r.estado]||r.estado}</span></div>
+  <div class="cl">👤 <b>${esc(r.nombre)}</b>${r.tel?` <span>· <a href="tel:${esc(r.tel)}">${esc(r.tel)}</a></span>`:''}${r.lang==='it'?' <span>· 🇮🇹</span>':r.lang==='en'?' <span>· 🇬🇧</span>':''}</div>
+  ${r.desc?`<div class="nt" style="background:#1F1A17;color:#E9B54A">🏷️ <b>-${r.desc}% en toda la cuenta</b> (reserva por la app)</div>`:''}${r.nota?`<div class="nt">📝 ${esc(r.nota)}</div>`:''}
+  <div class="acts">${r.estado==='pendiente'&&r.tel?`<a class="wa1" href="https://wa.me/${waNum(r.tel)}?text=${encodeURIComponent(msgRes(r,'ok'))}" target="_blank" rel="noopener" onclick="estRes('${r.fecha}','${r.id}','confirmada')">✓ Confirmar por WhatsApp</a><a class="wa1" style="background:#C2361C" href="https://wa.me/${waNum(r.tel)}?text=${encodeURIComponent(msgRes(r,'no'))}" target="_blank" rel="noopener" onclick="estRes('${r.fecha}','${r.id}','rechazada')">✕ No hay sitio</a>`:''}
+   ${r.estado==='pendiente'&&!r.tel?`<button class="go" onclick="estRes('${r.fecha}','${r.id}','confirmada')">✓ Confirmar</button>`:''}
+   ${r.estado==='confirmada'?`<button class="go" onclick="estRes('${r.fecha}','${r.id}','llego')">🙋 Llegó</button>${r.tel?`<a class="wa1" style="background:#3A0F0B" href="https://wa.me/${waNum(r.tel)}?text=${encodeURIComponent(msgRes(r,'rec'))}" target="_blank" rel="noopener">🔔 Recordar</a>`:''}<button onclick="estRes('${r.fecha}','${r.id}','noshow')">No vino</button>`:''}
+   ${r.estado!=='pendiente'?`<button onclick="estRes('${r.fecha}','${r.id}','pendiente')">↺</button>`:''}</div></div>`;}
+function renderReservas(){const vivas=RES.filter(r=>!['rechazada','noshow'].includes(r.estado)),pers=vivas.reduce((a,r)=>a+r.personas,0),pc=Math.min(100,pers/AFORO*100);
+  $('rkN').textContent=vivas.length;$('rkP').textContent=pers;$('rkC').textContent=RES.filter(r=>r.estado==='pendiente').length;
+  $('rOcc').innerHTML=`<div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600"><span>Ocupación del día</span><span>${pers} / ${AFORO} plazas</span></div><div style="height:8px;background:var(--line);border-radius:9px;margin-top:8px;overflow:hidden"><i style="display:block;height:100%;width:${pc}%;background:${pc>=90?'var(--red)':pc>=60?'var(--gold)':'var(--grn)'}"></i></div>${pers>AFORO?'<div style="font-size:12px;color:var(--red);font-weight:600;margin-top:6px">⚠️ Más personas que plazas</div>':''}`;
+  const L=RES.slice().sort((a,b)=>a.hora.localeCompare(b.hora));$('rList').innerHTML=L.length?L.map(cardRes).join(''):'<div class="empty">No hay reservas este día.<br>Las reservas de la app aparecen aquí solas.</div>';
+  const P=RPROX.filter(r=>!['rechazada','noshow'].includes(r.estado)).sort((a,b)=>(a.fecha+a.hora).localeCompare(b.fecha+b.hora));$('rProx').innerHTML=P.length?P.map(cardRes).join(''):'<div class="empty" style="padding:14px">Nada más en los próximos 14 días.</div>';}
+async function estRes(f,id,e){const r=await api('/api/reservas',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({fecha:f,id,estado:e})});if(!r.ok){toast('No se pudo guardar',true);return;}setTimeout(()=>cargarReservas(true),300);toast(e==='confirmada'?'Reserva confirmada':e==='rechazada'?'Reserva rechazada':e==='llego'?'Marcado: llegó':'Guardado');}
+async function resManual(){const f=prompt('Día (AAAA-MM-DD)',$('rFecha').value||HOY);if(!f)return;const h=prompt('Hora (HH:MM)','20:00');if(!h)return;const n=prompt('Nombre');if(!n)return;const pe=prompt('Personas','2');const tl=prompt('Teléfono (opcional)','')||'';const no=prompt('Nota (opcional)','')||'';
+  const r=await api('/api/reservas?manual=1',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({fecha:f.trim(),hora:h.trim(),nombre:n,personas:pe,tel:tl,nota:no})});if(!r.ok){toast('Revisa el día y la hora',true);return;}$('rFecha').value=f.trim();cargarReservas();toast('Reserva apuntada');}
 
 /* ---------- pedidos ---------- */
 function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.18].forEach(t=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=880;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.25,a.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+t+.15);o.start(a.currentTime+t);o.stop(a.currentTime+t+.16);});}catch(e){}}
@@ -368,12 +446,12 @@ function renderPedidos(){renderPausa();const vivos=PED.filter(p=>p.estado!=='can
   const L=PED.filter(p=>FIL==='todos'||(FIL==='curso'?enCurso(p):p.estado===FIL)).sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
   $('pList').innerHTML=L.length?L.map(p=>{const ret=p.modo==='Retiro en local';const sig=p.estado==='nuevo'?['preparando','Empezar a preparar']:p.estado==='preparando'?(ret?['listo','Listo para retirar']:['encamino','Salió a entregar']):(p.estado==='encamino'||p.estado==='listo')?['entregado','Entregado']:null;
     return `<div class="ped ${p.estado}"><div class="ph"><div><b>#${esc(p.id)}</b> <small>· ${esc(p.hora)} · ${p.origen==='local'?'🏪 Local':'📱 App'}</small></div><span class="est ${p.estado}">${EST[p.estado]||p.estado}</span></div>
-     ${p.cliente?`<div class="cl">👤 <b>${esc(p.cliente)}</b> <span>· ${esc(p.modo)}</span></div>`:`<div class="cl"><span>${esc(p.modo)}</span></div>`}${p.prog?`<div class="nt" style="background:#E3F0FF">⏰ Programado para <b>${p.prog.fecha===p.fecha?'hoy':fmtF(p.prog.fecha)} a las ${esc(p.prog.hora)}</b></div>`:''}${p.notaCli?`<div class="nt" style="background:#FDE8E3">📌 <b>Nota del cliente:</b> ${esc(p.notaCli)}</div>`:''}${p.fid?.toca?`<div class="nt" style="background:#E3F7EE">🎁 <b>Le toca el premio de fidelidad:</b> ${esc(p.fid.premio)}</div>`:''}
+     ${p.mesa?`<div class="cl" style="font-size:15px">🍽️ <b>MESA ${esc(p.mesa)}</b></div>`:''}${p.cliente?`<div class="cl">👤 <b>${esc(p.cliente)}</b> <span>· ${esc(p.modo)}</span></div>`:`<div class="cl"><span>${esc(p.modo)}</span></div>`}${p.prog?`<div class="nt" style="background:#E3F0FF">⏰ Programado para <b>${p.prog.fecha===p.fecha?'hoy':fmtF(p.prog.fecha)} a las ${esc(p.prog.hora)}</b></div>`:''}${p.notaCli?`<div class="nt" style="background:#FDE8E3">📌 <b>Nota del cliente:</b> ${esc(p.notaCli)}</div>`:''}${p.fid?.toca?`<div class="nt" style="background:#E3F7EE">🎁 <b>Le toca el premio de fidelidad:</b> ${esc(p.fid.premio)}</div>`:''}
      ${p.tel?`<div class="cl">📞 <a href="tel:${esc(p.tel)}">${esc(p.tel)}</a> · <a href="https://wa.me/${waNum(p.tel)}" target="_blank" rel="noopener" style="font-size:12px">WhatsApp</a>${p.fid&&!p.fid.toca?` <span>· ⭐ ${p.fid.n}/${p.fid.cada}</span>`:''}</div>`:''}${p.dir?`<div class="cl">📍 ${esc(p.dir)}${p.comune?` <span>· ${esc(p.comune)}</span>`:''} <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.dir)}" target="_blank" rel="noopener" style="font-size:12px">mapa</a></div>`:''}
      ${p.lineas.length?`<ul>${p.lineas.map(l=>`<li><span>${l.q} × ${esc(l.n)}${l.o&&l.o.length?`<small>${esc(l.o.map(s=>s.g+': '+s.v.join(', ')).join(' · '))}</small>`:''}</span><span>${eur(l.total)}</span></li>`).join('')}</ul>`:''}
      ${p.nota?`<div class="nt">📝 ${esc(p.nota)}</div>`:''}
      <div class="tt" style="margin-top:8px"><span>${p.desc?'🏷️ '+esc(p.cupon)+' −'+eur(p.desc)+' · ':''}${p.envio===null?'Envío <b style="font-size:13px;color:var(--or)">a confirmar</b> · ':p.envio?'Envío '+eur(p.envio)+' · ':''}${p.pago==='Tarjeta'?'💳':'💶'} ${esc(p.pago)}</span><b>${eur(p.total)}</b></div>
-     <div class="acts"><button onclick="imprimir('${p.id}')">🖨️ Comanda</button>${sig?`<button class="go" onclick="estado('${p.fecha}','${p.id}','${sig[0]}')">${sig[1]} →</button>`:''}
+     <div class="acts"><button onclick="imprimir('${p.id}')">🖨️ Comanda</button>${p.tel&&p.estado!=='cancelado'&&p.estado!=='entregado'?`<a class="wa1" href="https://wa.me/${waNum(p.tel)}?text=${encodeURIComponent(msgPed(p))}" target="_blank" rel="noopener">💬 Avisar</a>`:''}${sig?`<button class="go" onclick="estado('${p.fecha}','${p.id}','${sig[0]}')">${sig[1]} →</button>`:''}
       ${p.envio===null?`<button onclick="ponerEnvio('${p.fecha}','${p.id}')">Poner envío</button>`:''}
       ${p.estado!=='cancelado'?`<button onclick="estado('${p.fecha}','${p.id}',null,'${p.pago==='Tarjeta'?'Efectivo':'Tarjeta'}')">Cambiar a ${p.pago==='Tarjeta'?'efectivo':'tarjeta'}</button>`:''}
       ${p.estado!=='cancelado'&&p.estado!=='entregado'?`<button class="no" onclick="if(confirmar(this))estado('${p.fecha}','${p.id}','cancelado')">Cancelar</button>`:''}
@@ -706,7 +784,7 @@ async function guardar(){$('bSave').disabled=true;$('bSave').innerHTML='<span cl
     toast('✓ La app ya está actualizada');setTimeout(()=>{if(!DIRTY)$('saveBar').classList.add('hidden')},2000);if(TAB==='mas')cargarBackups();}
   catch(e){toast('No se pudo guardar. Revisa tu internet.',true);$('bSave').disabled=false;$('bSave').textContent='Guardar cambios';}}
 window.addEventListener('beforeunload',e=>{if(DIRTY){e.preventDefault();e.returnValue='';}});
-(()=>{let p=null;try{p=sessionStorage.getItem('ed_pin')}catch(e){}if(p){$('pin').value=p;entrar();}})();
+(()=>{let p=null;try{p=localStorage.getItem('ed_pin')}catch(e){}if(p){$('pin').value=p;entrar();}})();
 </script>
 <script>/* Netlify pone un sello abajo a la derecha en el plan gratis: subimos lo de abajo para que no tape botones */(function(){const f=()=>{if(document.getElementById('nl-badge-frame'))document.documentElement.classList.add('nlb');};f();new MutationObserver(f).observe(document.documentElement,{childList:true,subtree:true});})();</script>
 </body>
