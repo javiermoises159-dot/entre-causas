@@ -2,7 +2,7 @@
  "name": "Entre Causas · Peruvian Kitchen",
  "short_name": "Entre Causas",
  "description": "Ordina online ceviches, lomo saltado, chifa e parrillas. Prenota il tuo tavolo.",
- "start_url": "/pedir",
+ "start_url": "/",
  "scope": "/",
  "display": "standalone",
  "background_color": "#FFFFFF",

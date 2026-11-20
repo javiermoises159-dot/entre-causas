@@ -322,7 +322,7 @@ body.app-palmare #vApp,body.app-palmare #bn,body.app-palmare #saveBar,body.app-p
 
 <div class="wrap hidden" id="vApp">
   <div class="top" style="position:sticky;top:0;z-index:10;background:var(--bg);padding:12px 0 6px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)"><img src="logo-claro.png" alt="" style="height:42px"><div class="t" style="flex:1;min-width:0"><b style="display:block;font-size:15px">Panel Entre Causas</b><span id="upd" style="font-size:12px;color:var(--mut)">Carta del local</span></div>
-    <a class="btn b-lt" href="/pedir" target="_blank" rel="noopener" style="text-decoration:none;font-size:12.5px;padding:10px 12px">Ver app ↗</a></div>
+    <a class="btn b-lt" href="/" target="_blank" rel="noopener" style="text-decoration:none;font-size:12.5px;padding:10px 12px">Ver app ↗</a></div>
   <div class="tabs" id="tabs">
     <button data-t="ahora" class="act">⚡ Ahora</button><button data-t="sala">🍽️ Sala<span class="nb hidden" id="nbS">0</span></button><button data-t="pedidos">📋 Pedidos<span class="nb hidden" id="nbN">0</span></button><button data-t="reservas">📅 Reservas<span class="nb hidden" id="nbR">0</span></button><button data-t="cuentas">💰 Cuentas</button><button data-t="carta">🐟 Carta</button><button data-t="local">🕒 Local</button><button data-t="delivery">🛵 Envío</button><button data-t="mas">⚙️ Más</button>
   </div>
@@ -1414,7 +1414,7 @@ function numE(k,v){v=v.trim().replace(',','.');const n=parseFloat(v);const e=AJ(
   if(k==='costo')e.costo=v===''||isNaN(n)?null:n;else if(k==='minimo')e.minimo=isNaN(n)?0:n;else e.gratisDesde=v===''||isNaN(n)?null:n;dirty();}
 const LG=()=>AJ().legal;
 function renderMas(){renderAccesos();renderAuto();pintarInst();renderEquipo();const all=allItems();const g=LG();if($('gRa')){$('gRa').value=g.razon||'';$('gIva').value=g.piva||'';$('gEm').value=g.email||'';$('gSe').value=g.sede||'';}
-  if($('qrUrl')&&!$('qrUrl').value){$('qrUrl').value=location.origin+'/';pintarQR();}
+  if($('qrUrl')&&!$('qrUrl').value){$('qrUrl').value=location.origin+'/mesa';pintarQR();}
   $('recoList').innerHTML=M.recomendados.filter(id=>all[id]).map(id=>`<span class="pill">⭐ ${esc(all[id].nombre)}</span>`).join('')||'<span style="color:var(--mut);font-size:13px">Ninguno</span>';
   const a=AJ(),cu=a.cupones;$('cupList').innerHTML=cu.length?'<div class="lrow cu"><small>Código</small><small>Tipo</small><small>Valor</small><small>Mín. €</small><small></small></div>'+cu.map((c,i)=>`<div class="lrow cu"><input class="fi" style="text-transform:uppercase" value="${esc(c.codigo)}" placeholder="BENVENUTO" oninput="AJ().cupones[${i}].codigo=this.value.trim().toUpperCase();dirty()"><select class="fi" onchange="AJ().cupones[${i}].tipo=this.value;dirty()"><option${c.tipo==='%'?' selected':''}>%</option><option${c.tipo==='€'?' selected':''}>€</option></select><input class="fi" inputmode="decimal" value="${String(c.valor??'').replace('.',',')}" oninput="AJ().cupones[${i}].valor=parseFloat(this.value.replace(',','.'))||0;dirty()"><input class="fi" inputmode="decimal" value="${c.minimo?String(c.minimo).replace('.',','):''}" placeholder="—" oninput="AJ().cupones[${i}].minimo=parseFloat(this.value.replace(',','.'))||0;dirty()"><div style="display:flex;flex-direction:column;gap:4px;align-items:center"><label class="sw" style="transform:scale(.8)"><input type="checkbox" ${c.activo!==false?'checked':''} onchange="AJ().cupones[${i}].activo=this.checked;dirty()"><i></i></label><button class="mini-x" onclick="AJ().cupones.splice(${i},1);dirty();renderMas()">✕</button></div></div>`).join(''):'<div style="font-size:13px;color:var(--mut)">Todavía no hay cupones.</div>';
   $('fOn').checked=!!a.fidelidad.activo;$('fCada').value=a.fidelidad.cada||'';$('fPre').value=a.fidelidad.premio||'';$('fPreIt').value=a.fidelidad.premio_it||'';$('fPreEn').value=a.fidelidad.premio_en||'';
@@ -1529,8 +1529,8 @@ function restaurar(m,origen){if(!m||!Array.isArray(m.categorias)||!m.ajustes){to
 function restaurarArchivo(inp){const f=inp.files[0];inp.value='';if(!f)return;const r=new FileReader();r.onload=()=>{try{restaurar(JSON.parse(r.result),'el archivo');}catch(e){toast('No se pudo leer el archivo',true);}};r.readAsText(f);}
 /* ---------- menú de las mesas en PDF (lo abre el QR / NFC de las mesas) ---------- */
 async function pintarPdf(){const el=$('pdfBox');if(!el)return;let d={};try{d=await (await fetch('/api/menupdf?info',{cache:'no-store'})).json();}catch(e){}
-  const link=location.origin+'/';
-  el.innerHTML=`<h3>📄 Menú de las mesas (PDF)</h3><p>Es lo que abre el QR y el NFC de las mesas (${esc(link)}). La app de pedidos y reservas va aparte, en ${esc(location.origin)}/pedir.</p>
+  const link=location.origin+'/mesa';
+  el.innerHTML=`<h3>📄 Menú de las mesas (PDF)</h3><p>Es lo que abre el QR y el NFC de las mesas (${esc(link)}). La app de pedidos y reservas va aparte, en ${esc(location.origin)}.</p>
    ${d.ok?`<div class="crow" style="margin:8px 0"><span>✅</span><b style="flex:1">Subido el ${new Date(d.ts).toLocaleString('es-ES',{dateStyle:'medium',timeStyle:'short'})} · ${(d.size/1048576).toFixed(1)} MB</b><a class="btn b-lt" style="padding:7px 10px;font-size:12px;text-decoration:none" href="/api/menupdf?v=${encodeURIComponent(d.ts)}" target="_blank" rel="noopener">Ver</a></div>`
      :`<div class="nt" style="margin:8px 0">Todavía no hay PDF: el QR de las mesas muestra la carta de la app.</div>`}
    <input type="file" id="pdfF" accept="application/pdf,.pdf" class="hidden" onchange="subirPdf(this)">

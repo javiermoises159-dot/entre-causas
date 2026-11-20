@@ -2,7 +2,7 @@
 
 Proyecto independiente: Cloudflare Pages + Functions + base de datos D1 y fotos en KV propias.
 
-- `public/index.html` → app de clientes (carta en `/`, app completa en `/pedir` · ES/IT/EN)
+- `public/index.html` → app de clientes (app completa en `/`, carta de las mesas en `/mesa` · ES/IT/EN)
 - `public/admin.html` → panel del dueño (PIN = variable secreta `ADMIN_PIN`)
 - `public/menu.json` → carta inicial (se usa hasta el primer "Guardar" del panel)
 - `functions/api/` → rutas /api/… · `src/` → lógica del servidor (datos en D1, fotos en KV)
@@ -17,9 +17,9 @@ Proyecto independiente: Cloudflare Pages + Functions + base de datos D1 y fotos 
    - `entre-causas.pages.dev` sigue funcionando: las APK del equipo (panel, cocina, palmare) usan esa dirección.
 
 ## Direcciones
-- `/` → **menú de las mesas** (es lo que abre el QR / NFC de los posavasos): el PDF que el dueño sube en el panel (Más → 📄 Menú de las mesas). Si no hay PDF, muestra la carta de la app sin pedidos.
+- `/mesa` → **menú de las mesas** (es lo que abre el QR / NFC de los posavasos): el PDF que el dueño sube en el panel (Más → 📄 Menú de las mesas). Si no hay PDF, muestra la carta de la app sin pedidos.
 - `/api/menupdf` → el PDF (se abre en el navegador, no se descarga).
-- `/pedir` → la app completa: pedidos a domicilio, retiro, reservas, perfil (links de WhatsApp y campañas).
+- `/` → la app completa: pedidos a domicilio, retiro, reservas, perfil. `/pedir` sigue funcionando igual (links antiguos de WhatsApp y campañas).
 - `/admin`, `/cocina`, `/palmare`, `/reparto.html?k=…` → equipo.
 
 ## Qué hace (fase 2)

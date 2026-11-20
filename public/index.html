@@ -819,7 +819,7 @@ function init(m){setTimeout(cargarEspera,300);if(!window._espT)window._espT=setI
 seg('modo','modo');seg('pago','pago');seg('cuando','cuando');applyLang();
 const MESA=(new URLSearchParams(location.search).get('mesa')||'').replace(/\D/g,'').slice(0,3);
 // "/" (lo que abre el posavasos) = solo la carta, sin pedidos ni reservas. La app completa está en /pedir.
-const CARTA=!MESA&&!/^\/pedir\/?$/.test(location.pathname)&&!new URLSearchParams(location.search).has('app');
+const CARTA=!MESA&&/^\/mesa\/?$/.test(location.pathname);
 if(CARTA){document.body.classList.add('mesa','carta');$('wel').classList.add('hidden');CLI.modo='Mesa';CLI.cuando='ya';}
 if(MESA){document.body.classList.add('mesa');$('wel').classList.add('hidden');CLI.modo='Mesa';CLI.cuando='ya';$('mesaS').textContent='🍽️ '+t('mesaT')(MESA);$('mesaS').classList.remove('hidden');$('mesaS').insertAdjacentHTML('afterend',`<div class="mll"><button onclick="llamar('camarero',this)">🙋 ${t('llCam')}</button><button class="k" onclick="llamar('cuenta',this)">🧾 ${t('llCuenta')}</button></div>`);tab('menu');}else{tab('home');if(CLI.modo==='Mesa')CLI.modo='Delivery';if(new URLSearchParams(location.search).has('reservar')){$('wel').classList.add('hidden');window.__RES=1;}}
 const chips=$('chips');new IntersectionObserver(([e])=>chips.classList.toggle('stuck',e.intersectionRatio<1),{threshold:[1],rootMargin:'-1px 0px 0px 0px'}).observe(chips);

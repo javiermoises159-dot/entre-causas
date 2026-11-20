@@ -18,12 +18,13 @@ export async function onRequest(context) {
   });
 }
 
-// QR / NFC de las mesas: "/" abre el menú en PDF que el dueño subió desde el panel.
-// Si todavía no hay PDF, se muestra la carta de la app como siempre. La app completa está en /pedir.
+// QR / NFC de las mesas: "/mesa" (y "/?mesa=N") abre el menú en PDF que el dueño subió desde el panel.
+// Si todavía no hay PDF, se muestra la carta de la app sin pedidos. "/" es la app de delivery.
 async function menuMesas(context) {
   const { request, env } = context;
   const u = new URL(request.url);
-  if (request.method === "GET" && u.pathname === "/" && !u.searchParams.has("app") && env.DB) {
+  const esMesa = /^\/mesa\/?$/.test(u.pathname) || (u.pathname === "/" && u.searchParams.has("mesa"));
+  if (request.method === "GET" && esMesa && env.DB) {
     try {
       const r = await env.DB.prepare("SELECT v FROM blobs WHERE s = ? AND k = ?").bind("entrecausas", "menupdf").first();
       const d = r && JSON.parse(r.v);
