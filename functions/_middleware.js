@@ -23,6 +23,10 @@ export async function onRequest(context) {
 async function menuMesas(context) {
   const { request, env } = context;
   const u = new URL(request.url);
+  // Dominio viejo del restaurante (QR impresos en los posavasos): todo va al menú de las mesas
+  if (/(^|\.)entrecausasrestaurant\.com$/.test(u.hostname)) {
+    return new Response(null, { status: 301, headers: { location: "https://entrecausas.app/mesa" } });
+  }
   // Links viejos de clientes (entre-causas.pages.dev) → dominio propio. El panel, la cocina, el palmare
   // y las APK siguen funcionando en pages.dev (no se redirigen).
   if (request.method === "GET" && u.hostname === "entre-causas.pages.dev" && /^\/(pedir\/?|mesa\/?|index\.html)?$/.test(u.pathname)) {
