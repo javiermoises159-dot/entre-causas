@@ -1515,96 +1515,101 @@
    "items": [
     {
      "id": "b5",
-     "nombre": "Chicha morada",
+     "nombre": "Chicha morada ½ L",
      "desc": "Bebida peruana de maíz morado, piña y canela",
-     "precio": 6.0,
+     "precio": 6,
      "emoji": "🍇",
      "etiqueta": "De la casa",
      "foto": "",
      "agotado": false,
-     "opciones": [
-      {
-       "nombre": "Formato",
-       "tipo": "una",
-       "obligatorio": true,
-       "valores": [
-        {
-         "nombre": "0,5 L",
-         "precio": 0
-        },
-        {
-         "nombre": "1 L",
-         "precio": 4
-        }
-       ]
-      }
-     ],
+     "opciones": [],
      "desc_it": "Bevanda peruviana di mais viola, ananas e cannella",
      "desc_en": "Peruvian purple corn drink with pineapple and cinnamon",
      "etiqueta_it": "Della casa",
-     "etiqueta_en": "House special"
+     "etiqueta_en": "House special",
+     "nombre_it": "Chicha morada ½ L",
+     "nombre_en": "Chicha morada ½ L"
+    },
+    {
+     "id": "b5L",
+     "nombre": "Chicha morada 1 L",
+     "desc": "Bebida peruana de maíz morado, piña y canela",
+     "precio": 10,
+     "emoji": "🍇",
+     "etiqueta": "",
+     "foto": "",
+     "agotado": false,
+     "opciones": [],
+     "desc_it": "Bevanda peruviana di mais viola, ananas e cannella",
+     "desc_en": "Peruvian purple corn drink with pineapple and cinnamon",
+     "etiqueta_it": "",
+     "etiqueta_en": "",
+     "nombre_it": "Chicha morada 1 L",
+     "nombre_en": "Chicha morada 1 L"
     },
     {
      "id": "b6",
-     "nombre": "Jugo de maracuyá",
+     "nombre": "Jugo de maracuyá ½ L",
      "desc": "Jugo de maracuyá",
-     "precio": 7.0,
+     "precio": 7,
      "emoji": "🥭",
      "etiqueta": "",
      "foto": "",
      "agotado": false,
-     "opciones": [
-      {
-       "nombre": "Formato",
-       "tipo": "una",
-       "obligatorio": true,
-       "valores": [
-        {
-         "nombre": "0,5 L",
-         "precio": 0
-        },
-        {
-         "nombre": "1 L",
-         "precio": 5
-        }
-       ]
-      }
-     ],
+     "opciones": [],
      "desc_it": "Succo di frutto della passione",
      "desc_en": "Passion fruit juice",
-     "nombre_it": "Succo di maracuyá",
-     "nombre_en": "Passion fruit juice"
+     "nombre_it": "Succo di maracuyá ½ L",
+     "nombre_en": "Passion fruit juice ½ L"
+    },
+    {
+     "id": "b6L",
+     "nombre": "Jugo de maracuyá 1 L",
+     "desc": "Jugo de maracuyá",
+     "precio": 12,
+     "emoji": "🥭",
+     "etiqueta": "",
+     "foto": "",
+     "agotado": false,
+     "opciones": [],
+     "desc_it": "Succo di frutto della passione",
+     "desc_en": "Passion fruit juice",
+     "nombre_it": "Succo di maracuyá 1 L",
+     "nombre_en": "Passion fruit juice 1 L",
+     "etiqueta_it": "",
+     "etiqueta_en": ""
     },
     {
      "id": "b7",
-     "nombre": "Limonada",
+     "nombre": "Limonada ½ L",
      "desc": "Limonada fresca",
-     "precio": 5.0,
+     "precio": 5,
      "emoji": "🍋",
      "etiqueta": "",
      "foto": "",
      "agotado": false,
-     "opciones": [
-      {
-       "nombre": "Formato",
-       "tipo": "una",
-       "obligatorio": true,
-       "valores": [
-        {
-         "nombre": "0,5 L",
-         "precio": 0
-        },
-        {
-         "nombre": "1 L",
-         "precio": 3
-        }
-       ]
-      }
-     ],
+     "opciones": [],
      "desc_it": "Limonata fresca",
      "desc_en": "Fresh lemonade",
-     "nombre_it": "Limonata",
-     "nombre_en": "Lemonade"
+     "nombre_it": "Limonata ½ L",
+     "nombre_en": "Lemonade ½ L"
+    },
+    {
+     "id": "b7L",
+     "nombre": "Limonada 1 L",
+     "desc": "Limonada fresca",
+     "precio": 8,
+     "emoji": "🍋",
+     "etiqueta": "",
+     "foto": "",
+     "agotado": false,
+     "opciones": [],
+     "desc_it": "Limonata fresca",
+     "desc_en": "Fresh lemonade",
+     "nombre_it": "Limonata 1 L",
+     "nombre_en": "Lemonade 1 L",
+     "etiqueta_it": "",
+     "etiqueta_en": ""
     },
     {
      "id": "b4",
@@ -2028,33 +2033,36 @@
       "sulfitos"
      ],
      "nombre": "Prosecco",
-     "desc": "Espumoso · copa o botella de 75 cl",
-     "precio": 6,
+     "desc": "Espumoso · botella 75 cl",
+     "precio": 25,
      "emoji": "🍾",
      "etiqueta": "",
      "foto": "",
      "agotado": false,
-     "nombre_it": "",
-     "desc_it": "Bollicine · calice o bottiglia da 75 cl",
+     "desc_it": "Bollicine · bottiglia 75 cl",
      "etiqueta_it": "",
-     "opciones": [
-      {
-       "nombre": "Formato",
-       "tipo": "una",
-       "obligatorio": true,
-       "valores": [
-        {
-         "nombre": "Calice (copa)",
-         "precio": 0
-        },
-        {
-         "nombre": "Bottiglia 75 cl",
-         "precio": 19
-        }
-       ]
-      }
+     "opciones": [],
+     "desc_en": "Sparkling · 75 cl bottle",
+     "nombre_it": ""
+    },
+    {
+     "id": "w3c",
+     "alergenos": [
+      "sulfitos"
      ],
-     "desc_en": "Sparkling · glass or 75 cl bottle"
+     "nombre": "Copa Prosecco",
+     "desc": "Espumoso · copa",
+     "precio": 6,
+     "emoji": "🥂",
+     "etiqueta": "",
+     "foto": "",
+     "agotado": false,
+     "nombre_it": "Calice Prosecco",
+     "desc_it": "Bollicine · calice",
+     "etiqueta_it": "",
+     "opciones": [],
+     "desc_en": "Sparkling · glass",
+     "nombre_en": "Glass of Prosecco"
     },
     {
      "id": "w4",
@@ -2080,33 +2088,36 @@
       "sulfitos"
      ],
      "nombre": "Nero d'Avola",
-     "desc": "Vino tinto · copa o botella de 75 cl",
+     "desc": "Vino tinto · botella 75 cl",
+     "precio": 20,
+     "emoji": "🍷",
+     "etiqueta": "",
+     "foto": "",
+     "agotado": false,
+     "desc_it": "Vino rosso · bottiglia 75 cl",
+     "etiqueta_it": "",
+     "opciones": [],
+     "desc_en": "Red wine · 75 cl bottle",
+     "nombre_it": ""
+    },
+    {
+     "id": "w5c",
+     "alergenos": [
+      "sulfitos"
+     ],
+     "nombre": "Copa Nero d'Avola",
+     "desc": "Vino tinto · copa",
      "precio": 6,
      "emoji": "🍷",
      "etiqueta": "",
      "foto": "",
      "agotado": false,
-     "nombre_it": "",
-     "desc_it": "Vino rosso · calice o bottiglia da 75 cl",
+     "nombre_it": "Calice Nero d'Avola",
+     "desc_it": "Vino rosso · calice",
      "etiqueta_it": "",
-     "opciones": [
-      {
-       "nombre": "Formato",
-       "tipo": "una",
-       "obligatorio": true,
-       "valores": [
-        {
-         "nombre": "Calice (copa)",
-         "precio": 0
-        },
-        {
-         "nombre": "Bottiglia 75 cl",
-         "precio": 14
-        }
-       ]
-      }
-     ],
-     "desc_en": "Red wine · glass or 75 cl bottle"
+     "opciones": [],
+     "desc_en": "Red wine · glass",
+     "nombre_en": "Glass of Nero d'Avola"
     },
     {
      "id": "w6",
@@ -2204,33 +2215,36 @@
       "sulfitos"
      ],
      "nombre": "Greco",
-     "desc": "Vino blanco · copa o botella de 75 cl",
+     "desc": "Vino blanco · botella 75 cl",
+     "precio": 22,
+     "emoji": "🥂",
+     "etiqueta": "",
+     "foto": "",
+     "agotado": false,
+     "desc_it": "Vino bianco · bottiglia 75 cl",
+     "etiqueta_it": "",
+     "opciones": [],
+     "desc_en": "White wine · 75 cl bottle",
+     "nombre_it": ""
+    },
+    {
+     "id": "w12c",
+     "alergenos": [
+      "sulfitos"
+     ],
+     "nombre": "Copa Greco",
+     "desc": "Vino blanco · copa",
      "precio": 6,
      "emoji": "🥂",
      "etiqueta": "",
      "foto": "",
      "agotado": false,
-     "nombre_it": "",
-     "desc_it": "Vino bianco · calice o bottiglia da 75 cl",
+     "nombre_it": "Calice Greco",
+     "desc_it": "Vino bianco · calice",
      "etiqueta_it": "",
-     "opciones": [
-      {
-       "nombre": "Formato",
-       "tipo": "una",
-       "obligatorio": true,
-       "valores": [
-        {
-         "nombre": "Calice (copa)",
-         "precio": 0
-        },
-        {
-         "nombre": "Bottiglia 75 cl",
-         "precio": 16
-        }
-       ]
-      }
-     ],
-     "desc_en": "White wine · glass or 75 cl bottle"
+     "opciones": [],
+     "desc_en": "White wine · glass",
+     "nombre_en": "Glass of Greco"
     },
     {
      "id": "w7",
