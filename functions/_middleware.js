@@ -23,6 +23,11 @@ export async function onRequest(context) {
 async function menuMesas(context) {
   const { request, env } = context;
   const u = new URL(request.url);
+  // Links viejos de clientes (entre-causas.pages.dev) → dominio propio. El panel, la cocina, el palmare
+  // y las APK siguen funcionando en pages.dev (no se redirigen).
+  if (request.method === "GET" && u.hostname === "entre-causas.pages.dev" && /^\/(pedir\/?|mesa\/?|index\.html)?$/.test(u.pathname)) {
+    return new Response(null, { status: 301, headers: { location: "https://entrecausas.app" + (u.pathname === "/index.html" ? "/" : u.pathname) + u.search } });
+  }
   const esMesa = /^\/mesa\/?$/.test(u.pathname) || (u.pathname === "/" && u.searchParams.has("mesa"));
   if (request.method === "GET" && esMesa && env.DB) {
     try {
