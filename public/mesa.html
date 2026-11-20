@@ -4,85 +4,160 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Entre Causas · Menù</title>
-<meta name="theme-color" content="#0E0C0A">
+<meta name="theme-color" content="#EFE8DA">
 <meta name="description" content="Menù di Entre Causas · Peruvian Kitchen, Napoli">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Caveat+Brush&family=Oswald:wght@500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0E0C0A;--bg2:#17130F;--card:#1C1712;--line:#2E261E;--tx:#F4EDE3;--mut:#A99C8C;--aji:#F2B705;--rojo:#C8372D}
+:root{--bg:#EFE8DA;--bg2:#E6DDCB;--ink:#1D1A16;--mut:#6F6557;--line:#D6CBB6;--rojo:#C8372D;--aji:#E9A800}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--tx);font:400 15px/1.45 Poppins,system-ui,sans-serif;min-height:100vh;padding-bottom:env(safe-area-inset-bottom)}
-.top{position:sticky;top:0;z-index:20;background:rgba(14,12,10,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top));max-width:720px;margin:0 auto}
-.bar img{height:38px;filter:invert(1)}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.5 Poppins,system-ui,sans-serif;overflow-x:hidden}
+.brush{font-family:'Permanent Marker',cursive;text-transform:uppercase;letter-spacing:.01em;line-height:.95;transform:rotate(-3deg);display:inline-block}
+.kick{font-family:'Caveat Brush',cursive;color:var(--rojo);font-size:22px;transform:rotate(-3deg);display:inline-block}
+.lbl{font:600 11.5px Oswald,sans-serif;letter-spacing:.14em;text-transform:uppercase}
+.pill{display:inline-flex;align-items:center;justify-content:center;height:38px;padding:0 18px;border-radius:999px;border:2px solid var(--ink);color:var(--ink);background:none;text-decoration:none;cursor:pointer}
+.pill.fill{background:var(--ink);color:var(--bg)}
+.pill.r{border-color:var(--rojo);color:var(--rojo)}
+.top{position:fixed;inset:0 0 auto 0;z-index:30;transition:background .3s,box-shadow .3s}
+.top.s{background:rgba(239,232,218,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 1px 0 var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:1100px;margin:0 auto;padding:12px 18px;padding-top:calc(12px + env(safe-area-inset-top))}
+.bar img{height:34px;opacity:0;transition:opacity .3s}
+.top.s .bar img{opacity:1}
+.nav{display:none;gap:26px}
+.nav a{color:var(--ink);text-decoration:none}
+@media(min-width:760px){.nav{display:flex}}
 .lang{position:relative}
-.lang>button{display:flex;align-items:center;gap:6px;background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font:600 13px Poppins,sans-serif}
-.lang>button svg{width:16px;height:16px;stroke:var(--aji)}
-.lmenu{position:absolute;right:0;top:calc(100% + 6px);background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:160px;box-shadow:0 10px 30px rgba(0,0,0,.5);display:none}
+.lang>button{display:flex;align-items:center;gap:7px;height:36px;padding:0 14px}
+.lang svg{width:15px;height:15px}
+.lmenu{position:absolute;right:0;top:calc(100% + 8px);background:#FBF7EF;border:2px solid var(--ink);border-radius:16px;overflow:hidden;min-width:170px;display:none}
 .lmenu.on{display:block}
-.lmenu button{display:flex;gap:10px;align-items:center;width:100%;background:none;border:0;color:var(--tx);padding:12px 16px;font:500 15px Poppins,sans-serif;text-align:left}
-.lmenu button.sel{color:var(--aji);font-weight:600}
-.tabs{display:flex;gap:8px;overflow-x:auto;padding:0 16px 10px;max-width:720px;margin:0 auto;scrollbar-width:none}
+.lmenu button{display:block;width:100%;text-align:left;background:none;border:0;padding:12px 16px;font:500 15px Poppins,sans-serif;color:var(--ink)}
+.lmenu button.sel{color:var(--rojo);font-weight:600}
+.hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:90px 20px 0;position:relative}
+.hero .logo{width:min(250px,62vw);margin:4px 0 18px}
+.hero h1{font-size:clamp(40px,10.5vw,82px);max-width:900px}
+.hero p.s{color:var(--mut);max-width:520px;margin:20px auto 0;font-size:14.5px}
+.meta{margin-top:14px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;color:var(--mut)}
+.meta b{color:var(--ink)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#3E9B4F;margin-right:6px;vertical-align:1px}
+.dot.no{background:var(--rojo)}
+.btns{display:flex;gap:10px;justify-content:center;margin-top:22px}
+.strip{width:100vw;overflow:hidden;margin-top:44px;padding-bottom:20px;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.strip .tr{display:flex;gap:22px;width:max-content;animation:mq 60s linear infinite}
+.strip img{width:150px;height:150px;border-radius:50%;object-fit:cover;border:7px solid #E3D2B4;box-shadow:0 12px 24px rgba(60,40,10,.18)}
+@media(min-width:760px){.strip img{width:200px;height:200px}}
+@keyframes mq{to{transform:translateX(-50%)}}
+.firmas{max-width:1100px;margin:0 auto;padding:40px 22px 10px;position:relative}
+.dish{min-height:88svh;display:grid;grid-template-columns:1fr;align-items:center;gap:18px;padding:30px 0}
+@media(min-width:760px){.dish{grid-template-columns:1fr 1.1fr;gap:40px;min-height:92vh}}
+.dish .txt{order:2}
+@media(min-width:760px){.dish .txt{order:1}}
+.dish h3{font-size:clamp(42px,11vw,76px);position:relative;padding-bottom:10px}
+.dish h3::after{content:"";position:absolute;left:0;right:-6px;bottom:0;height:5px;background:var(--ink);border-radius:4px;transform:rotate(-1deg)}
+.dish .dd{margin-top:20px;font-size:16px;font-weight:500;max-width:430px}
+.dish ul{list-style:none;margin-top:20px}
+.dish li{font-weight:500;padding:3px 0}
+.dish li::before{content:"* ";color:var(--rojo)}
+.dish .pb{display:flex;align-items:center;gap:16px;margin-top:22px}
+.dish .pr{font:600 26px Oswald,sans-serif}
+.dish .ph{order:1;display:flex;justify-content:center}
+.plate{width:min(88vw,460px);aspect-ratio:1;border-radius:50%;overflow:hidden;border:14px solid #E3D2B4;box-shadow:0 30px 50px rgba(60,40,10,.22);transform:rotate(-8deg) scale(.88);opacity:0;transition:transform 1s cubic-bezier(.2,.8,.2,1),opacity .8s}
+.plate img{width:100%;height:100%;object-fit:cover}
+.dish .txt>*{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+.dish.in .plate{transform:rotate(0) scale(1);opacity:1}
+.dish.in .txt>*{opacity:1;transform:none}
+.dish.in .txt>*:nth-child(2){transition-delay:.12s}.dish.in .txt>*:nth-child(3){transition-delay:.24s}
+.dish:nth-child(even) h3,.dish:nth-child(even) .pr{color:var(--rojo)}
+.dish:nth-child(even) h3::after{background:var(--rojo)}
+.side{display:none;position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:5}
+.side a{display:block;color:#B3A791;text-decoration:none;padding:4px 0}
+.side a.on{color:var(--ink)}
+@media(min-width:1400px){.side.v{display:block}}
+.hist{max-width:1100px;margin:0 auto;padding:70px 22px;display:grid;gap:28px}
+@media(min-width:760px){.hist{grid-template-columns:1fr 1.2fr;align-items:center}}
+.hist h2{font-size:clamp(40px,10vw,70px)}
+.hist p{color:var(--mut);margin-top:20px;max-width:440px}
+.gal{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gal img{width:100%;height:100%;object-fit:cover;border-radius:14px;aspect-ratio:3/4}
+.gal img:first-child{grid-row:span 2;aspect-ratio:auto}
+.carta{background:var(--bg2);padding:60px 0 30px;scroll-margin-top:60px}
+.carta .in{max-width:900px;margin:0 auto;padding:0 18px}
+.carta h2{font-size:clamp(44px,11vw,72px);display:block;margin:0 auto 6px;width:max-content}
+.carta .sb{text-align:center;color:var(--mut);margin-bottom:22px}
+.tabs{position:sticky;top:58px;z-index:10;background:var(--bg2);display:flex;gap:8px;overflow-x:auto;padding:10px 18px;scrollbar-width:none;max-width:900px;margin:0 auto}
 .tabs::-webkit-scrollbar{display:none}
-.tabs a{flex:0 0 auto;color:var(--mut);text-decoration:none;font:500 13px Poppins,sans-serif;padding:6px 12px;border-radius:999px;border:1px solid var(--line)}
-.tabs a.on{color:#1A1206;background:var(--aji);border-color:var(--aji)}
-.hero{max-width:720px;margin:0 auto;padding:28px 20px 6px;text-align:center}
-.hero h1{font:700 26px/1.15 Cinzel,serif;letter-spacing:.06em}
-.hero p{color:var(--mut);font-size:13px;margin-top:6px;letter-spacing:.12em;text-transform:uppercase}
-.hero .orn{width:56px;height:2px;background:var(--aji);margin:14px auto 0;border-radius:2px}
-main{max-width:720px;margin:0 auto;padding:0 16px 40px}
-section{scroll-margin-top:118px;padding-top:26px}
-section h2{font:700 19px Cinzel,serif;letter-spacing:.08em;color:var(--aji);display:flex;align-items:center;gap:12px;margin-bottom:14px}
-section h2::after{content:"";flex:1;height:1px;background:var(--line)}
-.grid{display:grid;grid-template-columns:1fr;gap:14px}
-@media(min-width:560px){.grid{grid-template-columns:1fr 1fr}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
-.card .ph{aspect-ratio:4/3;background:#000;overflow:hidden}
-.card .ph img{width:100%;height:100%;object-fit:cover;display:block}
-.card .bd{padding:13px 15px 15px}
-.hd{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
-.hd h3{font:600 16px/1.3 Poppins,sans-serif}
-.pr{color:var(--aji);font:600 16px Poppins,sans-serif;white-space:nowrap}
-.ds{color:var(--mut);font-size:13.5px;margin-top:5px}
-.tag{display:inline-block;margin-top:8px;font:600 11px Poppins,sans-serif;letter-spacing:.04em;color:var(--aji);border:1px solid rgba(242,183,5,.45);border-radius:999px;padding:2px 9px}
-.ops{margin-top:7px;font-size:12.5px;color:var(--mut)}
-.ops b{color:var(--tx);font-weight:500}
-.alg{margin-top:8px;font-size:13px;letter-spacing:2px}
-.ago{opacity:.45}
-.ago .pr::after{content:attr(data-ago);display:block;font-size:11px;color:var(--rojo);text-align:right;letter-spacing:0}
-.list{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:4px 15px}
-.row{padding:12px 0;border-bottom:1px dashed var(--line)}
-.row:last-child{border-bottom:0}
-.leg{margin-top:34px;padding:16px;border:1px solid var(--line);border-radius:16px;color:var(--mut);font-size:12.5px}
-.leg h4{color:var(--tx);font:600 13px Poppins,sans-serif;margin-bottom:8px}
+.tabs a{flex:0 0 auto;text-decoration:none;color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 13px}
+.tabs a.on{background:var(--ink);color:var(--bg2)}
+.cat{scroll-margin-top:120px;padding-top:30px}
+.cat h3{font-size:30px;margin-bottom:12px}
+.it{display:flex;gap:14px;padding:14px 0;border-bottom:1.5px dashed var(--line);align-items:flex-start;scroll-margin-top:130px}
+.it img{width:76px;height:76px;border-radius:50%;object-fit:cover;border:4px solid #E3D2B4;flex:0 0 auto}
+.it .b{flex:1;min-width:0}
+.it .hd{display:flex;gap:10px;justify-content:space-between;align-items:baseline}
+.it h4{font:600 16px/1.3 Poppins,sans-serif}
+.it .pr{font:600 17px Oswald,sans-serif;white-space:nowrap}
+.it .ds{color:var(--mut);font-size:13.5px;margin-top:3px}
+.it .ops{color:var(--mut);font-size:12.5px;margin-top:4px}
+.it .ops b{color:var(--ink);font-weight:500}
+.it .tg{display:inline-block;margin-top:6px;color:var(--rojo);border:1.5px solid var(--rojo);border-radius:999px;padding:1px 9px;font:600 10.5px Oswald,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.it .al{margin-top:5px;letter-spacing:2px;font-size:13px}
+.it.ago{opacity:.45}
+.it.ago .pr::after{content:attr(data-ago);display:block;font:500 11px Poppins,sans-serif;color:var(--rojo);text-align:right}
+.leg{margin-top:34px;padding:16px;border:2px solid var(--ink);border-radius:16px;font-size:12.5px;color:var(--mut)}
+.leg h4{color:var(--ink);margin-bottom:8px}
 .leg span{display:inline-block;margin:0 12px 6px 0}
-footer{text-align:center;color:var(--mut);font-size:12px;padding:6px 16px 30px}
-.load{text-align:center;color:var(--mut);padding:60px 0}
+footer{text-align:center;padding:40px 18px 50px;color:var(--mut);font-size:12.5px}
+footer img{height:60px;margin-bottom:10px}
+@media(prefers-reduced-motion:reduce){.strip .tr{animation:none}.plate,.dish .txt>*{transition:none;opacity:1;transform:none}}
 </style>
 </head>
 <body>
-<header class="top">
+<header class="top" id="top">
   <div class="bar">
-    <img src="logo-claro.png" alt="Entre Causas · Peruvian Kitchen">
-    <div class="lang"><button id="lb" onclick="tg(event)" aria-label="Lingua / Idioma / Language"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span id="ll"></span></button>
+    <img src="logo-claro.png" alt="Entre Causas">
+    <nav class="nav lbl"><a href="#firmas" id="n1"></a><a href="#carta" id="n2"></a><a href="#hist" id="n3"></a></nav>
+    <div class="lang"><button class="pill lbl" id="lb" onclick="tg(event)" aria-label="Lingua / Idioma / Language"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span id="ll"></span></button>
       <div class="lmenu" id="lm"></div></div>
   </div>
-  <nav class="tabs" id="tabs"></nav>
 </header>
-<div class="hero"><h1>Entre Causas</h1><p id="sub"></p><div class="orn"></div></div>
-<main id="m"><div class="load">…</div></main>
-<footer id="ft"></footer>
+
+<section class="hero">
+  <span class="kick" id="kick"></span>
+  <img class="logo" src="logo-claro.png" alt="Entre Causas · Peruvian Kitchen">
+  <h1 class="brush" id="tag"></h1>
+  <p class="s" id="sub"></p>
+  <div class="meta lbl" id="meta"></div>
+  <div class="btns"><a class="pill fill lbl" href="#carta" id="b1"></a><a class="pill lbl" href="#firmas" id="b2"></a></div>
+  <div class="strip"><div class="tr" id="strip"></div></div>
+</section>
+
+<section class="firmas" id="firmas"></section>
+<nav class="side lbl" id="side"></nav>
+
+<section class="hist" id="hist">
+  <div><h2 class="brush" id="hT"></h2><p id="hP"></p></div>
+  <div class="gal"><img src="fotos/mesa2.jpg" alt="" loading="lazy"><img src="fotos/triolimeno.jpg" alt="" loading="lazy"><img src="fotos/mesa1.jpg" alt="" loading="lazy"></div>
+</section>
+
+<section class="carta" id="carta">
+  <div class="in"><h2 class="brush" id="cT"></h2><p class="sb" id="cS"></p></div>
+  <nav class="tabs lbl" id="tabs"></nav>
+  <div class="in" id="lista"></div>
+</section>
+<footer><img src="logo-claro.png" alt=""><div id="ft"></div></footer>
+
 <script>
-const LG={es:['🇪🇸','Español','ES'],it:['🇮🇹','Italiano','IT'],en:['🇬🇧','English','EN']};
-const TX={es:{sub:'Cocina peruana · Nápoles',alg:'Alérgenos',algTx:'Si tienes alguna alergia o intolerancia, avisa a nuestro personal.',ago:'Agotado',err:'No se pudo cargar la carta. Recarga la página.',ft:'Precios en euros, IVA incluido'},
- it:{sub:'Cucina peruviana · Napoli',alg:'Allergeni',algTx:'Per allergie o intolleranze, chiedi al nostro personale.',ago:'Esaurito',err:'Impossibile caricare il menù. Ricarica la pagina.',ft:'Prezzi in euro, IVA inclusa'},
- en:{sub:'Peruvian kitchen · Naples',alg:'Allergens',algTx:'If you have any allergy or intolerance, please tell our staff.',ago:'Sold out',err:'The menu could not load. Please refresh.',ft:'Prices in euros, VAT included'}};
+const LG={it:['🇮🇹','Italiano','IT'],es:['🇪🇸','Español','ES'],en:['🇬🇧','English','EN']};
+const TX={
+ es:{kick:'Peruvian Kitchen · Nápoles',tag:'Ningún ceviche te hace tan feliz.',sub:'Cocina peruana de verdad en el corazón de Nápoles: ceviches, causas, lomo saltado y parrillas, hechos al momento.',n1:'Nuestros platos',n2:'Carta',n3:'Entre Causas',b1:'Ver la carta',b2:'Platos estrella',ver:'Ver en la carta',abierto:'Abierto',cerrado:'Cerrado',hasta:'hasta las',abre:'abre a las',hT:'Del Perú a Nápoles.',hP:'Recetas de casa, ají amarillo, limón recién exprimido y pescado fresco cada día. La mesa peruana, como en Lima, pero frente al golfo.',cT:'La carta',cS:'Precios en euros, IVA incluido',alg:'Alérgenos',algTx:'Si tienes alguna alergia o intolerancia, avisa a nuestro personal.',ago:'Agotado',err:'No se pudo cargar la carta. Recarga la página.'},
+ it:{kick:'Peruvian Kitchen · Napoli',tag:'Nessun ceviche ti rende così felice.',sub:'Vera cucina peruviana nel cuore di Napoli: ceviche, causa, lomo saltado e grigliate, preparati al momento.',n1:'I nostri piatti',n2:'Menù',n3:'Entre Causas',b1:'Vedi il menù',b2:'Piatti forti',ver:'Vedi nel menù',abierto:'Aperto',cerrado:'Chiuso',hasta:'fino alle',abre:'apre alle',hT:'Dal Perù a Napoli.',hP:'Ricette di casa, ají amarillo, lime spremuto al momento e pesce fresco ogni giorno. La tavola peruviana, come a Lima, ma davanti al golfo.',cT:'Il menù',cS:'Prezzi in euro, IVA inclusa',alg:'Allergeni',algTx:'Per allergie o intolleranze, chiedi al nostro personale.',ago:'Esaurito',err:'Impossibile caricare il menù. Ricarica la pagina.'},
+ en:{kick:'Peruvian Kitchen · Naples',tag:'No ceviche makes you this happy.',sub:'Real Peruvian food in the heart of Naples: ceviche, causa, lomo saltado and grills, made to order.',n1:'Our dishes',n2:'Menu',n3:'Entre Causas',b1:'See the menu',b2:'Signature dishes',ver:'See in the menu',abierto:'Open',cerrado:'Closed',hasta:'until',abre:'opens at',hT:'From Peru to Naples.',hP:'Home recipes, ají amarillo, freshly squeezed lime and fresh fish every day. The Peruvian table, like in Lima, but facing the bay.',cT:'The menu',cS:'Prices in euros, VAT included',alg:'Allergens',algTx:'If you have any allergy or intolerance, please tell our staff.',ago:'Sold out',err:'The menu could not load. Please refresh.'}};
 const ALG={gluten:['🌾','Gluten','Glutine','Gluten'],crustaceos:['🦐','Crustáceos','Crostacei','Crustaceans'],huevo:['🥚','Huevo','Uova','Eggs'],pescado:['🐟','Pescado','Pesce','Fish'],cacahuetes:['🥜','Cacahuetes','Arachidi','Peanuts'],soja:['🫘','Soja','Soia','Soy'],lacteos:['🥛','Lácteos','Latte','Milk'],frutos:['🌰','Frutos de cáscara','Frutta a guscio','Tree nuts'],apio:['🥬','Apio','Sedano','Celery'],mostaza:['🟡','Mostaza','Senape','Mustard'],sesamo:['⚪','Sésamo','Sesamo','Sesame'],sulfitos:['🍷','Sulfitos','Solfiti','Sulphites'],altramuces:['🫛','Altramuces','Lupini','Lupin'],moluscos:['🦪','Moluscos','Molluschi','Molluscs']};
 const AI={es:1,it:2,en:3};
-let M=null,L='it';
+let M=null,L='';
 try{L=localStorage.getItem('ed_lang')||''}catch(e){}
 if(!LG[L]){const n=(navigator.language||'it').slice(0,2);L=LG[n]?n:'it';}
 const $=id=>document.getElementById(id);
@@ -92,33 +167,51 @@ const eur=n=>{n=Number(n)||0;return (n%1?n.toFixed(2).replace('.',','):String(n)
 function tg(e){e.stopPropagation();$('lm').classList.toggle('on');}
 addEventListener('click',()=>$('lm').classList.remove('on'));
 function setL(l){L=l;try{localStorage.setItem('ed_lang',l)}catch(e){}document.documentElement.lang=l;$('lm').classList.remove('on');pintar();}
+// ingredientes en viñetas a partir de la descripción
+function vin(d){d=String(d||'').replace(/\.\s*$/,'');const p=d.split(/,\s*|\s+(?:con|with|y|e|and)\s+/i).map(s=>s.trim()).filter(s=>s&&s.length<60);return p.length>=2?p.slice(0,5).map(s=>s[0].toUpperCase()+s.slice(1)):[];}
+function horario(){const h=M?.ajustes?.horario;if(!h)return '';const t=TX[L];
+  const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Europe/Rome'}));const dia=(now.getDay()+6)%7,mins=now.getHours()*60+now.getMinutes();
+  const m=s=>{const[a,b]=String(s||'0:0').split(':');return +a*60+ +b;};const hoy=h[dia];
+  if(hoy&&!hoy.cerrado){const ab=m(hoy.abre),ci=m(hoy.cierra);const c2=ci<=ab?ci+1440:ci;
+    if(mins>=ab&&mins<c2)return `<span><span class="dot"></span><b>${t.abierto}</b> ${t.hasta} ${esc(hoy.cierra)}</span>`;
+    if(mins<ab)return `<span><span class="dot no"></span><b>${t.cerrado}</b> · ${t.abre} ${esc(hoy.abre)}</span>`;}
+  return `<span><span class="dot no"></span><b>${t.cerrado}</b></span>`;}
+function cats(){return (M.categorias||[]).filter(c=>c.id!=='ofertas').map(c=>({...c,items:(c.items||[]).filter(i=>!i.oculto)})).filter(c=>c.items.length);}
+function todos(){return cats().flatMap(c=>c.items);}
 function ops(it){return (it.opciones||[]).map(o=>{const v=(o.valores||[]).map(x=>esc(loc(x,'nombre'))+(x.precio?` (+${eur(x.precio)})`:'')).join(' · ');return v?`<div class="ops"><b>${esc(loc(o,'nombre'))}:</b> ${v}</div>`:'';}).join('');}
-function item(it,conFoto){
-  const al=(it.alergenos||[]).filter(a=>ALG[a]).map(a=>`<span title="${esc(ALG[a][AI[L]])}">${ALG[a][0]}</span>`).join('');
-  const tag=loc(it,'etiqueta');
-  const bd=`<div class="hd"><h3>${esc(loc(it,'nombre'))}</h3><div class="pr" data-ago="${esc(TX[L].ago)}">${eur(it.precio)}</div></div>${loc(it,'desc')?`<div class="ds">${esc(loc(it,'desc'))}</div>`:''}${ops(it)}${tag?`<span class="tag">${esc(tag)}</span>`:''}${al?`<div class="alg">${al}</div>`:''}`;
-  const ag=it.agotado?' ago':'';
-  return conFoto?`<article class="card${ag}"><div class="ph"><img loading="lazy" src="${esc(it.foto)}" alt="${esc(loc(it,'nombre'))}"></div><div class="bd">${bd}</div></article>`:`<div class="row${ag}">${bd}</div>`;
-}
-function pintar(){
-  const t=TX[L];$('ll').textContent=LG[L][0]+' '+LG[L][2];$('sub').textContent=t.sub;
+function fila(it){const al=(it.alergenos||[]).filter(a=>ALG[a]).map(a=>`<span title="${esc(ALG[a][AI[L]])}">${ALG[a][0]}</span>`).join(''),tg=loc(it,'etiqueta');
+  return `<div class="it${it.agotado?' ago':''}" id="i-${esc(it.id)}">${it.foto?`<img loading="lazy" src="${esc(it.foto)}" alt="">`:''}<div class="b"><div class="hd"><h4>${esc(loc(it,'nombre'))}</h4><div class="pr" data-ago="${esc(TX[L].ago)}">${eur(it.precio)}</div></div>${loc(it,'desc')?`<div class="ds">${esc(loc(it,'desc'))}</div>`:''}${ops(it)}${tg?`<span class="tg">${esc(tg)}</span>`:''}${al?`<div class="al">${al}</div>`:''}</div></div>`;}
+let io1,io2,io3;
+function pintar(){const t=TX[L];
+  $('ll').textContent=LG[L][0]+' '+LG[L][2];
   $('lm').innerHTML=Object.keys(LG).map(k=>`<button class="${k===L?'sel':''}" onclick="setL('${k}')">${LG[k][0]} ${LG[k][1]}${k===L?' ✓':''}</button>`).join('');
-  if(!M){return;}
-  const cats=(M.categorias||[]).filter(c=>c.id!=='ofertas').map(c=>({...c,items:(c.items||[]).filter(i=>!i.oculto)})).filter(c=>c.items.length);
-  $('tabs').innerHTML=cats.map((c,i)=>`<a href="#c-${esc(c.id)}" class="${i?'':'on'}">${esc(loc(c,'corto')||loc(c,'nombre'))}</a>`).join('');
-  $('m').innerHTML=cats.map(c=>{const F=c.items.filter(i=>i.foto),S=c.items.filter(i=>!i.foto);
-    return `<section id="c-${esc(c.id)}"><h2>${esc(loc(c,'nombre'))}</h2>${F.length?`<div class="grid">${F.map(i=>item(i,true)).join('')}</div>`:''}${S.length?`<div class="list"${F.length?' style="margin-top:14px"':''}>${S.map(i=>item(i,false)).join('')}</div>`:''}</section>`;}).join('')
-   +`<div class="leg"><h4>${esc(t.alg)}</h4>${Object.values(ALG).map(a=>`<span>${a[0]} ${esc(a[AI[L]])}</span>`).join('')}<p style="margin-top:6px">${esc(t.algTx)}</p></div>`;
-  $('ft').textContent='Entre Causas · Peruvian Kitchen · '+t.ft;
-  spy();
-}
-let obs=null;
-function spy(){if(obs)obs.disconnect();const tabs=[...document.querySelectorAll('.tabs a')];
-  obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const id='#'+e.target.id;tabs.forEach(a=>{const on=a.getAttribute('href')===id;a.classList.toggle('on',on);if(on){const T=$('tabs');T.scrollTo({left:a.offsetLeft-T.clientWidth/2+a.clientWidth/2,behavior:'smooth'});}});}});},{rootMargin:'-130px 0px -65% 0px'});
-  document.querySelectorAll('main section').forEach(s=>obs.observe(s));}
+  for(const k of ['kick','tag','sub','n1','n2','n3','b1','b2','hT','hP','cT','cS'])$(k).textContent=t[k];
+  if(!M)return;
+  $('meta').innerHTML=horario();
+  const all=todos(),con=all.filter(i=>i.foto);
+  $('strip').innerHTML=[...con,...con].map(i=>`<img src="${esc(i.foto)}" alt="${esc(loc(i,'nombre'))}">`).join('');
+  let F=(M.recomendados||[]).map(id=>all.find(i=>i.id===id&&i.foto)).filter(Boolean);
+  for(const i of con){if(F.length>=6)break;if(!F.includes(i)&&loc(i,'etiqueta'))F.push(i);}
+  for(const i of con){if(F.length>=5)break;if(!F.includes(i))F.push(i);}
+  $('firmas').innerHTML=F.map((i,k)=>{const v=[];return `<article class="dish" id="f-${esc(i.id)}"><div class="txt"><h3 class="brush">${esc(loc(i,'nombre'))}</h3>${v.length?`<ul>${v.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:`<p class="dd">${esc(loc(i,'desc'))}</p>`}<div class="pb"><span class="pr">${eur(i.precio)}</span><a class="pill lbl${k%2?' r':''}" href="#i-${esc(i.id)}">${t.ver}</a></div></div><div class="ph"><div class="plate"><img src="${esc(i.foto)}" alt="${esc(loc(i,'nombre'))}" loading="lazy"></div></div></article>`;}).join('');
+  $('side').innerHTML=F.map(i=>`<a href="#f-${esc(i.id)}" data-f="f-${esc(i.id)}">${esc(loc(i,'nombre'))}</a>`).join('');
+  const C=cats();
+  $('tabs').innerHTML=C.map((c,k)=>`<a href="#c-${esc(c.id)}" class="${k?'':'on'}">${esc(loc(c,'corto')||loc(c,'nombre'))}</a>`).join('');
+  $('lista').innerHTML=C.map(c=>`<div class="cat" id="c-${esc(c.id)}"><h3 class="brush">${esc(loc(c,'nombre'))}</h3>${c.items.map(fila).join('')}</div>`).join('')
+   +`<div class="leg"><h4 class="lbl">${esc(t.alg)}</h4>${Object.values(ALG).map(a=>`<span>${a[0]} ${esc(a[AI[L]])}</span>`).join('')}<p style="margin-top:6px">${esc(t.algTx)}</p></div>`;
+  $('ft').textContent='Entre Causas · Peruvian Kitchen · Napoli';
+  obs();}
+function obs(){[io1,io2,io3].forEach(o=>o&&o.disconnect());
+  io1=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');document.querySelectorAll('#side a').forEach(a=>a.classList.toggle('on',a.dataset.f===e.target.id));}}),{threshold:.35});
+  document.querySelectorAll('.dish').forEach(d=>io1.observe(d));
+  io2=new IntersectionObserver(es=>es.forEach(e=>$('side').classList.toggle('v',e.isIntersecting)),{threshold:.05});io2.observe($('firmas'));
+  const tabs=[...document.querySelectorAll('#tabs a')],T=$('tabs');
+  io3=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const id='#'+e.target.id;tabs.forEach(a=>{const on=a.getAttribute('href')===id;a.classList.toggle('on',on);if(on)T.scrollTo({left:a.offsetLeft-T.clientWidth/2+a.clientWidth/2,behavior:'smooth'});});}}),{rootMargin:'-140px 0px -60% 0px'});
+  document.querySelectorAll('.cat').forEach(c=>io3.observe(c));}
+addEventListener('scroll',()=>$('top').classList.toggle('s',scrollY>60),{passive:true});
 async function cargar(){let m=null;try{const r=await fetch('/api/menu',{cache:'no-store'});if(r.ok)m=await r.json();}catch(e){}
   if(!m){try{const r=await fetch('menu.json');if(r.ok)m=await r.json();}catch(e){}}
-  if(!m){$('m').innerHTML=`<div class="load">${esc(TX[L].err)}</div>`;pintar();return;}
+  if(!m){$('lista').innerHTML=`<p class="sb">${esc(TX[L].err)}</p>`;pintar();return;}
   M=m;pintar();}
 document.documentElement.lang=L;pintar();cargar();
 </script>
