@@ -12,10 +12,23 @@ export const json = (data, status = 200) =>
 const BLOQUEO = 15 * 60 * 1000, MAX_FALLOS = 10, MAX_TOTAL = 100, DIA = 864e5;
 export const BLOQ = new WeakSet(); // peticiones rechazadas por bloqueo (se responden con 429, sin cerrar sesión)
 const huella = async (pin) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode("ec|" + pin)))].slice(0, 8).map((b) => b.toString(16).padStart(2, "0")).join("");
-// Quién entra: el dueño (ADMIN_PIN) o una persona del equipo con su PIN (cocina, camarero)
+// PIN del dueño: si lo cambió desde el panel se guarda (solo su hash con sal) en entrecausas-seguridad/pin-dueno
+// y manda sobre ADMIN_PIN. Para volver al de Cloudflare (si lo olvida): borrar esa fila en D1.
+const sha = async (t) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)))].map((b) => b.toString(16).padStart(2, "0")).join("");
+export const hashPin = (salt, pin) => sha("dueno|" + salt + "|" + pin);
+export async function pinDuenoGuardado() {
+  try { const d = await getStore({ name: "entrecausas-seguridad", consistency: "strong" }).get("pin-dueno", { type: "json" }); return d && d.h && d.salt ? d : null; } catch { return null; }
+}
+export async function esDueno(pin) {
+  pin = String(pin || "");
+  if (!pin) return false;
+  const g = await pinDuenoGuardado();
+  if (g) return (await hashPin(g.salt, pin)) === g.h;
+  return !!ENV.ADMIN_PIN && pin === ENV.ADMIN_PIN;
+}
+// Quién entra: el dueño o una persona del equipo con su PIN (cocina, camarero)
 export async function quien(req) {
-  const real = ENV.ADMIN_PIN;
-  if (!real) return null;
+  if (!ENV.ADMIN_PIN && !(await pinDuenoGuardado())) return null;
   const ip = (req.headers.get("cf-connecting-ip") || "desconocida").replace(/[^\w.:-]/g, "_");
   const st = getStore({ name: "entrecausas-seguridad", consistency: "strong" });
   const key = "fallos/" + ip, ahora = Date.now();
@@ -24,7 +37,7 @@ export async function quien(req) {
   const vigente = f && ahora - f.t < BLOQUEO, bloqueada = vigente && f.n >= MAX_FALLOS;
   const pin = req.headers.get("x-admin-pin") || "";
   let q = null;
-  if (pin && pin === real) q = { rol: "dueno", nombre: "Dueño", id: "" };
+  if (pin && (await esDueno(pin))) q = { rol: "dueno", nombre: "Dueño", id: "" };
   else if (pin.length >= 4) {
     try {
       const l = (await getStore({ name: "entrecausas-equipo", consistency: "strong" }).get("lista", { type: "json" }))?.personas || [];

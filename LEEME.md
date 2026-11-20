@@ -42,3 +42,8 @@ Proyecto independiente: Cloudflare Pages + Functions + base de datos D1 y fotos 
 - **Stock del día**: se pone en cada plato ("Stock diario"). Cuando llega a 0 el plato sale agotado, y cada mañana vuelve a empezar.
 - **Tarjetas regalo**: desde Ahora → 🎁 Regalo se buscan por código, se cobran (cuenta − saldo) y el dueño vende tarjetas nuevas.
 - No hace falta configurar nada más en Cloudflare: todo se guarda en la misma base D1.
+
+## PIN del dueño
+- El dueño lo cambia en el panel: **⚙️ Más → 🔒 Mi PIN de dueño** (pide el actual; el nuevo, de 6 a 8 números).
+- Se guarda solo su hash con sal en D1 (`entrecausas-seguridad` / `pin-dueno`) y manda sobre `ADMIN_PIN`.
+- Si lo olvida: borrar esa fila en D1 (`DELETE FROM blobs WHERE s='entrecausas-seguridad' AND k='pin-dueno'`) y vuelve a valer el `ADMIN_PIN` de Cloudflare.

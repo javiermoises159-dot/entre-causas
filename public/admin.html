@@ -424,6 +424,7 @@ body.app-palmare #vApp,body.app-palmare #bn,body.app-palmare #saveBar,body.app-p
 
   <!-- MAS -->
   <div id="p-mas" class="hidden">
+    <div class="box" id="pinBox"></div>
     <div class="box" id="accBox"></div>
     <div id="setup"></div>
     <div class="box" id="instBox"></div>
@@ -729,6 +730,25 @@ function renderAccesos(){const el=$('accBox');if(!el)return;if(ROL!=='dueno'){el
    <p style="font-size:12px;color:var(--mut);margin-top:10px">Los PIN de cada persona se crean y se borran en <b>Equipo y accesos</b>, aquí abajo.</p>`;}
 function accQR(L,t){const c=qrCanvas(L,600);$('md').innerHTML=`<h2>${esc(t)}<button class="x" onclick="cerrarMd()">✕</button></h2><p style="font-size:12.5px;color:var(--mut);margin:4px 0 10px">Escanéalo con la cámara de la tablet o del móvil.</p><img src="${c.toDataURL('image/png')}" alt="QR" style="width:100%;max-width:300px;display:block;margin:0 auto;border-radius:12px;border:1px solid var(--line)"><p style="text-align:center;font-size:12.5px;margin-top:8px">${esc(L.replace(/^https?:\/\//,''))}</p>`;$('ov').classList.remove('hidden');}
 
+/* ---------- PIN del dueño ---------- */
+function renderPinBox(){const el=$('pinBox');if(!el)return;if(ROL!=='dueno'){el.classList.add('hidden');return;}el.classList.remove('hidden');
+  el.innerHTML=`<h3>🔒 Mi PIN de dueño</h3><p>Es el PIN para entrar al panel con todo (cuentas, carta, clientes). Cámbialo si alguien más lo sabe.</p><button class="btn b-dk" style="width:100%;margin-top:8px" onclick="pinMd()">Cambiar mi PIN</button>`;}
+function pinMd(){$('md').innerHTML=`<h2>🔒 Cambiar mi PIN<button class="x" onclick="cerrarMd()">✕</button></h2>
+   <label class="f">PIN actual</label><input class="fi" id="pnA" type="password" inputmode="numeric" autocomplete="current-password" maxlength="8">
+   <label class="f">PIN nuevo <small>(6 a 8 números)</small></label><input class="fi" id="pnN" type="password" inputmode="numeric" autocomplete="new-password" maxlength="8">
+   <label class="f">Repite el PIN nuevo</label><input class="fi" id="pnR" type="password" inputmode="numeric" autocomplete="new-password" maxlength="8">
+   <div id="pnE" style="color:#C0392B;font-size:13px;font-weight:600;margin-top:8px"></div>
+   <button class="btn b-dk" id="pnB" style="width:100%;margin-top:12px" onclick="pinGuardar()">Guardar el PIN nuevo</button>
+   <p style="font-size:11.5px;color:var(--mut);margin-top:10px">Apúntalo en un sitio seguro. En los otros móviles y tablets donde entras como dueño (por ejemplo la APK del panel) tendrás que entrar otra vez con el PIN nuevo. Los PIN de camareros y cocina no cambian.</p>`;
+  $('ov').classList.remove('hidden');setTimeout(()=>$('pnA').focus(),50);}
+async function pinGuardar(){const a=$('pnA').value.trim(),n=$('pnN').value.trim(),r=$('pnR').value.trim(),e=$('pnE');e.textContent='';
+  if(!/^\d{6,8}$/.test(n)){e.textContent='El PIN nuevo debe tener de 6 a 8 números.';return;}
+  if(n!==r){e.textContent='Los dos PIN nuevos no coinciden.';return;}
+  const b=$('pnB');b.disabled=true;b.textContent='Guardando…';
+  try{const res=await api('/api/equipo?pindueno',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({actual:a,nuevo:n})});const j=await res.json().catch(()=>({}));
+    if(!res.ok){e.textContent=j.error||'No se pudo cambiar el PIN.';return;}
+    PIN=n;try{localStorage.setItem('ed_pin',n)}catch(x){}cerrarMd();toast('✅ PIN cambiado. Desde ahora entras con el nuevo');}
+  catch(x){e.textContent='No se pudo conectar. Revisa tu internet.';}finally{if($('pnB')){b.disabled=false;b.textContent='Guardar el PIN nuevo';}}}
 /* ---------- equipo y accesos (solo dueño) ---------- */
 let EQ=null,EROL='camarero';
 async function renderEquipo(){const el=$('equipoBox');if(!el)return;if(ROL!=='dueno'){el.classList.add('hidden');return;}
@@ -1429,7 +1449,7 @@ function renderEnvio(){const e=AJ().envio,f=v=>v==null||v===''||v===0?'':String(
 function numE(k,v){v=v.trim().replace(',','.');const n=parseFloat(v);const e=AJ().envio;
   if(k==='costo')e.costo=v===''||isNaN(n)?null:n;else if(k==='minimo')e.minimo=isNaN(n)?0:n;else e.gratisDesde=v===''||isNaN(n)?null:n;dirty();}
 const LG=()=>AJ().legal;
-function renderMas(){renderAccesos();renderAuto();pintarInst();renderEquipo();const all=allItems();const g=LG();if($('gRa')){$('gRa').value=g.razon||'';$('gIva').value=g.piva||'';$('gEm').value=g.email||'';$('gSe').value=g.sede||'';}
+function renderMas(){renderPinBox();renderAccesos();renderAuto();pintarInst();renderEquipo();const all=allItems();const g=LG();if($('gRa')){$('gRa').value=g.razon||'';$('gIva').value=g.piva||'';$('gEm').value=g.email||'';$('gSe').value=g.sede||'';}
   if($('qrUrl')&&!$('qrUrl').value){$('qrUrl').value=WEB+'/mesa';pintarQR();}
   $('recoList').innerHTML=M.recomendados.filter(id=>all[id]).map(id=>`<span class="pill">⭐ ${esc(all[id].nombre)}</span>`).join('')||'<span style="color:var(--mut);font-size:13px">Ninguno</span>';
   const a=AJ(),cu=a.cupones;$('cupList').innerHTML=cu.length?'<div class="lrow cu"><small>Código</small><small>Tipo</small><small>Valor</small><small>Mín. €</small><small></small></div>'+cu.map((c,i)=>`<div class="lrow cu"><input class="fi" style="text-transform:uppercase" value="${esc(c.codigo)}" placeholder="BENVENUTO" oninput="AJ().cupones[${i}].codigo=this.value.trim().toUpperCase();dirty()"><select class="fi" onchange="AJ().cupones[${i}].tipo=this.value;dirty()"><option${c.tipo==='%'?' selected':''}>%</option><option${c.tipo==='€'?' selected':''}>€</option></select><input class="fi" inputmode="decimal" value="${String(c.valor??'').replace('.',',')}" oninput="AJ().cupones[${i}].valor=parseFloat(this.value.replace(',','.'))||0;dirty()"><input class="fi" inputmode="decimal" value="${c.minimo?String(c.minimo).replace('.',','):''}" placeholder="—" oninput="AJ().cupones[${i}].minimo=parseFloat(this.value.replace(',','.'))||0;dirty()"><div style="display:flex;flex-direction:column;gap:4px;align-items:center"><label class="sw" style="transform:scale(.8)"><input type="checkbox" ${c.activo!==false?'checked':''} onchange="AJ().cupones[${i}].activo=this.checked;dirty()"><i></i></label><button class="mini-x" onclick="AJ().cupones.splice(${i},1);dirty();renderMas()">✕</button></div></div>`).join(''):'<div style="font-size:13px;color:var(--mut)">Todavía no hay cupones.</div>';
