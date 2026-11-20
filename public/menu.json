@@ -772,6 +772,23 @@
      "etiqueta_en": "House special"
     },
     {
+     "id": "m4",
+     "alergenos": [],
+     "nombre": "Trío limeño",
+     "desc": "",
+     "precio": 23,
+     "emoji": "🍽️",
+     "etiqueta": "",
+     "foto": "",
+     "agotado": false,
+     "nombre_it": "",
+     "desc_it": "",
+     "etiqueta_it": "",
+     "opciones": [],
+     "desc_en": "",
+     "etiqueta_en": ""
+    },
+    {
      "id": "e16",
      "alergenos": [
       "crustaceos",
