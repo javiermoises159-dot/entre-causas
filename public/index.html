@@ -686,7 +686,7 @@ async function enviar(){const err=$('err');const fail=s=>{err.textContent=s;err.
   if(pid)okServer('ped',pid,pfecha,MESA?'Mesa':CLI.modo);else setTimeout(()=>{try{location.href=url}catch(e){}},350);}
 let REGNEXT='Delivery';
 // Registro al abrir la app: si no está registrado, se pide antes que nada. Si dice "ahora no", se vuelve a pedir a los 3 días.
-function regPend(){if(LS.get('ed_reg',null))return false;const n=LS.get('ed_regno',0);return !n||(typeof n==='number'&&Date.now()-n>3*864e5);}
+function regPend(){if(LS.get('ed_reg',null))return false;const n=LS.get('ed_regno',0);return typeof n!=='number'||Date.now()-n>3*864e5;}
 function elegir(v){$('wel').classList.add('out');setTimeout(()=>$('wel').classList.add('hidden'),300);if(regPend()&&v!=='res'){REGNEXT=v;openReg();return;}irModo(v);}
 function irModo(v){if(v==='inicio'){const w=$('wel');w.classList.remove('hidden','out');return;}if(v==='perfil'){tab('perfil');renderHome();return;}if(v==='none'){if(telD())openFid();renderHome();return;}if(v==='res'){openRes();return;}CLI.modo=v;LS.set('ed_cli',CLI);updCart();tab('home');}
 function openReg(){$('regSheet').innerHTML=`<div class="grab"></div><h2>${t('regT')}<button class="x" onclick="saltarReg()" aria-label="Cerrar">✕</button></h2>
