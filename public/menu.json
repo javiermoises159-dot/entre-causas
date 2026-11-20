@@ -2049,7 +2049,7 @@
      "alergenos": [
       "sulfitos"
      ],
-     "nombre": "Prosecco",
+     "nombre": "Botella Prosecco 75 cl",
      "desc": "Espumoso · botella 75 cl",
      "precio": 25,
      "emoji": "🍾",
@@ -2060,7 +2060,8 @@
      "etiqueta_it": "",
      "opciones": [],
      "desc_en": "Sparkling · 75 cl bottle",
-     "nombre_it": ""
+     "nombre_it": "Bottiglia Prosecco 75 cl",
+     "nombre_en": "Prosecco bottle 75 cl"
     },
     {
      "id": "w3c",
@@ -2104,7 +2105,7 @@
      "alergenos": [
       "sulfitos"
      ],
-     "nombre": "Nero d'Avola",
+     "nombre": "Botella Nero d'Avola 75 cl",
      "desc": "Vino tinto · botella 75 cl",
      "precio": 20,
      "emoji": "🍷",
@@ -2115,7 +2116,8 @@
      "etiqueta_it": "",
      "opciones": [],
      "desc_en": "Red wine · 75 cl bottle",
-     "nombre_it": ""
+     "nombre_it": "Bottiglia Nero d'Avola 75 cl",
+     "nombre_en": "Nero d'Avola bottle 75 cl"
     },
     {
      "id": "w5c",
@@ -2231,7 +2233,7 @@
      "alergenos": [
       "sulfitos"
      ],
-     "nombre": "Greco",
+     "nombre": "Botella Greco 75 cl",
      "desc": "Vino blanco · botella 75 cl",
      "precio": 22,
      "emoji": "🥂",
@@ -2242,7 +2244,8 @@
      "etiqueta_it": "",
      "opciones": [],
      "desc_en": "White wine · 75 cl bottle",
-     "nombre_it": ""
+     "nombre_it": "Bottiglia Greco 75 cl",
+     "nombre_en": "Greco bottle 75 cl"
     },
     {
      "id": "w12c",
