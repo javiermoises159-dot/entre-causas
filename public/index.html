@@ -685,8 +685,10 @@ async function enviar(){const err=$('err');const fail=s=>{err.textContent=s;err.
   CART=[];saveCart();$('nota').value='';closeAll();$('ok').classList.remove('hidden');renderAll();
   if(pid)okServer('ped',pid,pfecha,MESA?'Mesa':CLI.modo);else setTimeout(()=>{try{location.href=url}catch(e){}},350);}
 let REGNEXT='Delivery';
-function elegir(v){$('wel').classList.add('out');setTimeout(()=>$('wel').classList.add('hidden'),300);if(!LS.get('ed_reg',null)&&!LS.get('ed_regno',false)&&v!=='res'){REGNEXT=v;openReg();return;}irModo(v);}
-function irModo(v){if(v==='perfil'){tab('perfil');renderHome();return;}if(v==='none'){if(telD())openFid();renderHome();return;}if(v==='res'){openRes();return;}CLI.modo=v;LS.set('ed_cli',CLI);updCart();tab('home');}
+// Registro al abrir la app: si no está registrado, se pide antes que nada. Si dice "ahora no", se vuelve a pedir a los 3 días.
+function regPend(){if(LS.get('ed_reg',null))return false;const n=LS.get('ed_regno',0);return !n||(typeof n==='number'&&Date.now()-n>3*864e5);}
+function elegir(v){$('wel').classList.add('out');setTimeout(()=>$('wel').classList.add('hidden'),300);if(regPend()&&v!=='res'){REGNEXT=v;openReg();return;}irModo(v);}
+function irModo(v){if(v==='inicio'){const w=$('wel');w.classList.remove('hidden','out');return;}if(v==='perfil'){tab('perfil');renderHome();return;}if(v==='none'){if(telD())openFid();renderHome();return;}if(v==='res'){openRes();return;}CLI.modo=v;LS.set('ed_cli',CLI);updCart();tab('home');}
 function openReg(){$('regSheet').innerHTML=`<div class="grab"></div><h2>${t('regT')}<button class="x" onclick="saltarReg()" aria-label="Cerrar">✕</button></h2>
   <div style="font-size:13.5px;color:var(--mut);line-height:1.5;margin-top:6px">${t('regS')}</div>
   <div class="lbl">${t('tuNombre')}</div><input class="fi" id="gNom" autocomplete="name" placeholder="María" value="${esc(CLI.nom)}">
@@ -733,7 +735,7 @@ function pedirGift(){const pa=$('gcPara').value.trim(),de=$('gcDe').value.trim()
   if(!pa||!de){e.textContent=t('gcErr');e.style.display='block';return;}
   let m=`🎁 *TARJETA REGALO · Entre Causas*\n\n💶 ${GC.v} €\n🎨 Estilo: ${T.es['gcS_'+GC.s]}\n🎉 Para: ${pa}\n👤 De: ${de}`;if(ms)m+=`\n💌 ${ms}`;if(LANG!=='es')m+=`\n🌐 Cliente en ${LANG==='it'?'italiano':'inglés'}`;
   CLI.nom=CLI.nom||de;LS.set('ed_cli',CLI);const url='https://wa.me/'+String(AJ.whatsapp||'').replace(/\D/g,'')+'?text='+encodeURIComponent(m);closeAll();toast('🎁 '+t('gcOk'));setTimeout(()=>{try{location.href=url}catch(x){}},300);}
-function saltarReg(){LS.set('ed_regno',true);closeAll();irModo(REGNEXT);}
+function saltarReg(){LS.set('ed_regno',Date.now());closeAll();irModo(REGNEXT);}
 function cerrarOk(){$('ok').classList.add('hidden');applyLang();scrollTo({top:0,behavior:'smooth'});}
 /* reservas */
 const RES={f:'',h:'',p:2,nota:''};
@@ -815,7 +817,7 @@ function init(m){setTimeout(cargarEspera,300);if(!window._espT)window._espT=setI
   RECO=(m.recomendados||[]).filter(id=>ITEMS[id]);SUG=(m.sugerencias||[]).filter(id=>ITEMS[id]);
   marcarDias();CART=CART.filter(l=>ITEMS[l.id]&&!ITEMS[l.id].agotado);saveCart();
   if(AJ.aviso.activo&&AJ.aviso.texto&&LS.get('ed_aviso','')!==AJ.aviso.texto){$('avisoT').textContent='📣 '+TX(AJ.aviso,'texto');$('aviso').classList.remove('hidden');}
-  $('nom').value=CLI.nom||'';$('dir').value=CLI.dir||'';$('tel').value=CLI.tel||'';$('promos').checked=!!CLI.promos;ACT=CATS[0]?.id;{const F=AJ.fidelidad||{};if(F.activo&&F.cada>1&&!MESA&&!CARTA){$('wFid').textContent=t('wFid')(F.cada,TX(F,'premio'));$('wFid').classList.remove('hidden');}}renderAll();if(window.__RES){window.__RES=0;openRes();}}
+  $('nom').value=CLI.nom||'';$('dir').value=CLI.dir||'';$('tel').value=CLI.tel||'';$('promos').checked=!!CLI.promos;ACT=CATS[0]?.id;{const F=AJ.fidelidad||{};if(F.activo&&F.cada>1&&!MESA&&!CARTA){$('wFid').textContent=t('wFid')(F.cada,TX(F,'premio'));$('wFid').classList.remove('hidden');}}renderAll();if(window.__RES){window.__RES=0;openRes();}else if(!MESA&&!CARTA&&regPend()&&!$('wel').classList.contains('hidden')){$('wel').classList.add('hidden');REGNEXT='inicio';openReg();}}
 seg('modo','modo');seg('pago','pago');seg('cuando','cuando');applyLang();
 const MESA=(new URLSearchParams(location.search).get('mesa')||'').replace(/\D/g,'').slice(0,3);
 // "/" (lo que abre el posavasos) = solo la carta, sin pedidos ni reservas. La app completa está en /pedir.
