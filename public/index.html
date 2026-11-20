@@ -272,7 +272,7 @@ body.mesa .qa{display:none!important}
 </head>
 <body>
 <div class="wel" id="wel">
-  <button class="lang" id="wLang" onclick="setLang(NXL[LANG])"></button>
+  <button class="lang" id="wLang" onclick="menuLang(this)"></button>
   <img src="logo-claro.png" alt="Entre Causas">
   <h1 data-t="wBienv"></h1><div class="q" data-t="wQue"></div>
   <div id="wFid" class="hidden" style="margin-top:12px;font-size:13px;font-weight:600;background:#FFF4D6;padding:7px 14px;border-radius:99px"></div>
@@ -289,7 +289,7 @@ body.mesa .qa{display:none!important}
   <header class="top">
     <img src="logo-claro.png" alt="Entre Causas">
     <span class="sp"></span>
-    <button class="lang" id="lang" onclick="setLang(NXL[LANG])" aria-label="Idioma"></button>
+    <button class="lang" id="lang" onclick="menuLang(this)" aria-label="Idioma"></button>
     <button class="icb" onclick="openInfo()" aria-label="Info"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></button>
     <button class="icb" onclick="openCart()" aria-label="Mi pedido"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg><span class="bd hidden" id="hb">0</span></button>
   </header>
@@ -512,7 +512,11 @@ function pintarEstado(){EST=estado();$('stat').classList.toggle('off',!EST.open)
 
 function applyLang(){document.documentElement.lang=LANG;
   document.querySelectorAll('[data-t]').forEach(e=>{const v=t(e.dataset.t);if(typeof v==='string')e.innerHTML=v;});
-  document.querySelectorAll('[data-tp]').forEach(e=>e.placeholder=t(e.dataset.tp));$('lang').textContent=$('wLang').textContent=LBL[NXL[LANG]];}
+  document.querySelectorAll('[data-tp]').forEach(e=>e.placeholder=t(e.dataset.tp));$('lang').textContent=$('wLang').textContent=LBL[LANG]+' ▾';}
+function menuLang(b){let m=document.getElementById('lgM');if(m){m.remove();return;}m=document.createElement('div');m.id='lgM';
+  const r=b.getBoundingClientRect();m.style.cssText=`position:fixed;z-index:9999;top:${r.bottom+6}px;right:${Math.max(8,innerWidth-r.right)}px;background:#fff;border:1px solid #e6e0d8;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.15);overflow:hidden;min-width:150px`;
+  m.innerHTML=['es','it','en'].map(l=>`<button onclick="document.getElementById('lgM').remove();setLang('${l}')" style="display:block;width:100%;text-align:left;border:0;background:${l===LANG?'#F6EFE3':'#fff'};padding:12px 16px;font:${l===LANG?700:500} 15px Poppins,sans-serif;color:#1F1A17">${LBL[l]} ${{es:'Español',it:'Italiano',en:'English'}[l]}${l===LANG?' ✓':''}</button>`).join('');
+  document.body.appendChild(m);setTimeout(()=>addEventListener('pointerdown',function c(e){if(!document.body.contains(m)){removeEventListener('pointerdown',c,true);return;}if(!m.contains(e.target)&&!b.contains(e.target)){m.remove();removeEventListener('pointerdown',c,true);}},true),0);}
 function setLang(l){LANG=l;LS.set('ed_lang',l);applyLang();renderAll();if(TAB==='res')renderRes();if(TAB==='perfil'&&typeof renderPerfil==='function')renderPerfil();if(AJ&&AJ.aviso)$('avisoT').textContent='📣 '+TX(AJ.aviso,'texto');if(MESA){$('mesaS').textContent='🍽️ '+t('mesaT')(MESA);document.querySelectorAll('.mll button').forEach((b,i)=>b.textContent=(i?'🧾 ':'🙋 ')+t(i?'llCuenta':'llCam'));}}
 
 /* carta */
@@ -753,7 +757,7 @@ function renderPerfil(){const F=AJ.fidelidad||{},c=F.cada||8,n=fidN(),reg=telD()
   if(reg){const co=p=>`<svg style="position:absolute;${p}" width="20" height="20" viewBox="0 0 26 26" fill="none" stroke="#E9B54A" stroke-width="1.6" aria-hidden="true"><path d="M1 25V1h24"/><path d="M5 25V5h20"/></svg>`;
     h+=`<button class="tes" onclick="openFid()" style="position:relative;display:block;width:100%;border:none;text-align:left;font-family:Poppins;background:#0E0C0B;color:#E9B54A;margin-top:0">${co('top:10px;left:10px')}${co('top:10px;right:10px;transform:scaleX(-1)')}<span style="display:flex;justify-content:space-between;align-items:flex-start;padding:4px 14px 0"><span><span style="display:block;font-family:Cinzel,serif;font-size:9.5px;letter-spacing:3px">${t('fdT').toUpperCase()}</span><img src="logo-claro.png" alt="Entre Causas" style="height:38px;margin-top:6px;filter:brightness(0) saturate(100%) invert(79%) sepia(38%) saturate(783%) hue-rotate(353deg) brightness(96%) contrast(90%)"></span><img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=4&data=${encodeURIComponent(fidCode())}" alt="QR" style="width:58px;height:58px;background:#fff;border-radius:8px"></span><span class="st" style="grid-template-columns:repeat(${c},1fr);gap:6px;margin:14px 0 10px">${Array.from({length:c},(_,i)=>`<i class="${i<n?'on':''}" style="font-size:13px;border-width:1.5px">${i===c-1&&i>=n?'🎁':''}</i>`).join('')}</span><span style="display:flex;justify-content:space-between;font-size:12px;color:#F6E7C1"><span>${t('fdS')(n,c)} · ${esc(TX(F,'premio'))}</span><span style="opacity:.7">${fidCode()}</span></span></button>`;}
   else h+=`<button class="pf-cta" onclick="REGNEXT='perfil';openReg()">${t('regT')}</button>`;
-  const R=[['repeat',t('pfPed'),last.length?last.slice(0,2).map(l=>N(ITEMS[l.id])).join(', '):t('pfNoPed'),last.length?'repetir()':"tab('menu')"],['cal',t('pfRes'),t('pfResN')(rs),"tab('res')"],['gift',t('gcT'),t('qGcS'),'openGift()'],['tag',t('pfCup'),cu.length?cu.map(x=>x.codigo).join(', '):t('pfCupNo'),'pfCupones()'],['user',t('pfDat'),reg?(CLI.nom||'')+' · '+(CLI.tel||''):t('pfDatS'),"REGNEXT='perfil';openReg()"],['globe',t('pfLang'),LBL[LANG],'setLang(NXL[LANG]);renderPerfil()'],['info',t('pfLoc'),t('infoLink'),'openInfo()']];
+  const R=[['repeat',t('pfPed'),last.length?last.slice(0,2).map(l=>N(ITEMS[l.id])).join(', '):t('pfNoPed'),last.length?'repetir()':"tab('menu')"],['cal',t('pfRes'),t('pfResN')(rs),"tab('res')"],['gift',t('gcT'),t('qGcS'),'openGift()'],['tag',t('pfCup'),cu.length?cu.map(x=>x.codigo).join(', '):t('pfCupNo'),'pfCupones()'],['user',t('pfDat'),reg?(CLI.nom||'')+' · '+(CLI.tel||''):t('pfDatS'),"REGNEXT='perfil';openReg()"],['globe',t('pfLang'),LBL[LANG]+' ▾','menuLang(this)'],['info',t('pfLoc'),t('infoLink'),'openInfo()']];
   h+=`<div class="pf-l">${R.map(([i,a,b,f])=>`<button class="pf-r" onclick="${f}"><span class="i">${pic2(i)}</span><span class="s"><b>${a}</b><small>${esc(b)}</small></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div>`;
   $('perfilPage').innerHTML=h;}
 function openRes(){if(CARTA)return;if(!MESA){tab('res');return;}RES_T='resSheet';const ds=diasRes();if(!ds.some(x=>x.f===RES.f))RES.f=ds[0]?ds[0].f:'';renderRes();openS('resSheet');}
